@@ -14,7 +14,6 @@ from local_components import card_container
 import streamlit.components.v1 as components
 import streamlit_shadcn_ui as ui
 import logging
-from postgrest import APIError
 
 def app():
     if 'is_authenticated' not in st.session_state:
@@ -28,15 +27,44 @@ def app():
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_bill():
+        def load_bill(email_user, password_user, sharepoint_url, list_name):
             try:
-                clients = SharePoint().connect_to_list(ls_name='Home Delivery')
-                return pd.DataFrame(clients)
-            except APIError as e:
-                st.error("Connection not available, check connection")
-                st.stop() 
+                auth = AuthenticationContext(sharepoint_url)
+                auth.acquire_token_for_user(email_user, password_user)
+                ctx = ClientContext(sharepoint_url, auth)
+                web = ctx.web
+                ctx.load(web)
+                ctx.execute_query()
+                
+                target_list = ctx.web.lists.get_by_title(list_name)
+                items = target_list.get_items()
+                ctx.load(items)
+                ctx.execute_query()
 
-        Trans_df = load_bill
+                selected_columns = [
+                    "UHID", "Patientname","Location",  "Bookedon",
+                     "BilledDate", 
+                    "BilledBy","BillingStatus","ID","Bookingstatus"
+                ]
+
+                data = []
+                for item in items:
+                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
+                    data.append(item_data)
+                return pd.DataFrame(data)
+
+            except Exception as e:
+                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
+                st.error(f"Error details: {e}")
+                return None
+        
+        email_user = "biosafety@blisshealthcare.co.ke"
+        password_user = "Buma@8349"
+        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
+        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+        list_name = "Home Delivery"
+
+        Trans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
         st.write(Trans_df)
         
         current_date = datetime.now().date()
@@ -150,7 +178,7 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "Booked By", "Facility",
+                "BookingDate", "Bookedon", "BookedBy", "Facility",
                 "DoctorName", "TeleDoctor", "BookingComments", "Dispatchedstatus",
                 "DispatchedDate", "DispatchedBy", "DispatchComments", "BillingComments","mobile"
                 "Collectionstatus", "CollectionDate", "Month", "Year","BilledDate","BilledBy","BookedBy","ID"
