@@ -16,4 +16,3 @@ supabase==2.4.0
 ntlm-auth==1.5.0
 SharePlum==0.5.1
 streamlit_dynamic_filters
-st-gsheets-connection
