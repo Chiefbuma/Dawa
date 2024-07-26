@@ -62,7 +62,7 @@ def app():
         password_user = "Buma@8349"
         SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        list_name = "Home Deliver"
+        list_name = "Home Delivery"
 
         Trans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
         
