@@ -302,7 +302,7 @@ def app():
             # Streamlit Form helps from rerunning on every widget-click
             # Also helps in providing layout       
             with st.form('Booking Patient') as f:
-                st.header('Book 🔖')
+                st.header('Book  Patient🔖')
                 
             # Inside the form, we are displaying an AgGrid table using the AgGrid function. 
             # The allow_unsafe_jscode parameter is set to True, 
