@@ -28,7 +28,7 @@ def app():
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_data():
+        def load_bill():
             try:
                 clients = SharePoint().connect_to_list(ls_name='Home Delivery')
                 return pd.DataFrame(clients)
@@ -36,8 +36,8 @@ def app():
                 st.error("Connection not available, check connection")
                 st.stop() 
 
-        Trans_df = load_data
-        #st.write(Trans_df)
+        Trans_df = load_bill
+        st.write(Trans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
