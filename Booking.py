@@ -321,7 +321,7 @@ def app():
             # AgGrid Table with Button Feature
             # Streamlit Form helps from rerunning on every widget-click
             # Also helps in providing layout       
-            with st.form('Booking') as f:
+            with st.form('Booking Patient') as f:
                 st.header('Book 🔖')
                 
             # Inside the form, we are displaying an AgGrid table using the AgGrid function. 
