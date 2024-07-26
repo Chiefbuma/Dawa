@@ -79,7 +79,7 @@ def app():
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d-%m-%Y")
-        Trans_df['field_7'] = Trans_df['field_7'].fillna(formatted_date)
+        Trans_df['field_16'] = Trans_df['field_16'].fillna(formatted_date)
         Trans_df['field_17'] = department
         
 
@@ -197,8 +197,6 @@ def app():
                 "field_13",
                 "field_14",
                 "field_15",
-                "field_16",
-                "field_17",
                 "field_18",
                 "field_19",
                 "field_20",
