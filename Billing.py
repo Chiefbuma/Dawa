@@ -42,9 +42,9 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patientname","Location",  "Booked on",
-                     "Billed Date", 
-                    "Billed By","Billing Status","ID","Booking status"
+                    "field_1", "field_2","field_3",  "field_4",
+                     "field_5", 
+                    "field_6","field_7","ID","field_8"
                 ]
 
                 data = []
