@@ -292,27 +292,6 @@ def app():
             gd.configure_column('UHID', editable=False)
     
             
-            
-            @st.cache_data
-            def get_unique_item_descriptions():
-                return booking_df['Location'].unique().tolist()
-
-            # Fetch unique item descriptions
-            unique_item_descriptions = get_unique_item_descriptions()
-            
-            
-            
-            # Define dropdown options for specified columns
-            dropdown_options = {
-                'Location': unique_item_descriptions
- 
-            }
-            
-            
-            for col, options in dropdown_options.items():
-                gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
-            
-            
             # Configure the default column to be editable
             gd.configure_default_column(editable=True,minWidth=150, flex=0)
 
