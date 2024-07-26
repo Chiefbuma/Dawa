@@ -16,11 +16,7 @@ from sharepoint import SharePoint
 from postgrest import APIError
 from IPython.display import HTML
 from streamlit_dynamic_filters import DynamicFilters
-from streamlit_gsheets import GSheetsConnection
 from urllib.error import HTTPError
-from google.oauth2.service_account import Credentials
-from google.oauth2 import service_account
-import gspread
 from st_aggrid import AgGrid, JsCode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 from postgrest import APIError
