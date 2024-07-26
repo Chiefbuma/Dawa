@@ -50,7 +50,7 @@ def app():
         
         book_df = load_data()
         
-        st.write(book_df)
+        #st.write(book_df)
         # Get unique titles
         Title_names = book_df['Patientname'].unique()
 
