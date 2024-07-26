@@ -41,10 +41,18 @@ def app():
                 ctx.load(items)
                 ctx.execute_query()
 
-                selected_columns = [
-                    "field_1", "field_2","field_3",  "field_4",
-                     "field_5", 
-                    "field_6","field_7","ID","field_8"
+                selected_columns = ["ID"
+                                "field_1",
+                                "field_2",
+                                "field_3",
+                                "field_4",
+                                "field_5",
+                                "field_6",
+                                "field_15",
+                                "field_16",
+                                "field_17",
+                                "field_18"
+
                 ]
 
                 data = []
@@ -71,8 +79,8 @@ def app():
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d-%m-%Y")
-        Trans_df['BilledDate'] = Trans_df['BilledDate'].fillna(formatted_date)
-        Trans_df['BilledBy'] = department
+        Trans_df['field_7'] = Trans_df['field_7'].fillna(formatted_date)
+        Trans_df['field_17'] = department
         
 
         @st.cache_resource
@@ -179,10 +187,27 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "BookedBy", "Facility",
-                "DoctorName", "TeleDoctor", "BookingComments", "Dispatchedstatus",
-                "DispatchedDate", "DispatchedBy", "DispatchComments", "BillingComments","mobile"
-                "Collectionstatus", "CollectionDate", "Month", "Year","BilledDate","BilledBy","BookedBy","ID"
+                "field_5",
+                "field_7",
+                "field_8",
+                "field_9",
+                "field_10",
+                "field_11",
+                "field_12",
+                "field_13",
+                "field_14",
+                "field_15",
+                "field_16",
+                "field_17",
+                "field_18",
+                "field_19",
+                "field_20",
+                "field_21",
+                "field_22",
+                "field_23",
+                "field_24",
+                "field_25"
+
             ]
            
             # Hide specified columns
