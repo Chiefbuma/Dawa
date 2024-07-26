@@ -23,6 +23,7 @@ from postgrest import APIError
 from dateutil.relativedelta import relativedelta
 from sharepoint import SharePoint
 import conection
+import logging
 
 
 def app():
