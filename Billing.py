@@ -42,7 +42,7 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patient name","Location",  "Booked on",
+                    "UHID", "Patientname","Location",  "Booked on",
                      "Billed Date", 
                     "Billed By","Billing Status","ID","Booking status"
                 ]
@@ -62,9 +62,10 @@ def app():
         password_user = "Buma@8349"
         SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        list_name = "Home Delivery"
+        list_name = "Home Deliver"
 
         Trans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
+        
         st.write(Trans_df)
         
         current_date = datetime.now().date()
