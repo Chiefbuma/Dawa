@@ -178,7 +178,7 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "BookedBy", "Title", "Facility",
+                "BookingDate", "Bookedon", "BookedBy", "Facility",
                 "DoctorName", "TeleDoctor", "BookingComments", "Dispatchedstatus",
                 "DispatchedDate", "DispatchedBy", "DispatchComments", "BillingComments","mobile"
                 "Collectionstatus", "CollectionDate", "Month", "Year","BilledDate","BilledBy","BookedBy","ID"
