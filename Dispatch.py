@@ -89,7 +89,7 @@ def app():
             current_month_name = datetime.now().strftime("%B")
             current_date = datetime.now().date()
 
-            Allresponse = supabase.from_('Dawa_Details').select('*').eq('Medical Centre', location).execute()
+            Allresponse = supabase.from_('Dawa_Details').select('*').execute()
             Details_df = pd.DataFrame(Allresponse.data)
             
             Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
