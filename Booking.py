@@ -322,7 +322,7 @@ def app():
             # Streamlit Form helps from rerunning on every widget-click
             # Also helps in providing layout       
             with st.form('Booking') as f:
-                st.header('Book Patient 🔖')
+                st.header('Book 🔖')
                 
             # Inside the form, we are displaying an AgGrid table using the AgGrid function. 
             # The allow_unsafe_jscode parameter is set to True, 
@@ -383,7 +383,8 @@ def app():
                 
                 except Exception as e:
                     st.error(f"Failed to update to SharePoint: {str(e)}")
-                    st.stop() 
+                    st.stop()
+                    
                 
                 
                 def submit_to_sharepoint(Appointment_df):
