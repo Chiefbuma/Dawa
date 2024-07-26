@@ -23,6 +23,7 @@ from postgrest import APIError
 from dateutil.relativedelta import relativedelta
 from sharepoint import SharePoint
 import conection
+import logging
 
 
 def app():
@@ -229,12 +230,56 @@ def app():
             hidden_columns = [
                 'Booked By',
                 'Booking Date',
-                'Facility',
+                'Location',
                 'TeleDoctor',
                 'Title',
                 'Month',
-                'Year'
+                'Year',
+                'S.No'
             ]
+            
+            # Define the list of names for the dropdown
+            names_list = [
+                'Abdalla Said',
+                'Alfred Kalisa',
+                'Bancy Waithera',
+                'Barbra Mumbi Wachira',
+                'Brian Muriuki',
+                'Denis Kiplagat',
+                'Dr Alya Shalima Mohammed',
+                'Dr David Gikobi',
+                'Dr Grace Nasike',
+                'Dr John Wachira',
+                'Dr Kendra Ochieng',
+                'Dr Kinita Patel',
+                'Dr Shruti Gite',
+                'Edwin Wangila',
+                'Elizabeth Patrice',
+                'Francis Abuga',
+                'Grace Wanjiru Githaiga',
+                'Jezreel Kagunda',
+                'Kenneth Nkunja Murira',
+                'Margaret Kiriiya',
+                'Martha Njoki',
+                'Mohammed Nurr',
+                'Nebart Nyaga',
+                'Sheilla Weimer',
+                'Solomon Mwendwa',
+                'Terry Kariuki',
+                'Victor Maweu',
+                'Yuvy Mochama'
+            ]
+
+            # Define dropdown options for the specified column
+            dropdown_options = {
+                'DoctorName': names_list
+            }
+
+            # Configure the column with the dropdown options
+            for col, options in dropdown_options.items():
+                gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
+
+            
 
             # Hide specified columns
             for col in hidden_columns:
@@ -277,8 +322,8 @@ def app():
             # AgGrid Table with Button Feature
             # Streamlit Form helps from rerunning on every widget-click
             # Also helps in providing layout       
-            with st.form('Booking') as f:
-                st.header('Book Patient 🔖')
+            with st.form('Booking Patient') as f:
+                st.header('Book 🔖')
                 
             # Inside the form, we are displaying an AgGrid table using the AgGrid function. 
             # The allow_unsafe_jscode parameter is set to True, 
@@ -301,72 +346,76 @@ def app():
                 
                 cols = st.columns(6)
                 with cols[5]:
-                    st.form_submit_button(" Confirm Bookings(s) 🔒", type="primary")
+                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
                 
-                with st.expander("CONFIRM BOKING DETAILS"):
+            with card_container(key="Main1"):
+                try:
                     
+                    # Fetch the data from the AgGrid Table
+                    res = response['data']
+                    #st.table(res)
+                    
+                    df = pd.DataFrame(res)
+            
+                                # Assuming the 'Booking Date' column exists and needs to be formatted
+                    if 'Booking Date' in df.columns:
+                        df['Booking Date'] = pd.to_datetime(df['Booking Date'], errors='coerce', dayfirst=True)
+                        df['Booked on'] = pd.to_datetime(df['Booked on'], errors='coerce', dayfirst=True)
+                        df['Booking Date'] = df['Booking Date'].dt.strftime('%d-%m-%Y')
+                        df['Booked on'] = df['Booked on'].dt.strftime('%d-%m-%Y')
+                    
+                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
+                    Appointment_df = df[df['Booking status'] == 'Booked']
+                    
+                    Appointment_df=Appointment_df[['Title','UHID',	'Patientname','mobile','DoctorName','Booking status','Booking Date',	
+                                    'Booked on','Booked By'	,'Month','Year']]
+
+                    
+                    # Display the filtered DataFrame
+                    #st.dataframe(Appointment_df)
+                    
+                    
+                    with card_container(key="Appoint"):
+                        cols = st.columns(1)
+                        with cols[0]:
+                            with card_container(key="table1"):
+                                ui.table(data=Appointment_df, maxHeight=300)
+                    
+                
+                except Exception as e:
+                    st.error(f"Failed to update to SharePoint: {str(e)}")
+                    st.stop()
+                    
+                
+                
+                def submit_to_sharepoint(Appointment_df):
                     try:
+                        sp = SharePoint()
+                        site = sp.auth()
+                        target_list = site.List(list_name='Home Delivery')
+
+                        # Iterate over the DataFrame and create items in the SharePoint list
+                        for ind in Appointment_df.index:
+                            item_creation_info = {
+                                'Title': Appointment_df.at[ind, 'Title'],  # Replace 'Title' with your field name
+                                'UHID': Appointment_df.at[ind, 'UHID'],
+                                'Patientname': Appointment_df.at[ind, 'Patientname'],
+                                'mobile': Appointment_df.at[ind, 'mobile'],
+                                'DoctorName': Appointment_df.at[ind, 'DoctorName'],
+                                'Booking status': Appointment_df.at[ind, 'Booking status'],
+                                'Booking Date': Appointment_df.at[ind, 'Booking Date'],
+                                'Booked on': Appointment_df.at[ind, 'Booked on'],
+                                'Booked By': Appointment_df.at[ind, 'Booked By'],
+                                'Month': Appointment_df.at[ind, 'Month'],
+                                 'Year': Appointment_df.at[ind, 'Year']
+                            
+                            }
+                            target_list.UpdateListItems(data=[item_creation_info], kind='New')
                         
-                        # Fetch the data from the AgGrid Table
-                        res = response['data']
-                        #st.table(res)
-                        
-                        df = pd.DataFrame(res)
-                
-                                    # Assuming the 'Booking Date' column exists and needs to be formatted
-                        if 'Booking Date' in df.columns:
-                            df['Booking Date'] = pd.to_datetime(df['Booking Date'], errors='coerce', dayfirst=True)
-                            df['Booked on'] = pd.to_datetime(df['Booked on'], errors='coerce', dayfirst=True)
-                            df['Booking Date'] = df['Booking Date'].dt.strftime('%d-%m-%Y')
-                            df['Booked on'] = df['Booked on'].dt.strftime('%d-%m-%Y')
-                        
-                        # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        Appointment_df = df[df['Booking status'] == 'Booked']
-                        
-                        # Display the filtered DataFrame
-                        #st.dataframe(Appointment_df)
-                        
-                        
-                        with card_container(key="Appoint"):
-                            cols = st.columns(1)
-                            with cols[0]:
-                                with card_container(key="table1"):
-                                    ui.table(data=Appointment_df, maxHeight=300)
-                       
-                    
+                        st.success("Updated to Database", icon="✅")
                     except Exception as e:
                         st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop() 
-                    
-                    def submit_to_sharepoint(Appointment_df):
-                        try:
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
-
-                            # Iterate over the DataFrame and create items in the SharePoint list
-                            for ind in Appointment_df.index:
-                                item_creation_info = {
-                                    'Title': Appointment_df.at[ind, 'Title'],  # Replace 'Title' with your field name
-                                    'UHID': Appointment_df.at[ind, 'UHID'],
-                                    'Facility': Appointment_df.at[ind, 'Facility'],
-                                    'Patientname': Appointment_df.at[ind, 'Patientname'],
-                                    'mobile': Appointment_df.at[ind, 'mobile'],
-                                    'Location': Appointment_df.at[ind, 'Location'],
-                                    'TeleDoctor': Appointment_df.at[ind, 'TeleDoctor'],
-                                    'Booking status': Appointment_df.at[ind, 'Booking status'],
-                                    'Booking Date': Appointment_df.at[ind, 'Booking Date'],
-                                    'Booked on': Appointment_df.at[ind, 'Booked on'],
-                                    'Booked By': Appointment_df.at[ind, 'Booked By'],
-                                    'Month': Appointment_df.at[ind, 'Month'],
-                                    'Year': Appointment_df.at[ind, 'Year']
-                                }
-                                target_list.UpdateListItems(data=[item_creation_info], kind='New')
-                            
-                            st.success("Updated to Database", icon="✅")
-                        except Exception as e:
-                            st.error(f"Failed to update to SharePoint: {str(e)}")
-                            st.stop()
+                        st.stop()
 
             cols=st.columns(12)
             with cols[6]:
