@@ -62,7 +62,7 @@ def app():
                     "ReceivedBy",
                     "ReceivedStatus",
                     "Collectionstatus",
-                    "DispensedBy"
+                    "DispensedBy",
                     "CollectionDate",
                     "Month",
                     "TransactionType",
@@ -88,7 +88,8 @@ def app():
         list_name = "Home Delivery"
 
         Trans_df = load_data(email_user, password_user, sharepoint_url, list_name)
-        #st.write(Trans_df)
+        
+        st.write(Trans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
