@@ -31,7 +31,11 @@ def app():
             
         if 'Department' not in st.session_state:
             st.session_state.Department = ''
-                    # Initialize session state if it doesn't exist
+        
+        if 'staffnumber' not in st.session_state:
+            st.session_state.staffnumber= ''
+            
+        # Initialize session state if it doesn't exist
         
         def init_connection():
             try:
@@ -50,6 +54,10 @@ def app():
         location_df = pd.DataFrame(response.data)
 
         def get_facilities(staffnumber):
+            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+            login_df = pd.DataFrame(response.data)
+            return login_df
+        
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             login_df = pd.DataFrame(response.data)
             return login_df
@@ -80,9 +88,9 @@ def app():
                     department= facilities_df['department'].iloc[0]
                     st.session_state.Location = location
                     st.session_state.Region =region
-                    st.session_state.Department = department 
+                    st.session_state.Department = department
+                    st.session_state.staffnumber = staffnumber  
 
-                    
                     if password == facilities_df['password'].iloc[0]:
                         return True, region, location,department
                     return False, None, None
@@ -134,7 +142,7 @@ def app():
                                     st.write(f"Location: {location}, Region: {region}")
                                     st.session_state.logged_in= True
                                     st.session_state.is_authenticated=True
-                                    st.session_state.staffnumber = staffnumber
+                                    st.session_state.staffnumber = staffnumber  
                                     st.session_state.password = password
                                     st.session_state.Location = location
                                     st.session_state.Region =region
@@ -192,6 +200,8 @@ def app():
                                 st.session_state.Location = location
                                 st.session_state.Region =region
                                 st.session_state.Department = department
+                                st.session_state.staffnumber = staffnumber  
+
                                 form_container.empty()
                             else:
                                 st.warning("Invalid credentials. Please try again.")
@@ -201,8 +211,9 @@ def app():
             st.write(f"""<span style="color: green;">
                             Successfully logged in !!<br>
                             Location: <strong>{st.session_state.Location}</strong><br>
+                            Staffnumber: <strong>{st.session_state.staffnumber}</strong><br>
                             Department: <strong>{st.session_state.Department}</strong><br>
-                            Region: <strong>{st.session_state.Region}</strong>.<br>\
+                           \
                             <br>
                             Naviagte to your  dashboard from the menu on the sidebar.
                         </span>""", unsafe_allow_html=True)

@@ -23,7 +23,8 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location = st.session_state.Region
+        location=st.session_state.Region
+        staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -42,12 +43,30 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patientname","Location",  "Bookedon","BookingDate",
-                     "BilledDate", 
-                    "BilledBy","BillingStatus","ID",
-                             "Dispatchedstatus",
-                "DispatchedDate", "DispatchedBy", "DispatchComments",
-                "Collectionstatus", "CollectionDate", "Month", "Year","ReceivedStatus"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "Dispatchedstatus",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "ReceivedStatus",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year"
+
                 ]
 
                 data = []
@@ -72,10 +91,8 @@ def app():
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d-%m-%Y")
+        formatted_date = current_date.strftime("%d/%m/%Y")
         Trans_df['CollectionDate'] = Trans_df['CollectionDate'].fillna(formatted_date)
-       
-        
        
         @st.cache_resource
         def init_connection():
@@ -121,28 +138,34 @@ def app():
 
             # JavaScript for checkbox renderer
             checkbox_renderer = JsCode("""
-            class CheckboxRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'checkbox');
-                    this.eGui.checked = params.value === 'Collected';
-                    this.eGui.addEventListener('click', (event) => {
-                        if (event.target.checked) {
-                            params.setValue('Collected');
-                        } else {
-                            params.setValue('');
-                        }
-                    });
+                class CheckboxRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('input');
+                        this.eGui.setAttribute('type', 'checkbox');
+                        
+                        // Default the checkbox to unchecked
+                        this.eGui.checked = params.value === '';
+                        
+                        this.eGui.addEventListener('click', (event) => {
+                            if (event.target.checked) {
+                                params.setValue('Collected');
+                            } else {
+                                params.setValue('');
+                            }
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+
+                    refresh(params) {
+                        // Update the checkbox state when the cell is refreshed
+                        this.eGui.checked = params.value === 'Collected';
+                    }
                 }
-                getGui() {
-                    return this.eGui;
-                }
-                refresh(params) {
-                    this.eGui.checked = params.value === 'Collected';
-                }
-            }
-            """)
+                """)
 
             # JavaScript for date renderer
             date_renderer = JsCode("""
@@ -181,10 +204,23 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                 "Bookedon", "BookedBy", "Title", "Facility",
-                "DoctorName", "TeleDoctor", "BookingComments",
-                 "DispatchedBy", "DispatchComments", "BillingComments","BillingStatus","BilledDate","BookingDate","DispatchedDate",
-                 "Month", "Year","BilledBy","BookedBy","mobile","ID","CollectionDate","Dispatchedstatus","Month"
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "Dispatchedstatus",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year"
+
                 
             ]           
            
@@ -194,8 +230,14 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                "Title", "Facility", "UHID", "Patientname",
-                "DoctorName", "TeleDoctor", "Location","Dispatchedstatus","ID"
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "ReceivedStatus",
+                    "Month",
+                    "TransactionType",
+                    "Year"
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
@@ -437,6 +479,16 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Collectionstatus'] == 'Collected']
                         
+                        pres_df=pres_df[["Title",
+                                        "UHID",
+                                        "Patientname",
+                                        "Location",
+                                        "Collectionstatus",
+                                        "CollectionDate",
+                                        "Month",
+                                        "Year"]]
+
+                        
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)
                         
@@ -494,18 +546,6 @@ def app():
                         if ui_but:
                             submit_to_sharepoint(pres_df)    
 
-                
-            # Handle selection
-                
-                        
-            cols = st.columns(12)
-            with cols[6]:
-                if st.button("Clear", key="Transbtn"):
-                    st.cache_data.clear()
-
-            with cols[5]:
-                if st.button("Submit", key="Transubbtn"):
-                    submit_to_sharepoint(Trans_df)
                             
               
         else:

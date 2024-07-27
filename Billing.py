@@ -23,7 +23,8 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location = st.session_state.Region
+        location=st.session_state.Region
+        staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -42,9 +43,16 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patientname","Location",  "Booked on",
-                     "Billed Date", 
-                    "Billed By","Billing Status","ID","Booking status"
+                    "ID",
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Bookingstatus",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate"
                 ]
 
                 data = []
@@ -66,15 +74,13 @@ def app():
 
         Trans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
         
-        st.write(Trans_df)
+        #st.write(Trans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d-%m-%Y")
-        Trans_df['BilledDate'] = Trans_df['BilledDate'].fillna(formatted_date)
-        Trans_df['BilledBy'] = department
+        formatted_date = current_date.strftime("%d/%m/%Y")
+        Trans_df['ConsulationDate'] = Trans_df['ConsulationDate'].fillna(formatted_date)
         
-
         @st.cache_resource
         def init_connection():
             url = "https://effdqrpabawzgqvugxup.supabase.co"
@@ -124,20 +130,26 @@ def app():
                     this.params = params;
                     this.eGui = document.createElement('input');
                     this.eGui.setAttribute('type', 'checkbox');
-                    this.eGui.checked = params.value === 'Billed';
+                    
+                    // Default the checkbox to unchecked
+                    this.eGui.checked = params.value === '';
+                    
                     this.eGui.addEventListener('click', (event) => {
                         if (event.target.checked) {
-                            params.setValue('Billed');
+                            params.setValue('Consulted');
                         } else {
                             params.setValue('');
                         }
                     });
                 }
+
                 getGui() {
                     return this.eGui;
                 }
+
                 refresh(params) {
-                    this.eGui.checked = params.value === 'Billed';
+                    // Update the checkbox state when the cell is refreshed
+                    this.eGui.checked = params.value === 'Consulted';
                 }
             }
             """)
@@ -179,10 +191,7 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "BookedBy", "Facility",
-                "DoctorName", "TeleDoctor", "BookingComments", "Dispatchedstatus",
-                "DispatchedDate", "DispatchedBy", "DispatchComments", "BillingComments","mobile"
-                "Collectionstatus", "CollectionDate", "Month", "Year","BilledDate","BilledBy","BookedBy","ID"
+                      "Title","ID","mobile","DoctorName","ConsulationDate"
             ]
            
             # Hide specified columns
@@ -191,14 +200,41 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                "Title", "Facility", "UHID", "Patientname", "mobile", 
-                "DoctorName", "TeleDoctor", "Location","BilledDate","BilledBy","ID"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Bookingstatus",
+                    "DoctorName"
+
             ]
+            
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
+        
+            response = supabase.table('facilities').select("*").execute()
 
+            location_df = pd.DataFrame(response.data)
+            
+            @st.cache_data
+            def get_unique_item_descriptions():
+                return location_df['Location'].unique().tolist()
+
+            # Fetch unique item descriptions
+            unique_item_descriptions = get_unique_item_descriptions()
+            
+            
+            # Define dropdown options for specified columns
+            dropdown_options = {
+                'Location': unique_item_descriptions
+ 
+            }
+            
+            for col, options in dropdown_options.items():
+                gb.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
+            
             # Configure specific columns with additional settings
-            gb.configure_column('BillingStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('ConsulationStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -211,7 +247,6 @@ def app():
 
             # Build the grid options
             gridoptions = gb.build()
-            
             
             #Add manual selection configuration
             gridoptions.update({
@@ -229,7 +264,7 @@ def app():
 
             # Streamlit container to act as card
             with card_container(key="Bill"):
-                st.header('Bill  Patient 🔖')
+                st.header('Consult Patient 🔖')
                 
                 with card_container(key="Bill"):
                     # Display the AgGrid table
@@ -243,7 +278,6 @@ def app():
                         fit_columns_on_grid_load=True
                     )
                     
-               
                 selected_row = response['selected_rows']
                 if 'Patient_name' not in st.session_state:
                     st.session_state.Patient_name = '' 
@@ -432,7 +466,7 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['BillingStatus'] == 'Billed']
+                        pres_df = df[df['ConsulationStatus'] == 'Consulted']
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)
@@ -457,15 +491,14 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                billing_status = pres_df.at[ind, 'BillingStatus']
-                                billed_date = pres_df.at[ind, 'BilledDate']
-                                billed_by = pres_df.at[ind, 'BilledBy']
+                                consultation_status = pres_df.at[ind, 'ConsulationStatus']
+                                consultation_date = pres_df.at[ind, 'ConsulationDate']
+                               
 
                                 item_creation_info = {
                                     'ID': item_id, 
-                                    'Billing Status': billing_status,
-                                    'Billed Date': billed_date,
-                                    'Billed By': billed_by,
+                                    'Consulation Status': consultation_status,
+                                    'Consulation Date': consultation_date
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
@@ -490,10 +523,7 @@ def app():
                         ui_but = ui.button("Submit ", key="subbtn")
                         if ui_but:
                             submit_to_sharepoint(pres_df)    
-
-                
-
-                            
+        
               
         else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")

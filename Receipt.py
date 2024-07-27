@@ -23,7 +23,8 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location = st.session_state.Region
+        location=st.session_state.Region
+        staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -42,9 +43,29 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patientname","Location",  "BilledDate",
-                     "DispatchedBy", 
-                    "DispatchedDate","Dispatchedstatus","ID","ReceivedDate","ReceivedStatus","ReceivedBy"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "Dispatchedstatus",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "ReceivedStatus",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year"
                 ]
 
                 data = []
@@ -69,7 +90,7 @@ def app():
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d-%m-%Y")
+        formatted_date = current_date.strftime("%d/%m/%Y")
         Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
         Trans_df['ReceivedBy'] = department
         
@@ -178,11 +199,23 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "BookedBy", "Title", "Facility",
-                "DoctorName", "TeleDoctor", "BookingComments",
-                 "DispatchComments", "BillingComments",
-                "CollectionDate", "Month", "Year","BilledBy","BookedBy","mobile","BilledDate","DispatchedDate","ReceivedBy","ReceivedDate","DispatchedBy"
-            ]
+                              
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year" ]
            
             # Hide specified columns
             for col in book_columns:
@@ -190,8 +223,12 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                "Title", "Facility", "UHID", "Patientname", "ID",
-                "DoctorName", "TeleDoctor", "Location","BilledDate","BilledBy","ID","Bookedon"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "ReceivedStatus"
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
@@ -420,8 +457,7 @@ def app():
                                 st.stop()
                      
                     
-                with st.expander("CONFIRM RECEIPT OF PACKAGE"):
-                    
+                with card_container(key="reveived" f"CONFIRM RECEIVING"):
                     try:
                         
                         # Fetch the data from the AgGrid Table
@@ -432,6 +468,16 @@ def app():
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['ReceivedStatus'] == 'Received']
+                        
+                        pres_df=pres_df[["Title",
+                                        "UHID",
+                                        "Patientname",
+                                        "Location",
+                                        "ReceivedDate",
+                                        "ReceivedBy",
+                                        "ReceivedStatus",
+                                        "Month",
+                                        "Year"]]
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)
@@ -489,20 +535,6 @@ def app():
                         ui_but = ui.button("Submit ", key="subbtn")
                         if ui_but:
                             submit_to_sharepoint(pres_df)    
-
-                
-            # Handle selection
-                
-                        
-            cols = st.columns(12)
-            with cols[6]:
-                if st.button("Clear", key="Transbtn"):
-                    st.cache_data.clear()
-
-            with cols[5]:
-                if st.button("Submit", key="Transubbtn"):
-                    submit_to_sharepoint(Trans_df)
-                            
               
         else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")

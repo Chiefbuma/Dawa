@@ -23,7 +23,8 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location = st.session_state.Region
+        location=st.session_state.Region
+        staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -42,9 +43,30 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
-                    "UHID", "Patientname","Location",  "BilledDate",
-                     "DispatchedBy", 
-                    "DispatchedDate","Dispatchedstatus","ID","BillingStatus"
+                     "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "Dispatchedstatus",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "ReceivedStatus",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year"
+
                 ]
 
                 data = []
@@ -69,7 +91,7 @@ def app():
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d-%m-%Y")
+        formatted_date = current_date.strftime("%d/%m/%Y")
         Trans_df['DispatchedDate'] = Trans_df['DispatchedDate'].fillna(formatted_date)
         Trans_df['DispatchedBy'] = department
         
@@ -119,27 +141,33 @@ def app():
             # JavaScript for checkbox renderer
             checkbox_renderer = JsCode("""
             class CheckboxRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'checkbox');
-                    this.eGui.checked = params.value === 'Dispatched';
-                    this.eGui.addEventListener('click', (event) => {
-                        if (event.target.checked) {
-                            params.setValue('Dispatched');
-                        } else {
-                            params.setValue('');
-                        }
-                    });
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('input');
+                        this.eGui.setAttribute('type', 'checkbox');
+                        
+                        // Default the checkbox to unchecked
+                        this.eGui.checked = params.value === '';
+                        
+                        this.eGui.addEventListener('click', (event) => {
+                            if (event.target.checked) {
+                                params.setValue('Dispatched');
+                            } else {
+                                params.setValue('');
+                            }
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+
+                    refresh(params) {
+                        // Update the checkbox state when the cell is refreshed
+                        this.eGui.checked = params.value === 'Dispatched';
+                    }
                 }
-                getGui() {
-                    return this.eGui;
-                }
-                refresh(params) {
-                    this.eGui.checked = params.value === 'Dispatched';
-                }
-            }
-            """)
+                """)
 
             # JavaScript for date renderer
             date_renderer = JsCode("""
@@ -178,10 +206,24 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                "BookingDate", "Bookedon", "BookedBy", "Title", "Facility",
-                "DoctorName", "TeleDoctor", "BookingComments",
-                 "DispatchComments", "BillingComments",
-                "CollectionDate", "Month", "Year","BilledBy","BookedBy","mobile","BilledDate","DispatchedDate","DispatchedBy"
+                    "ConsulationDate",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "ReceivedStatus",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year",
+                    "Month",
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationDate"
             ]
            
             # Hide specified columns
@@ -190,8 +232,13 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                "Title", "Facility", "UHID", "Patientname", "ID",
-                "DoctorName", "TeleDoctor", "Location","BilledDate","BilledBy","ID","Bookedon"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "DoctorName",
+                    "ConsulationStatus"
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
@@ -432,6 +479,17 @@ def app():
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
+                        
+                        pres_df=pres_df[["Title",
+                                        "UHID",
+                                        "Patientname",
+                                        "Location",
+                                        "Dispatchedstatus",
+                                        "DispatchedDate",
+                                         "DispatchedBy",
+                                        "Month",
+                                        "Year"]]
+        
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)

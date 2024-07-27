@@ -37,19 +37,72 @@ def app():
                  
     if st.session_state.is_authenticated:
         location=st.session_state.Region
-        department=st.session_state.Department
+        staffnumber=st.session_state.staffnumber
+        department = st.session_state.Department
+        
+       
         
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_data():
+        def load_data(email_user, password_user, sharepoint_url, list_name):
             try:
-                clients = SharePoint().connect_to_list(ls_name='Home Delivery')
-                return pd.DataFrame(clients)
-            except APIError as e:
-                st.error("Connection not available, check connection")
-                st.stop() 
+                auth = AuthenticationContext(sharepoint_url)
+                auth.acquire_token_for_user(email_user, password_user)
+                ctx = ClientContext(sharepoint_url, auth)
+                web = ctx.web
+                ctx.load(web)
+                ctx.execute_query()
+                
+                target_list = ctx.web.lists.get_by_title(list_name)
+                items = target_list.get_items()
+                ctx.load(items)
+                ctx.execute_query()
+
+                selected_columns = [
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Bookingstatus",
+                    "BookingDate",
+                    "Bookedon",
+                    "BookedBy",
+                    "DoctorName",
+                    "ConsulationStatus",
+                    "ConsulationDate",
+                    "Dispatchedstatus",
+                    "DispatchedDate",
+                    "DispatchedBy",
+                    "ReceivedDate",
+                    "ReceivedBy",
+                    "ReceivedStatus",
+                    "Collectionstatus",
+                    "CollectionDate",
+                    "Month",
+                    "TransactionType",
+                    "Year"
+
+                ]
+
+                data = []
+                for item in items:
+                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
+                    data.append(item_data)
+                return pd.DataFrame(data)
+
+            except Exception as e:
+                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
+                st.error(f"Error details: {e}")
+                return None
         
-        book_df = load_data()
+        email_user = "biosafety@blisshealthcare.co.ke"
+        password_user = "Buma@8349"
+        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
+        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+        list_name = "Home Delivery"
         
+        book_df  =load_data(email_user, password_user, sharepoint_url, list_name)
+
         #st.write(book_df)
         # Get unique titles
         Title_names = book_df['Patientname'].unique()
@@ -82,7 +135,7 @@ def app():
             current_date=datetime.now().date()
             #current_month = datetime.now() - relativedelta(months=1)
             #current_month_name = (datetime.now() - relativedelta(months=1)).strftime("%B")
-            formatted_date = current_date.strftime("%d-%m-%Y")
+            formatted_date = current_date.strftime("%d/%m/%Y")
 
             
             # Query the MTD_Revenue table with the filter for location_name and Month
@@ -240,34 +293,40 @@ def app():
             
             # Define the list of names for the dropdown
             names_list = [
-                'Abdalla Said',
-                'Alfred Kalisa',
-                'Bancy Waithera',
-                'Barbra Mumbi Wachira',
-                'Brian Muriuki',
-                'Denis Kiplagat',
-                'Dr Alya Shalima Mohammed',
-                'Dr David Gikobi',
-                'Dr Grace Nasike',
-                'Dr John Wachira',
-                'Dr Kendra Ochieng',
-                'Dr Kinita Patel',
-                'Dr Shruti Gite',
-                'Edwin Wangila',
-                'Elizabeth Patrice',
-                'Francis Abuga',
-                'Grace Wanjiru Githaiga',
-                'Jezreel Kagunda',
-                'Kenneth Nkunja Murira',
-                'Margaret Kiriiya',
-                'Martha Njoki',
-                'Mohammed Nurr',
-                'Nebart Nyaga',
-                'Sheilla Weimer',
-                'Solomon Mwendwa',
-                'Terry Kariuki',
-                'Victor Maweu',
-                'Yuvy Mochama'
+                "Abdalla Said",
+                "Alfred Kalisa",
+                "Alya Shalima",
+                "Bancy  Mbogo",
+                "Barbra Mumbi",
+                "BRIAN MURIUKI",
+                "David  Gikobi",
+                "Denis Kiplangat",
+                "Diana Bonareri",
+                "DoctorName",
+                "Edwin Wangila",
+                "Elizabeth  Pratice Waithera",
+                "Francis Abuga",
+                "Grace  Nasike",
+                "Grace Githaga",
+                "Jezreel Kagunda",
+                "John  Wachira",
+                "Kendra  Ochieng",
+                "Kenneth Nkunja Muiruri",
+                "Kinita  Patel",
+                "Margaret Wangari Kiniya",
+                "Martha Njoki",
+                "Melissa Muthoni",
+                "Mohammed Nurr",
+                "Nebart Nyaga",
+                "Nuru Jumaan",
+                "Sheila Kisiangani",
+                "Shruti  Sandeep",
+                "Solomon   Mwendwa",
+                "Susan Opondo",
+                "Terry   Kariuki",
+                "Victor Maweu",
+                "Yuvy Nalse Mochama"
+
             ]
 
             # Define dropdown options for the specified column
@@ -336,7 +395,7 @@ def app():
                     
                     df = pd.DataFrame(res)
             
-                                # Assuming the 'Booking Date' column exists and needs to be formatted
+                    # Assuming the 'Booking Date' column exists and needs to be formatted
                     if 'Booking Date' in df.columns:
                         df['Booking Date'] = pd.to_datetime(df['Booking Date'], errors='coerce', dayfirst=True)
                         df['Booked on'] = pd.to_datetime(df['Booked on'], errors='coerce', dayfirst=True)
