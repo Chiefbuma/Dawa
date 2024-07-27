@@ -122,13 +122,7 @@ def app():
         
         #st.write(Details_df)
             
-       
-        response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
-        usersD_df = pd.DataFrame(response.data)
-        
-        staffname = usersD_df['StaffName'].iloc[0]
-        
-        st.write(staffname)
+
         
         # Check if the connection is successful
         if init_connection():
@@ -153,7 +147,13 @@ def app():
             Allresponse = supabase.from_('Dawa_Details').select('*').execute()
             Details_df = pd.DataFrame(Allresponse.data)
             
+                   
+            response = supabase.from_('StaffList').select('*').eq('staffnumber', staffnumber).execute()
+            usersD_df = pd.DataFrame(response.data)
             
+            staffname = usersD_df['StaffName'].iloc[0]
+            
+            st.write(staffname)
             
             import calendar
             # Query the MTD_Revenue table with the filter for location_name and Month

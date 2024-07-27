@@ -104,7 +104,7 @@ def app():
             
             
                    
-            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+            response = supabase.from_('StaffList').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
