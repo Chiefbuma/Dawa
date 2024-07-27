@@ -119,6 +119,17 @@ def app():
 
         supabase = init_connection()
         
+        
+        #st.write(Details_df)
+            
+       
+        response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+        usersD_df = pd.DataFrame(response.data)
+        
+        staffname = usersD_df['StaffName'].iloc[0]
+        
+        st.write(staffname)
+        
         # Check if the connection is successful
         if init_connection():
         
@@ -142,7 +153,6 @@ def app():
             Allresponse = supabase.from_('Dawa_Details').select('*').execute()
             Details_df = pd.DataFrame(Allresponse.data)
             
-            #st.write(Details_df)
             
             
             import calendar

@@ -116,6 +116,13 @@ def app():
             Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
             chronic_df = pd.DataFrame(Allresponse2.data)
             
+            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+            usersD_df = pd.DataFrame(response.data)
+            
+            staffname = usersD_df['StaffName'].iloc[0]
+            
+            st.write(staffname)
+            
             #st.write(chronic_df)
             
             # JavaScript for link renderer
