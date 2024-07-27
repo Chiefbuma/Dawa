@@ -217,6 +217,7 @@ def app():
                     "ReceivedDate",
                     "ReceivedBy",
                     "CollectionDate",
+                    "mobile",
                     "Month",
                     "TransactionType",
                     "Year"
@@ -232,7 +233,6 @@ def app():
             non_editable_columns = [
                     "UHID",
                     "Patientname",
-                    "mobile",
                     "Location",
                     "ReceivedStatus",
                     "Month",
