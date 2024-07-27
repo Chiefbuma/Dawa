@@ -115,7 +115,7 @@ def app():
             Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
             chronic_df = pd.DataFrame(Allresponse2.data)
             
-            response = supabase.from_('StaffList').select('*').eq('staffnumber', staffnumber).execute()
+            response = supabase.from_('StaffList').select('*').eq('StaffNumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
