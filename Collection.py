@@ -62,6 +62,7 @@ def app():
                     "ReceivedBy",
                     "ReceivedStatus",
                     "Collectionstatus",
+                    "DispensedBy"
                     "CollectionDate",
                     "Month",
                     "TransactionType",
@@ -92,6 +93,7 @@ def app():
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
+        
         Trans_df['CollectionDate'] = Trans_df['CollectionDate'].fillna(formatted_date)
        
         @st.cache_resource
@@ -119,6 +121,8 @@ def app():
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
+            
+            Trans_df['DispensedBy']=staffname
             
             st.write(staffname)
             
@@ -243,8 +247,10 @@ def app():
                     "Location",
                     "ReceivedStatus",
                     "Month",
+                    "DispensedBy"
                     "TransactionType",
-                    "Year"
+                    "Year",
+          
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
@@ -492,6 +498,7 @@ def app():
                                         "Location",
                                         "Collectionstatus",
                                         "CollectionDate",
+                                        "DispensedBy",
                                         "Month",
                                         "Year"]]
 
@@ -521,12 +528,14 @@ def app():
                                 item_id = pres_df.at[ind, 'ID']
                                 collection_status = pres_df.at[ind, 'Collectionstatus']
                                 collection_date = pres_df.at[ind, 'CollectionDate']
+                                collection_by = pres_df.at[ind, 'DispensedBy']
                                 
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Collection status': collection_status,
                                     'Collection Date': collection_date,
+                                    'Dispensed By': collection_by
                                 
                                 }
 
