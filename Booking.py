@@ -171,7 +171,7 @@ def app():
             
             booking_df['Booked on'] = booking_df['Booked on'].dt.strftime('%d-%m-%Y')
             
-            booking_df['Booked By']=department
+            booking_df['Booked By']=staffname
             
             # Add 'Month' column with full month name
             booking_df['Month'] = datetime.now().strftime("%B")

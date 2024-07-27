@@ -92,7 +92,7 @@ def app():
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
         Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
-        Trans_df['ReceivedBy'] = department
+       
         
 
         @st.cache_resource
@@ -120,6 +120,8 @@ def app():
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
+            
+            Trans_df['ReceivedBy']=staffname
             
             st.write(staffname)
             

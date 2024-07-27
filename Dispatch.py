@@ -123,6 +123,8 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
+            Trans_df['DispatchedBy']=staffname
+            
             st.write(staffname)
             #st.write(chronic_df)
             

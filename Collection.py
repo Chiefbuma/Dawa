@@ -248,7 +248,7 @@ def app():
                     "Location",
                     "ReceivedStatus",
                     "Month",
-                    "DispensedBy"
+                    "DispensedBy",
                     "TransactionType",
                     "Year",
           
