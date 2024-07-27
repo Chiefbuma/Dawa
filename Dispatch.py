@@ -85,15 +85,16 @@ def app():
         SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
         list_name = "Home Delivery"
+        
+        AllTrans_df=load_data(email_user, password_user, sharepoint_url, list_name)
 
-        Trans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+
         #st.write(Trans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
-        Trans_df['DispatchedDate'] = Trans_df['DispatchedDate'].fillna(formatted_date)
-        Trans_df['DispatchedBy'] = department
+        
         
 
         @st.cache_resource
@@ -122,6 +123,13 @@ def app():
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
+            
+            Trans_df['DispatchedDate'] = Trans_df['DispatchedDate'].fillna(formatted_date)
+            Trans_df['DispatchedBy'] = department
+            
+            Trans_df = AllTrans_df[
+                    (AllTrans_df['ConsulationStatus'] == 'Consulted') & 
+                    (AllTrans_df['Dispatchedstatus'].isnull())]
             
             Trans_df['DispatchedBy']=staffname
             

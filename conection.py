@@ -34,7 +34,7 @@ class MultiApp:
         with st.sidebar: 
             app = option_menu.option_menu(key="main_key",
             menu_title='DAWA NYUMBANI',
-            options=['Account','Bookings','Conslutation', 'Dispatch','Receiving','Collection','Dashboard'],
+            options=['Account','Bookings','Consultation', 'Dispatch','Receiving','Collection','Dashboard'],
             icons=['house-fill', 'receipt', 'receipt', 'receipt', 'receipt', 'person-circle'],
             menu_icon='house-fill',
             default_index=0,
@@ -49,7 +49,7 @@ class MultiApp:
             logs.app()
         if app == "Bookings":
             Booking.app()
-        if app == "Conslutation":
+        if app == "Consultation":
             Billing.app()  
         if app == "Dispatch":
             Dispatch.app()  

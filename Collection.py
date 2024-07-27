@@ -87,7 +87,7 @@ def app():
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
         list_name = "Home Delivery"
 
-        Trans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         
         st.write(Trans_df)
         
@@ -95,7 +95,7 @@ def app():
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
         
-        Trans_df['CollectionDate'] = Trans_df['CollectionDate'].fillna(formatted_date)
+        
        
         @st.cache_resource
         def init_connection():
@@ -123,7 +123,15 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
+            Trans_df = AllTrans_df[
+                (AllTrans_df['ReceivedStatus'] == 'Received') & 
+                (AllTrans_df['Collectionstatus'].isnull())]
+        
+            
             Trans_df['DispensedBy']=staffname
+            
+            Trans_df['CollectionDate'] = Trans_df['CollectionDate'].fillna(formatted_date)
+            
             
             st.write(staffname)
             

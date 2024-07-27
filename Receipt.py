@@ -85,13 +85,13 @@ def app():
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
         list_name = "Home Delivery"
 
-        Trans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         #st.write(Trans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
-        Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
+        
        
         
 
@@ -120,6 +120,14 @@ def app():
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['StaffName'].iloc[0]
+            
+            
+            Trans_df = AllTrans_df[
+                    (AllTrans_df['Dispatchedstatus'] == 'Dispatched') & 
+                    (AllTrans_df['ReceivedStatus'].isnull())]
+            
+            
+            Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
             
             Trans_df['ReceivedBy']=staffname
             
