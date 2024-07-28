@@ -28,7 +28,7 @@ def app():
         department = st.session_state.Department
         
        
-        @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        @st.cache_data(ttl=2, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_bill(email_user, password_user, sharepoint_url, list_name):
             try:
                 auth = AuthenticationContext(sharepoint_url)
@@ -53,8 +53,8 @@ def app():
                     "Bookingstatus",
                     "DoctorName",
                     "ConsultationStatus",
-                    "ConsultationDate",
-                    "TransactionType"
+                    "TransactionType",
+                    "ConsultationDate"
                 ]
 
                 data = []
@@ -72,6 +72,7 @@ def app():
         password_user = "Buma@8349"
         SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+       
         list_name = "Home Delivery"
 
         AllTrans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
@@ -114,9 +115,9 @@ def app():
             st.write(staffname)
             
             Trans_df = AllTrans_df[
-               ((AllTrans_df['DoctorName'] == staffname) & 
-                (AllTrans_df['TransactionType'] =="Booking"))]
-                
+                (AllTrans_df['DoctorName'] == staffname) & 
+                (AllTrans_df['TransactionType'] == 'Booking') & 
+                (AllTrans_df['ConsultationStatus'].isnull())]
             
             st.write(Trans_df)
                 

@@ -27,7 +27,7 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        @st.cache_data(ttl=2,show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_data(email_user, password_user, sharepoint_url, list_name):
             try:
                 auth = AuthenticationContext(sharepoint_url)
@@ -86,11 +86,12 @@ def app():
         password_user = "Buma@8349"
         SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+        
         list_name = "Home Delivery"
 
         AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         
-        #st.write(AllTrans_df)
+        st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
