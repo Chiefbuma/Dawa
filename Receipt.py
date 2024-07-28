@@ -36,6 +36,7 @@ def app():
                             "Patientname",
                             "mobile",
                             "Location",
+                            "DoctorName",
                             "Consultation Status",
                             "Consultation Date",
                             "Dispatched status",

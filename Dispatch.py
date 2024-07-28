@@ -36,6 +36,7 @@ def app():
                             "Title","UHID",
                             "Patientname",
                             "mobile",
+                            "DoctorName",
                             "Location",
                             "Consultation Status",
                             "Consultation Date",
