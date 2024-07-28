@@ -40,67 +40,18 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=2, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_data(email_user, password_user, sharepoint_url, list_name):
+        def load_data():
             try:
-                auth = AuthenticationContext(sharepoint_url)
-                auth.acquire_token_for_user(email_user, password_user)
-                ctx = ClientContext(sharepoint_url, auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                
-                target_list = ctx.web.lists.get_by_title(list_name)
-                items = target_list.get_items()
-                ctx.load(items)
-                ctx.execute_query()
-
-                selected_columns = [
-                    "Title",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
-                    "Dispatchedstatus",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "ReceivedStatus",
-                    "Collectionstatus",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "Year"
-
-                ]
-
-                data = []
-                for item in items:
-                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
-                    data.append(item_data)
-                return pd.DataFrame(data)
-
-            except Exception as e:
-                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
-                st.error(f"Error details: {e}")
-                return None
+                clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                return pd.DataFrame(clients)
+            except APIError as e:
+                st.error("Connection not available, check connection")
+                st.stop() 
         
-        email_user = "biosafety@blisshealthcare.co.ke"
-        password_user = "Buma@8349"
-        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
-        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        list_name = "Home Delivery"
         
-        book_df=load_data(email_user, password_user, sharepoint_url, list_name)
-
+        book_df = load_data()
+        
+       
         #st.write(book_df)
         # Get unique titles
         Title_names = book_df['Patientname'].unique()

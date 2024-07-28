@@ -14,6 +14,7 @@ from local_components import card_container
 import streamlit.components.v1 as components
 import streamlit_shadcn_ui as ui
 import logging
+from postgrest import APIError
 
 def app():
     if 'is_authenticated' not in st.session_state:
@@ -27,55 +28,20 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-       
-        @st.cache_data(ttl=2, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_bill(email_user, password_user, sharepoint_url, list_name):
-            try:
-                auth = AuthenticationContext(sharepoint_url)
-                auth.acquire_token_for_user(email_user, password_user)
-                ctx = ClientContext(sharepoint_url, auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                
-                target_list = ctx.web.lists.get_by_title(list_name)
-                items = target_list.get_items()
-                ctx.load(items)
-                ctx.execute_query()
-
-                selected_columns = [
-                    "ID",
-                    "Title",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Bookingstatus",
-                    "DoctorName",
-                    "ConsultationStatus",
-                    "TransactionType",
-                    "ConsultationDate"
-                ]
-
-                data = []
-                for item in items:
-                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
-                    data.append(item_data)
-                return pd.DataFrame(data)
-
-            except Exception as e:
-                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
-                st.error(f"Error details: {e}")
-                return None
         
-        email_user = "biosafety@blisshealthcare.co.ke"
-        password_user = "Buma@8349"
-        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
-        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-       
-        list_name = "Home Delivery"
-
-        AllTrans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
+        #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        @st.cache_data(ttl=80, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        def load_new():
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                    return pd.DataFrame(clients)
+                except APIError as e:
+                    st.error("Connection not available, check connection")
+                    st.stop() 
+            
+        AllTrans_df= load_new()
+        
+        st.write(AllTrans_df)
         
         #st.write(AllTrans_df)
         
@@ -106,7 +72,6 @@ def app():
             chronic_df = pd.DataFrame(Allresponse2.data)
             
             
-                   
             response = supabase.from_('StaffList').select('*').eq('StaffNumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
@@ -115,15 +80,23 @@ def app():
             st.write(staffname)
             
             Trans_df = AllTrans_df[
-                (AllTrans_df['DoctorName'] == staffname) & 
-                (AllTrans_df['TransactionType'] == 'Booking') & 
-                (AllTrans_df['ConsultationStatus'].isnull())]
-            
-            st.write(Trans_df)
+                (AllTrans_df['DoctorName'] == staffname) &
+                (AllTrans_df['Booking status'] == 'Booked') &  
+                (AllTrans_df['Consultation Status'].isnull())]
                 
+            
+            #st.write(Trans_df)
             Trans_df['DoctorName']=staffname
                 
-            Trans_df['ConsultationDate'] = Trans_df['ConsultationDate'].fillna(formatted_date)
+           # Convert 'Consultation Date' to datetime
+            Trans_df['Consultation Date'] = pd.to_datetime(Trans_df['Consultation Date'], errors='coerce')
+
+            # Fill NaN values with the formatted date
+            Trans_df['Consultation Date'] = Trans_df['Consultation Date'].fillna(formatted_date)
+
+            # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+            Trans_df['Consultation Date'] = Trans_df['Consultation Date'].dt.strftime('%Y/%m/%d')
+            
             
             #st.write(staffname)
             
@@ -216,7 +189,34 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                      "Title","ID","mobile","DoctorName","ConsultationDate"
+                        "Booking Date",
+                        "Booked on",
+                        "Booked By",
+                        "DoctorName",
+                        "Consultation Date",
+                        "Dispatched status",
+                        "Dispatched Date",
+                        "Dispatched By",
+                        "Month",
+                        "Transaction Type",
+                        "Year",
+                       "Modified",
+                        "Modified By",
+                        "Level",
+                        "Unique Id",
+                        "Item Type",
+                        "Property Bag",
+                        "ID",
+                        "owshiddenversion",
+                        "Created",
+                        "Title",
+                        "Name",
+                        "Effective Permissions Mask",
+                        "ScopeId",
+                        "URL Path",
+                        "Approval Status",
+                        "mobile"
+
             ]
            
             # Hide specified columns
@@ -229,9 +229,10 @@ def app():
                     "UHID",
                     "Patientname",
                     "mobile",
-                    "Bookingstatus",
+                    "Booking status",
                     "DoctorName",
-                    "ConsultationDate"
+                    "Consultation Date"
+                    
 
             ]
             
@@ -242,15 +243,12 @@ def app():
 
             location_df = pd.DataFrame(response.data)
             
-            
-            
             @st.cache_data
             def get_unique_item_descriptions():
                 return location_df['Location'].unique().tolist()
 
             # Fetch unique item descriptions
             unique_item_descriptions = get_unique_item_descriptions()
-            
             
             # Define dropdown options for specified columns
             dropdown_options = {
@@ -262,7 +260,7 @@ def app():
                 gb.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
             
             # Configure specific columns with additional settings
-            gb.configure_column('ConsultationStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Consultation Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -494,10 +492,9 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['ConsultationStatus'] == 'Consulted']
+                        pres_df = df[df['Consultation Status'] == 'Consulted']
                         
-                        # Display the filtered DataFrame
-                        #st.dataframe(Appointment_df)
+
                         
                         with card_container(key="bill"):
                             cols = st.columns(1)
@@ -519,8 +516,8 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                consultation_status = pres_df.at[ind, 'ConsultationStatus']
-                                consultation_date = pres_df.at[ind, 'ConsultationDate']
+                                consultation_status = pres_df.at[ind, 'Consultation Status']
+                                consultation_date = pres_df.at[ind, 'Consultation Date']
                                 
 
                                 item_creation_info = {
