@@ -352,7 +352,7 @@ def app():
                             details_columns = [
                                 "mobile", "Company Type", "RateContract", "Speciality",    
                                 "DoctorName", "Location", "Medical Centre", "TeleDoctor",
-                                "Facility", "UHID", "Patientname","Sn"
+                                "Facility", "UHID", "Patientname","S.No"
                             ]
                             
                             # Hide specified columns

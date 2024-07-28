@@ -27,66 +27,18 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=2, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_data(email_user, password_user, sharepoint_url, list_name):
-            try:
-                auth = AuthenticationContext(sharepoint_url)
-                auth.acquire_token_for_user(email_user, password_user)
-                ctx = ClientContext(sharepoint_url, auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                
-                target_list = ctx.web.lists.get_by_title(list_name)
-                items = target_list.get_items()
-                ctx.load(items)
-                ctx.execute_query()
-
-                selected_columns = [
-                    "ID",
-                    "Title",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
-                    "Dispatchedstatus",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "ReceivedStatus",
-                    "Collectionstatus",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "Year"
-                ]
-
-                data = []
-                for item in items:
-                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
-                    data.append(item_data)
-                return pd.DataFrame(data)
-
-            except Exception as e:
-                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
-                st.error(f"Error details: {e}")
-                return None
+       #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        def load_new():
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                    return pd.DataFrame(clients)
+                except APIError as e:
+                    st.error("Connection not available, check connection")
+                    st.stop() 
+            
         
-        email_user = "biosafety@blisshealthcare.co.ke"
-        password_user = "Buma@8349"
-        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
-        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        list_name = "Home Delivery"
-
-        AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        AllTrans_df= load_new()
         #st.write(Trans_df)
         
         current_date = datetime.now().date()
@@ -124,14 +76,16 @@ def app():
             
             
             Trans_df = AllTrans_df[
-                    (AllTrans_df['Dispatchedstatus'] == 'Dispatched') & 
+                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['ReceivedStatus'].isnull())]
+                    (AllTrans_df['Received Status'].isnull())]
             
             
             Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
             
             Trans_df['ReceivedBy']=staffname
+            
+            Trans_df['Transaction Type']= "Receipt"
             
             st.write(staffname)
             
@@ -218,23 +172,33 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                    "ID",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "Collectionstatus",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "Year" ]
+                        "Booking Date",
+                        "Booked on",
+                        "Booking status",
+                        "Booked By",
+                        "DoctorName",
+                        "Consultation Date",
+                        "Dispatched Date",
+                        "Dispatched By",
+                        "Month",
+                        "Transaction Type",
+                        "Year",
+                        "Modified",
+                        "Modified By",
+                        "Level",
+                        "Unique Id",
+                        "Item Type",
+                        "Property Bag",
+                        "ID",
+                        "owshiddenversion",
+                        "Created",
+                        "Title",
+                        "Name",
+                        "Effective Permissions Mask",
+                        "ScopeId",
+                        "URL Path",
+                        "Approval Status",
+                        "mobile" ]
            
             # Hide specified columns
             for col in book_columns:
@@ -247,13 +211,14 @@ def app():
                     "Patientname",
                     "mobile",
                     "Location",
-                    "ReceivedStatus"
+                    "DoctorName",
+                    "Received Status"
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-            gb.configure_column('ReceivedStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -486,7 +451,7 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['ReceivedStatus'] == 'Received']
+                        pres_df = df[df['Received Status'] == 'Received']
                         
                         pres_df=pres_df[[
                                         "ID",
@@ -494,11 +459,12 @@ def app():
                                         "UHID",
                                         "Patientname",
                                         "Location",
-                                        "ReceivedDate",
-                                        "ReceivedBy",
-                                        "ReceivedStatus",
+                                        "Received Date",
+                                        "Received By",
+                                        "Received Status",
                                         "Month",
-                                        "Year"]]
+                                        "Year",
+                                        "Transaction Type"]]
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)
@@ -508,7 +474,6 @@ def app():
                             with cols[0]:
                                 with card_container(key="bil1d3"):
                                     ui.table(data=pres_df, maxHeight=300)
-                    
                     
                     except Exception as e:
                         st.error(f"Failed to update to SharePoint: {str(e)}")
@@ -523,15 +488,17 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                Received_status = pres_df.at[ind, 'ReceivedStatus']
-                                Received_date = pres_df.at[ind, 'ReceivedDate']
-                                Received_by = pres_df.at[ind, 'ReceivedBy']
+                                Received_status = pres_df.at[ind, 'Received Status']
+                                Received_date = pres_df.at[ind, 'Received Date']
+                                Received_by = pres_df.at[ind, 'Received By']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type']
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Received Status':Received_status,
                                     'Received Date': Received_date,
-                                    'Received By': Received_by
+                                    'Received By': Received_by,
+                                    'Transaction Type':   Transaction_by
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
