@@ -66,7 +66,7 @@ def app():
         AllTrans_df = load_new()
         
         
-        st.write(AllTrans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
