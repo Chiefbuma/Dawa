@@ -202,6 +202,8 @@ def app():
                         "Booked By",
                         "DoctorName",
                         "Consultation Date",
+                        "Collection status",
+                        "Collection Date",
                         "Dispatched Date",
                         "Dispatched By",
                          "Received Date",
