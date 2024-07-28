@@ -43,6 +43,7 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
+                    "ID",
                     "Title",
                     "UHID",
                     "Patientname",
@@ -124,6 +125,7 @@ def app():
             
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatchedstatus'] == 'Dispatched') & 
+                    (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['ReceivedStatus'].isnull())]
             
             
@@ -216,7 +218,7 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                              
+                    "ID",
                     "Bookingstatus",
                     "BookingDate",
                     "Bookedon",
@@ -486,7 +488,9 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['ReceivedStatus'] == 'Received']
                         
-                        pres_df=pres_df[["Title",
+                        pres_df=pres_df[[
+                                        "ID",
+                                        "Title",
                                         "UHID",
                                         "Patientname",
                                         "Location",

@@ -28,7 +28,6 @@ def app():
         department = st.session_state.Department
         
        
-        
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_bill(email_user, password_user, sharepoint_url, list_name):
             try:
@@ -54,7 +53,8 @@ def app():
                     "Bookingstatus",
                     "DoctorName",
                     "ConsultationStatus",
-                    "ConsultationDate"
+                    "ConsultationDate",
+                    "TransactionType"
                 ]
 
                 data = []
@@ -111,14 +111,14 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            #st.write(staffname)
+            st.write(staffname)
             
             Trans_df = AllTrans_df[
-                (AllTrans_df['DoctorName'] == staffname) & 
-                (AllTrans_df['Bookingstatus'] == 'Booked') & 
-                (AllTrans_df['ConsultationStatus'].isnull())]
+               ((AllTrans_df['DoctorName'] == staffname) & 
+                (AllTrans_df['TransactionType'] == 'Booked'))]
+                
             
-            #st.write(Trans_df)
+            st.write(Trans_df)
                 
             Trans_df['DoctorName']=staffname
                 
@@ -229,7 +229,8 @@ def app():
                     "Patientname",
                     "mobile",
                     "Bookingstatus",
-                    "DoctorName"
+                    "DoctorName",
+                    "ConsultationDate"
 
             ]
             
@@ -379,7 +380,7 @@ def app():
                             details_columns = [
                                 "mobile", "Company Type", "RateContract", "Speciality",    
                                 "DoctorName", "Location", "Medical Centre", "TeleDoctor",
-                                "Facility", "UHID", "Patientname","Sn"
+                                "Facility", "UHID", "Patientname","S.No"
                             ]
                             
                             # Hide specified columns

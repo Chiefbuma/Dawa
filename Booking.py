@@ -169,7 +169,8 @@ def app():
             booking_df['Booked on'] = pd.to_datetime(booking_df['Booked on'], dayfirst=True)
             
             
-            booking_df['Booked on'] = booking_df['Booked on'].dt.strftime('%d-%m-%Y')
+            booking_df['Booked on'] = booking_df['Booked on']
+            
             
             booking_df['Booked By']=staffname
             
@@ -180,6 +181,8 @@ def app():
             booking_df['Year'] =  datetime.now().year
                         
             booking_df['Title']=booking_df['Patientname'].astype(str).str.cat(booking_df['Month'])
+            
+            booking_df['TransactionType'] ="Booking"
             
 
             #st.write(booking_df)
@@ -296,6 +299,7 @@ def app():
                 'Location',
                 'TeleDoctor',
                 'Title',
+                'TransactionType',
                 'Month',
                 'Year',
                 'S.No'
@@ -409,14 +413,14 @@ def app():
                     if 'Booking Date' in df.columns:
                         df['Booking Date'] = pd.to_datetime(df['Booking Date'], errors='coerce', dayfirst=True)
                         df['Booked on'] = pd.to_datetime(df['Booked on'], errors='coerce', dayfirst=True)
-                        df['Booking Date'] = df['Booking Date'].dt.strftime('%d-%m-%Y')
-                        df['Booked on'] = df['Booked on'].dt.strftime('%d-%m-%Y')
+                        df['Booking Date'] = df['Booking Date'].dt.strftime('%d/%m/%Y')
+                        df['Booked on'] = df['Booked on'].dt.strftime('%d/%m/%Y')
                     
                     # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                     Appointment_df = df[df['Booking status'] == 'Booked']
                     
                     Appointment_df=Appointment_df[['Title','UHID',	'Patientname','mobile','DoctorName','Booking status','Booking Date',	
-                                    'Booked on','Booked By'	,'Month','Year']]
+                                    'Booked on','Booked By'	,'Month','Year',"TransactionType"]]
 
                     
                     # Display the filtered DataFrame
@@ -454,6 +458,7 @@ def app():
                                 'Booking Date': Appointment_df.at[ind, 'Booking Date'],
                                 'Booked on': Appointment_df.at[ind, 'Booked on'],
                                 'Booked By': Appointment_df.at[ind, 'Booked By'],
+                                'Transaction Type': Appointment_df.at[ind, 'TransactionType'],
                                 'Month': Appointment_df.at[ind, 'Month'],
                                  'Year': Appointment_df.at[ind, 'Year']
                             

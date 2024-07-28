@@ -43,6 +43,7 @@ def app():
                 ctx.execute_query()
 
                 selected_columns = [
+                    "ID",
                     "Title",
                     "UHID",
                     "Patientname",
@@ -89,7 +90,7 @@ def app():
 
         AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         
-        st.write(Trans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
@@ -125,6 +126,7 @@ def app():
             
             Trans_df = AllTrans_df[
                 (AllTrans_df['ReceivedStatus'] == 'Received') & 
+                (AllTrans_df['Location'] == location) & 
                 (AllTrans_df['Collectionstatus'].isnull())]
         
             
@@ -223,7 +225,7 @@ def app():
             gb = GridOptionsBuilder.from_dataframe(Trans_df)
 
             # List of columns to hide
-            book_columns = [
+            book_columns = ["ID",
                     "Bookingstatus",
                     "BookingDate",
                     "Bookedon",
@@ -235,6 +237,7 @@ def app():
                     "DispatchedDate",
                     "DispatchedBy",
                     "ReceivedDate",
+                    "DispensedBy",
                     "ReceivedBy",
                     "CollectionDate",
                     "mobile",
@@ -386,7 +389,8 @@ def app():
                             details_columns = [
                                 "mobile", "Company Type", "RateContract", "Speciality",    
                                 "DoctorName", "Location", "Medical Centre", "TeleDoctor",
-                                "Facility", "UHID", "Patientname","Sn"
+                                "Facility", "UHID", "Patientname","S.No"
+                                  
                             ]
                             
                             # Hide specified columns
@@ -501,7 +505,9 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Collectionstatus'] == 'Collected']
                         
-                        pres_df=pres_df[["Title",
+                        pres_df=pres_df[[
+                                        "ID",
+                                        "Title",
                                         "UHID",
                                         "Patientname",
                                         "Location",

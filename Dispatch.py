@@ -44,6 +44,7 @@ def app():
 
                 selected_columns = [
                      "Title",
+                     "ID",
                     "UHID",
                     "Patientname",
                     "mobile",
@@ -53,13 +54,14 @@ def app():
                     "Bookedon",
                     "BookedBy",
                     "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
+                    "ConsultationStatus",
+                    "ConsultationDate",
                     "Dispatchedstatus",
                     "DispatchedDate",
                     "DispatchedBy",
                     "ReceivedDate",
                     "ReceivedBy",
+                    "DispensedBy",
                     "ReceivedStatus",
                     "Collectionstatus",
                     "CollectionDate",
@@ -89,7 +91,7 @@ def app():
         AllTrans_df=load_data(email_user, password_user, sharepoint_url, list_name)
 
 
-        st.write(AllTrans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
@@ -136,7 +138,7 @@ def app():
             
             Trans_df['DispatchedBy']=staffname
             
-            st.write(staffname)
+            #st.write(staffname)
             #st.write(chronic_df)
             
             # JavaScript for link renderer
@@ -226,7 +228,6 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                    "ConsulationDate",
                     "DispatchedDate",
                     "DispatchedBy",
                     "ReceivedDate",
@@ -236,14 +237,16 @@ def app():
                     "CollectionDate",
                     "Month",
                     "TransactionType",
+                    "DispensedBy",
                     "Year",
                     "Month",
                     "Bookingstatus",
                     "BookingDate",
                     "Bookedon",
                     "BookedBy",
+                    "mobile",
                     "DoctorName",
-                    "ConsulationDate"
+                    "ConsultationDate"
             ]
            
             # Hide specified columns
@@ -258,7 +261,7 @@ def app():
                     "mobile",
                     "Location",
                     "DoctorName",
-                    "ConsulationStatus"
+                    "ConsultationStatus"
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
@@ -487,7 +490,7 @@ def app():
                                 st.stop()
                      
                     
-                with st.expander("CONFIRM DISPATCH STATUS"):
+                with card_container(key="disp"):
                     
                     try:
                         
@@ -500,7 +503,9 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
                         
-                        pres_df=pres_df[["Title",
+                        pres_df=pres_df[[
+                                        "ID",
+                                        "Title",
                                         "UHID",
                                         "Patientname",
                                         "Location",
