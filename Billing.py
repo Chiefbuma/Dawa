@@ -96,7 +96,7 @@ def app():
             Trans_df['Consultation Date'] = Trans_df['Consultation Date'].fillna(formatted_date)
 
             # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
-            Trans_df['Consultation Date'] = Trans_df['Consultation Date'].dt.strftime('%Y/%m/%d')
+            Trans_df['Consultation Date'] = Trans_df['Consultation Date'].dt.strftime('%d/%m/%Y')
             
             
             #st.write(staffname)
