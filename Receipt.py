@@ -31,26 +31,31 @@ def app():
 
         def load_new():
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["ID",
-                            "Title","UHID",
-                            "Patientname",
-                            "mobile",
-                            "Location",
-                            "DoctorName",
-                            "Consultation Status",
-                            "Consultation Date",
-                            "Dispatched status",
-                            "Dispatched Date",
-                            "Dispatched By",
-                            "Received Date",
-                            "Received By",
-                            "Received Status",
-                            "Dispensed By",
-                            "Collection status",
-                            "Collection Date",
-                            "Month",
-                            "Transaction Type",
-                            "Year"
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=[
+                        "ID",
+                        "UHID",
+                        "Patientname",
+                        "mobile",
+                        "Location",
+                        "Booking status",
+                        "Booking Date",
+                        "Booked on",
+                        "Booked By",
+                        "DoctorName",
+                        "Consultation Status",
+                        "Consultation Date",
+                        "Dispatched status",
+                        "Dispatched Date",
+                        "Dispatched By",
+                        "Received Date",
+                        "Received By",
+                        "Received Status",
+                        "Dispensed By",
+                        "Collection status",
+                        "Collection Date",
+                        "Month",
+                        "Transaction Type",
+                        "Year"
 ])
                     return pd.DataFrame(clients)
                 except APIError as e:
