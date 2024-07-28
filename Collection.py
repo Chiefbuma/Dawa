@@ -240,7 +240,6 @@ def app():
                     "Received Status",
                     "Month",
                     "Dispensed By",
-                    "Transaction Type",
                     "Year",
           
             ]
@@ -496,7 +495,7 @@ def app():
                                         "Dispensed By",
                                         "Month",
                                         "Year",
-                                        "TypeTransaction Type"]]
+                                        "Transaction Type"]]
 
                         
                         # Display the filtered DataFrame
