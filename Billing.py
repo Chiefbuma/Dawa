@@ -564,12 +564,15 @@ def app():
                                 item_id = pres_df.at[ind, 'ID']
                                 consultation_status = pres_df.at[ind, 'Consultation Status']
                                 consultation_date = pres_df.at[ind, 'Consultation Date']
+                                Location = pres_df.at[ind, 'Location']
+                                
                                 
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Consultation Status': consultation_status,
-                                    'Consultation Date': consultation_date
+                                    'Consultation Date': consultation_date,
+                                    'Location':Location
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
