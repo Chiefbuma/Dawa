@@ -26,9 +26,15 @@ class SharePoint:
         )
         return self.site
 
-    def connect_to_list(self, ls_name):
+    def connect_to_list(self, ls_name, columns=None):
         self.auth_site = self.auth()
-
         list_data = self.auth_site.List(list_name=ls_name).GetListItems()
-
-        return list_data
+        
+        if columns:
+            filtered_list_data = [
+                {col: item[col] for col in columns if col in item}
+                for item in list_data
+            ]
+            return filtered_list_data
+        else:
+            return list_data
