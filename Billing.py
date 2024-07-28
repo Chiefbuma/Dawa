@@ -41,15 +41,16 @@ def app():
             
         AllTrans_df= load_new()
         
-        st.write(AllTrans_df)
+        #st.write(AllTrans_df)
         
         #st.write(AllTrans_df)
         
-        current_date = datetime.now().date()
+        current_date = datetime.today().date()
         
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
        
+        #st.write(formatted_date)
         
         @st.cache_resource
         def init_connection():
@@ -78,7 +79,7 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            st.write(staffname)
+            #st.write(staffname)
             
             Trans_df = AllTrans_df[
                 (AllTrans_df['DoctorName'] == staffname) &
@@ -98,10 +99,13 @@ def app():
             # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
             Trans_df['Consultation Date'] = Trans_df['Consultation Date'].dt.strftime('%d/%m/%Y')
             
-            
+            # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+            Trans_df['Transaction Type']="Booking"
             #st.write(staffname)
             
-            st.write(Trans_df)
+            #st.write(Trans_df)
+            
+            #st.write(formatted_date)
             
             # JavaScript for link renderer
             cellRenderer_link = JsCode("""
@@ -194,7 +198,6 @@ def app():
                         "Booked on",
                         "Booked By",
                         "DoctorName",
-                        "Consultation Date",
                         "Dispatched status",
                         "Dispatched Date",
                         "Dispatched By",
@@ -495,7 +498,17 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Consultation Status'] == 'Consulted']
                         
-
+                        pres_df=pres_df[[
+                                        "ID",
+                                        "Title",
+                                        "UHID",
+                                        "Patientname",
+                                        "Location",
+                                        "Consultation Status",
+                                        "Consultation Date",
+                                        "Month",
+                                        "Year",
+                                        "Transaction Type"]]
                         
                         with card_container(key="bill"):
                             cols = st.columns(1)

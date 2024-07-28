@@ -27,7 +27,7 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=2,show_spinner=False, persist=False, experimental_allow_widgets=False)
+        @st.cache_data(ttl=2,show_spinner=True, persist=False, experimental_allow_widgets=False)
         def load_data(email_user, password_user, sharepoint_url, list_name):
             try:
                 auth = AuthenticationContext(sharepoint_url)

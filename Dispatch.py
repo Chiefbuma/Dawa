@@ -14,6 +14,7 @@ from local_components import card_container
 import streamlit.components.v1 as components
 import streamlit_shadcn_ui as ui
 import logging
+from postgrest import APIError
 
 def app():
     if 'is_authenticated' not in st.session_state:
@@ -27,69 +28,19 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=2, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_data(email_user, password_user, sharepoint_url, list_name):
-            try:
-                auth = AuthenticationContext(sharepoint_url)
-                auth.acquire_token_for_user(email_user, password_user)
-                ctx = ClientContext(sharepoint_url, auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                
-                target_list = ctx.web.lists.get_by_title(list_name)
-                items = target_list.get_items()
-                ctx.load(items)
-                ctx.execute_query()
-
-                selected_columns = [
-                     "Title",
-                     "ID",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsultationStatus",
-                    "ConsultationDate",
-                    "Dispatchedstatus",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "DispensedBy",
-                    "ReceivedStatus",
-                    "Collectionstatus",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "Year"
-
-                ]
-
-                data = []
-                for item in items:
-                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
-                    data.append(item_data)
-                return pd.DataFrame(data)
-
-            except Exception as e:
-                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
-                st.error(f"Error details: {e}")
-                return None
+        #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        def load_new():
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                    return pd.DataFrame(clients)
+                except APIError as e:
+                    st.error("Connection not available, check connection")
+                    st.stop() 
+            
         
-        email_user = "biosafety@blisshealthcare.co.ke"
-        password_user = "Buma@8349"
-        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
-        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        list_name = "Home Delivery"
+        AllTrans_df= load_new()
         
-        AllTrans_df=load_data(email_user, password_user, sharepoint_url, list_name)
-
 
         #st.write(AllTrans_df)
         
@@ -129,15 +80,19 @@ def app():
             
             
             Trans_df = AllTrans_df[
-                    (AllTrans_df['ConsultationStatus'] == 'Consulted') & 
-                    (AllTrans_df['Dispatchedstatus'].isnull())]
+                    (AllTrans_df['Consultation Status'] == 'Consulted') & 
+                    (AllTrans_df['Dispatched status'].isnull())]
             
             
-            Trans_df['DispatchedDate'] = Trans_df['DispatchedDate'].fillna(formatted_date)
-            Trans_df['DispatchedBy'] = department
+            Trans_df['Dispatched Date'] = Trans_df['Dispatched Date'].fillna(formatted_date)
+            Trans_df['Dispatched By'] = department
             
-            Trans_df['DispatchedBy']=staffname
+            Trans_df['Dispatched By']=staffname
             
+            Trans_df['Transaction Type']= "Dispatch"
+             
+             
+          
             #st.write(staffname)
             #st.write(chronic_df)
             
@@ -228,25 +183,33 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "ReceivedStatus",
-                    "Collectionstatus",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "DispensedBy",
-                    "Year",
-                    "Month",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "mobile",
-                    "DoctorName",
-                    "ConsultationDate"
+                    "Booking Date",
+                        "Booked on",
+                        "Booking status",
+                        "Booked By",
+                        "DoctorName",
+                        "Consultation Date",
+                        "Dispatched Date",
+                        "Dispatched By",
+                        "Month",
+                        "Transaction Type",
+                        "Year",
+                       "Modified",
+                        "Modified By",
+                        "Level",
+                        "Unique Id",
+                        "Item Type",
+                        "Property Bag",
+                        "ID",
+                        "owshiddenversion",
+                        "Created",
+                        "Title",
+                        "Name",
+                        "Effective Permissions Mask",
+                        "ScopeId",
+                        "URL Path",
+                        "Approval Status",
+                        "mobile"
             ]
            
             # Hide specified columns
@@ -255,19 +218,20 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                    "Title",
+                     "Title",
                     "UHID",
                     "Patientname",
                     "mobile",
                     "Location",
                     "DoctorName",
-                    "ConsultationStatus"
+                    "Dispatched Date",
+                    
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-            gb.configure_column('Dispatchedstatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Dispatched status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -501,7 +465,7 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
+                        pres_df = df[df['Dispatched status'] == 'Dispatched']
                         
                         pres_df=pres_df[[
                                         "ID",
@@ -509,11 +473,12 @@ def app():
                                         "UHID",
                                         "Patientname",
                                         "Location",
-                                        "Dispatchedstatus",
-                                        "DispatchedDate",
-                                         "DispatchedBy",
+                                        "Dispatched status",
+                                        "Dispatched Date",
+                                         "Dispatched By",
                                         "Month",
-                                        "Year"]]
+                                        "Year",
+                                        "Transaction Type"]]
         
                         
                         # Display the filtered DataFrame
@@ -539,15 +504,17 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                Dispatch_status = pres_df.at[ind, 'Dispatchedstatus']
-                                Dispatch_date = pres_df.at[ind, 'DispatchedDate']
-                                Dispatch_by = pres_df.at[ind, 'DispatchedBy']
+                                Dispatch_status = pres_df.at[ind, 'Dispatched status']
+                                Dispatch_date = pres_df.at[ind, 'Dispatched Date']
+                                Dispatch_by = pres_df.at[ind, 'Dispatched By']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type']
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Dispatched status':Dispatch_status,
                                     'Dispatched Date': Dispatch_date,
-                                    'Dispatched By': Dispatch_by,
+                                     'Dispatched Date': Dispatch_date,
+                                    'Transaction Type': Transaction_by
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
