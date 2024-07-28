@@ -32,6 +32,7 @@ def app():
         def load_new():
                 try:
                     clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=[
+                        "Title",
                         "ID",
                         "UHID",
                         "Patientname",
