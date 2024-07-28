@@ -79,14 +79,14 @@ def app():
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status'].isnull())]
+                    (AllTrans_df['ReceivedStatus'].isnull())]
             
             
-            Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
+            Trans_df['ReceivedDate'] = Trans_df['Received Date'].fillna(formatted_date)
             
             Trans_df['ReceivedBy']=staffname
             
-            Trans_df['Transaction Type']= "Receipt"
+            Trans_df['TransactionType']= "Receipt"
             
             st.write(staffname)
             
