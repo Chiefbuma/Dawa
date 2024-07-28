@@ -30,7 +30,7 @@ def app():
         
         
         #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
-        @st.cache_data(ttl=80, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_new():
                 try:
                     clients = SharePoint().connect_to_list(ls_name='Home Delivery')
@@ -46,6 +46,7 @@ def app():
         #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
+        
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
        
@@ -100,7 +101,7 @@ def app():
             
             #st.write(staffname)
             
-            #st.write(chronic_df)
+            st.write(Trans_df)
             
             # JavaScript for link renderer
             cellRenderer_link = JsCode("""
@@ -494,9 +495,7 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Consultation Status'] == 'Consulted']
                         
-                        # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
-                        pres_df['Consultation Date'] = pres_df['Consultation Date'].dt.strftime('%Y/%m/%d')
-        
+
                         
                         with card_container(key="bill"):
                             cols = st.columns(1)
