@@ -115,7 +115,7 @@ def app():
             
             Trans_df = AllTrans_df[
                ((AllTrans_df['DoctorName'] == staffname) & 
-                (AllTrans_df['Transaction Type'] == 'Booking'))]
+                (AllTrans_df['TransactionType'] =="Booking"))]
                 
             
             st.write(Trans_df)
