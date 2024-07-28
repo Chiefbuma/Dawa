@@ -99,14 +99,14 @@ def app():
             staffname = usersD_df['StaffName'].iloc[0]
             
             Trans_df = AllTrans_df[
-                (AllTrans_df['ReceivedStatus'] == 'Received') & 
+                (AllTrans_df['Received Status'] == 'Received') & 
                 (AllTrans_df['Location'] == location) & 
-                (AllTrans_df['Collectionstatus'].isnull())]
+                (AllTrans_df['Collection status'].isnull())]
         
             
-            Trans_df['DispensedBy']=staffname
+            Trans_df['Dispensed  By']=staffname
             
-            Trans_df['CollectionDate'] = Trans_df['CollectionDate'].fillna(formatted_date)
+            Trans_df['CollectionD ate'] = Trans_df['Collection Date'].fillna(formatted_date)
             
             
             st.write(staffname)
@@ -199,25 +199,29 @@ def app():
             gb = GridOptionsBuilder.from_dataframe(Trans_df)
 
             # List of columns to hide
-            book_columns = ["ID",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
-                    "Dispatchedstatus",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "DispensedBy",
-                    "ReceivedBy",
-                    "CollectionDate",
-                    "mobile",
-                    "Month",
-                    "TransactionType",
-                    "Year"
+            book_columns = [
+                        "Title",
+                        "ID",
+                        "UHID",
+                        "Patientname",
+                        "mobile",
+                        "Location",
+                        "Booking status",
+                        "Booking Date",
+                        "Booked on",
+                        "Booked By",
+                        "DoctorName",
+                        "Consultation Status",
+                        "Consultation Date",
+                        "Dispatched status",
+                        "Dispatched Date",
+                        "Dispatched By",
+                        "Received Date",
+                        "Received By",
+                        "Dispensed By",
+                        "Month",
+                        "Transaction Type",
+                        "Year"
 
                 
             ]           
@@ -231,10 +235,10 @@ def app():
                     "UHID",
                     "Patientname",
                     "Location",
-                    "ReceivedStatus",
+                    "Received Status",
                     "Month",
-                    "DispensedBy",
-                    "TransactionType",
+                    "Dispensed By",
+                    "Transaction Type",
                     "Year",
           
             ]
@@ -242,7 +246,7 @@ def app():
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-            gb.configure_column('Collectionstatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Collection status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -477,7 +481,7 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['Collectionstatus'] == 'Collected']
+                        pres_df = df[df['Collection status'] == 'Collected']
                         
                         pres_df=pres_df[[
                                         "ID",
@@ -485,11 +489,12 @@ def app():
                                         "UHID",
                                         "Patientname",
                                         "Location",
-                                        "Collectionstatus",
-                                        "CollectionDate",
-                                        "DispensedBy",
+                                        "Collection status",
+                                        "Collection Date",
+                                        "Dispensed By",
                                         "Month",
-                                        "Year"]]
+                                        "Year",
+                                        "TypeTransaction Type"]]
 
                         
                         # Display the filtered DataFrame
@@ -515,17 +520,18 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                collection_status = pres_df.at[ind, 'Collectionstatus']
-                                collection_date = pres_df.at[ind, 'CollectionDate']
-                                collection_by = pres_df.at[ind, 'DispensedBy']
+                                collection_status = pres_df.at[ind, 'Collection status']
+                                collection_date = pres_df.at[ind, 'Collection Date']
+                                collection_by = pres_df.at[ind, 'Dispensed By']
+                                Transaction_by = pres_df.at[ind, 'TypeTransaction Type']
                                 
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Collection status': collection_status,
                                     'Collection Date': collection_date,
-                                    'Dispensed By': collection_by
-                                
+                                    'Dispensed By': collection_by,
+                                    'Transaction Type': Transaction_by
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
