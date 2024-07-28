@@ -132,7 +132,7 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            st.write(staffname)
+            #st.write(staffname)
             
             import calendar
             # Query the MTD_Revenue table with the filter for location_name and Month
