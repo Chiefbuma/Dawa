@@ -28,8 +28,7 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-       #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
-        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+
         def load_new():
                 try:
                     clients = SharePoint().connect_to_list(ls_name='Home Delivery')
