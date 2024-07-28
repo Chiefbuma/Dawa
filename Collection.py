@@ -111,7 +111,7 @@ def app():
             Trans_df['CollectionD ate'] = Trans_df['Collection Date'].fillna(formatted_date)
             
             
-            st.write(staffname)
+            #st.write(staffname)
             
             #st.write(chronic_df)
             

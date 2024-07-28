@@ -78,7 +78,7 @@ def app():
             
         book_df= load_new()
         
-        st.write(book_df)
+        #st.write(book_df)
         
         
        
