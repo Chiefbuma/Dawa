@@ -27,6 +27,8 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
+       
+        
         @st.cache_data(ttl=800, max_entries=200, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_bill(email_user, password_user, sharepoint_url, list_name):
             try:
@@ -51,8 +53,8 @@ def app():
                     "Location",
                     "Bookingstatus",
                     "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate"
+                    "ConsultationStatus",
+                    "ConsultationDate"
                 ]
 
                 data = []
@@ -72,14 +74,14 @@ def app():
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
         list_name = "Home Delivery"
 
-        Trans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
+        AllTrans_df = load_bill(email_user, password_user, sharepoint_url, list_name)
         
-        #st.write(Trans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
-        Trans_df['ConsulationDate'] = Trans_df['ConsulationDate'].fillna(formatted_date)
+       
         
         @st.cache_resource
         def init_connection():
@@ -109,7 +111,20 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            st.write(staffname)
+            #st.write(staffname)
+            
+            Trans_df = AllTrans_df[
+                (AllTrans_df['DoctorName'] == staffname) & 
+                (AllTrans_df['Bookingstatus'] == 'Booked') & 
+                (AllTrans_df['ConsultationStatus'].isnull())]
+            
+            #st.write(Trans_df)
+                
+            Trans_df['DoctorName']=staffname
+                
+            Trans_df['ConsultationDate'] = Trans_df['ConsultationDate'].fillna(formatted_date)
+            
+            #st.write(staffname)
             
             #st.write(chronic_df)
             
@@ -200,7 +215,7 @@ def app():
 
             # List of columns to hide
             book_columns = [
-                      "Title","ID","mobile","DoctorName","ConsulationDate"
+                      "Title","ID","mobile","DoctorName","ConsultationDate"
             ]
            
             # Hide specified columns
@@ -225,6 +240,8 @@ def app():
 
             location_df = pd.DataFrame(response.data)
             
+            
+            
             @st.cache_data
             def get_unique_item_descriptions():
                 return location_df['Location'].unique().tolist()
@@ -243,7 +260,7 @@ def app():
                 gb.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
             
             # Configure specific columns with additional settings
-            gb.configure_column('ConsulationStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('ConsultationStatus', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -475,7 +492,7 @@ def app():
                         df = pd.DataFrame(res)
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['ConsulationStatus'] == 'Consulted']
+                        pres_df = df[df['ConsultationStatus'] == 'Consulted']
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)
@@ -500,14 +517,14 @@ def app():
                             # Iterate over the DataFrame and update items in the SharePoint list
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
-                                consultation_status = pres_df.at[ind, 'ConsulationStatus']
-                                consultation_date = pres_df.at[ind, 'ConsulationDate']
-                               
+                                consultation_status = pres_df.at[ind, 'ConsultationStatus']
+                                consultation_date = pres_df.at[ind, 'ConsultationDate']
+                                
 
                                 item_creation_info = {
                                     'ID': item_id, 
-                                    'Consulation Status': consultation_status,
-                                    'Consulation Date': consultation_date
+                                    'Consultation Status': consultation_status,
+                                    'Consultation Date': consultation_date
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")

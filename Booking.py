@@ -101,7 +101,7 @@ def app():
         sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
         list_name = "Home Delivery"
         
-        book_df  =load_data(email_user, password_user, sharepoint_url, list_name)
+        book_df=load_data(email_user, password_user, sharepoint_url, list_name)
 
         #st.write(book_df)
         # Get unique titles
