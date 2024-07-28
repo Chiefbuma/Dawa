@@ -204,6 +204,8 @@ def app():
                         "Consultation Date",
                         "Dispatched Date",
                         "Dispatched By",
+                         "Received Date",
+                        "Received By",
                         "Month",
                         "Transaction Type",
                         "Year",
