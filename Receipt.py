@@ -40,7 +40,8 @@ def app():
             
         
         AllTrans_df= load_new()
-        #st.write(Trans_df)
+        
+        st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
@@ -89,7 +90,7 @@ def app():
             
             st.write(staffname)
             
-            #st.write(chronic_df)
+            st.write(Trans_df)
             
             # JavaScript for link renderer
             cellRenderer_link = JsCode("""
