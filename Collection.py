@@ -106,6 +106,8 @@ def app():
             
             Trans_df['Dispensed  By']=staffname
             
+            Trans_df['Transaction Type']= "Collection"
+            
             Trans_df['CollectionD ate'] = Trans_df['Collection Date'].fillna(formatted_date)
             
             
@@ -523,7 +525,7 @@ def app():
                                 collection_status = pres_df.at[ind, 'Collection status']
                                 collection_date = pres_df.at[ind, 'Collection Date']
                                 collection_by = pres_df.at[ind, 'Dispensed By']
-                                Transaction_by = pres_df.at[ind, 'TypeTransaction Type']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type']
                                 
 
                                 item_creation_info = {
