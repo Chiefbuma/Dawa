@@ -494,7 +494,9 @@ def app():
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Consultation Status'] == 'Consulted']
                         
-
+                        # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+                        pres_df['Consultation Date'] = pres_df['Consultation Date'].dt.strftime('%Y/%m/%d')
+        
                         
                         with card_container(key="bill"):
                             cols = st.columns(1)
