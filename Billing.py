@@ -33,18 +33,36 @@ def app():
         @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_new():
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["ID",
+                            "Title","UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Consultation Status",
+                            "Consultation Date",
+                            "Dispatched status",
+                            "Dispatched Date",
+                            "Dispatched By",
+                            "Received Date",
+                            "Received By",
+                            "Received Status",
+                            "Dispensed By",
+                            "Collection status",
+                            "Collection Date",
+                            "Month",
+                            "Transaction Type",
+                            "Year"
+])
                     return pd.DataFrame(clients)
                 except APIError as e:
                     st.error("Connection not available, check connection")
                     st.stop() 
             
         AllTrans_df= load_new()
-        
+
         st.write(AllTrans_df)
         
         #st.write(AllTrans_df)
-        
         current_date = datetime.today().date()
         
         # Format the date as a string (e.g., YYYY-MM-DD)

@@ -14,6 +14,7 @@ from local_components import card_container
 import streamlit.components.v1 as components
 import streamlit_shadcn_ui as ui
 import logging
+from postgrest import APIError
 
 def app():
     if 'is_authenticated' not in st.session_state:
@@ -27,69 +28,36 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=2,show_spinner=True, persist=False, experimental_allow_widgets=False)
-        def load_data(email_user, password_user, sharepoint_url, list_name):
-            try:
-                auth = AuthenticationContext(sharepoint_url)
-                auth.acquire_token_for_user(email_user, password_user)
-                ctx = ClientContext(sharepoint_url, auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                
-                target_list = ctx.web.lists.get_by_title(list_name)
-                items = target_list.get_items()
-                ctx.load(items)
-                ctx.execute_query()
-
-                selected_columns = [
-                    "ID",
-                    "Title",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Bookingstatus",
-                    "BookingDate",
-                    "Bookedon",
-                    "BookedBy",
-                    "DoctorName",
-                    "ConsulationStatus",
-                    "ConsulationDate",
-                    "Dispatchedstatus",
-                    "DispatchedDate",
-                    "DispatchedBy",
-                    "ReceivedDate",
-                    "ReceivedBy",
-                    "ReceivedStatus",
-                    "Collectionstatus",
-                    "DispensedBy",
-                    "CollectionDate",
-                    "Month",
-                    "TransactionType",
-                    "Year"
-
-                ]
-
-                data = []
-                for item in items:
-                    item_data = {key: item.properties.get(key, None) for key in selected_columns}
-                    data.append(item_data)
-                return pd.DataFrame(data)
-
-            except Exception as e:
-                st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
-                st.error(f"Error details: {e}")
-                return None
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        def load_new():
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["ID",
+                            "Title","UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Consultation Status",
+                            "Consultation Date",
+                            "Dispatched status",
+                            "Dispatched Date",
+                            "Dispatched By",
+                            "Received Date",
+                            "Received By",
+                            "Received Status",
+                            "Dispensed By",
+                            "Collection status",
+                            "Collection Date",
+                            "Month",
+                            "Transaction Type",
+                            "Year"
+])
+                    return pd.DataFrame(clients)
+                except APIError as e:
+                    st.error("Connection not available, check connection")
+                    st.stop() 
+            
+        AllTrans_df = load_new()
         
-        email_user = "biosafety@blisshealthcare.co.ke"
-        password_user = "Buma@8349"
-        SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
-        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-        
-        list_name = "Home Delivery"
-
-        AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         
         st.write(AllTrans_df)
         
@@ -97,8 +65,6 @@ def app():
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
         
-        
-       
         @st.cache_resource
         def init_connection():
             url = "https://effdqrpabawzgqvugxup.supabase.co"

@@ -40,16 +40,38 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        def load_data():
-            try:
-                clients = SharePoint().connect_to_list(ls_name='Home Delivery')
-                return pd.DataFrame(clients)
-            except APIError as e:
-                st.error("Connection not available, check connection")
-                st.stop() 
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+        def load_new():
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["ID",
+                            "Title","UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Consultation Status",
+                            "Consultation Date",
+                            "Dispatched status",
+                            "Dispatched Date",
+                            "Dispatched By",
+                            "Received Date",
+                            "Received By",
+                            "Received Status",
+                            "Dispensed By",
+                            "Collection status",
+                            "Collection Date",
+                            "Month",
+                            "Transaction Type",
+                            "Year"
+])
+                    return pd.DataFrame(clients)
+                except APIError as e:
+                    st.error("Connection not available, check connection")
+                    st.stop() 
+            
+        book_df= load_new()
         
+        st.write(book_df)
         
-        book_df = load_data()
         
        
         #st.write(book_df)

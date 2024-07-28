@@ -32,15 +32,32 @@ def app():
         @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_new():
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery')
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["ID",
+                            "Title","UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Consultation Status",
+                            "Consultation Date",
+                            "Dispatched status",
+                            "Dispatched Date",
+                            "Dispatched By",
+                            "Received Date",
+                            "Received By",
+                            "Received Status",
+                            "Dispensed By",
+                            "Collection status",
+                            "Collection Date",
+                            "Month",
+                            "Transaction Type",
+                            "Year"
+])
                     return pd.DataFrame(clients)
                 except APIError as e:
                     st.error("Connection not available, check connection")
                     st.stop() 
             
-        
-        AllTrans_df= load_new()
-        
+        AllTrans_df = load_new()
 
         #st.write(AllTrans_df)
         
@@ -78,9 +95,9 @@ def app():
             staffname = usersD_df['StaffName'].iloc[0]
             
             
-            
             Trans_df = AllTrans_df[
                     (AllTrans_df['Consultation Status'] == 'Consulted') & 
+                    (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['Dispatched status'].isnull())]
             
             
@@ -90,9 +107,7 @@ def app():
             Trans_df['Dispatched By']=staffname
             
             Trans_df['Transaction Type']= "Dispatch"
-             
-             
-          
+        
             #st.write(staffname)
             #st.write(chronic_df)
             
@@ -224,7 +239,7 @@ def app():
                     "mobile",
                     "Location",
                     "DoctorName",
-                    "Dispatched Date",
+                    "Dispatched Date"
                     
             ]
             for column in non_editable_columns:
