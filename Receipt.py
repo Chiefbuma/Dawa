@@ -14,6 +14,7 @@ from local_components import card_container
 import streamlit.components.v1 as components
 import streamlit_shadcn_ui as ui
 import logging
+from postgrest import APIError
 
 def app():
     if 'is_authenticated' not in st.session_state:
@@ -76,8 +77,9 @@ def app():
             
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
-                    (AllTrans_df['Location'] == location)]
-                   
+                    (AllTrans_df['Location'] == location) & 
+                    (AllTrans_df['Received Status'].isnull())]
+            
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
