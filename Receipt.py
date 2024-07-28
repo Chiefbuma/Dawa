@@ -76,9 +76,8 @@ def app():
             
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
-                    (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status'].isnull())]
-            
+                    (AllTrans_df['Location'] == location)]
+                   
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
