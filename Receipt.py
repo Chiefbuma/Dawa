@@ -74,14 +74,13 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                     (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['Received Status'].isnull())]
             
             
-            Trans_df['ReceivedDate'] = Trans_df['ReceivedDate'].fillna(formatted_date)
+            Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
             Trans_df['ReceivedBy']=staffname
             
