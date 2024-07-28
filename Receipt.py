@@ -31,9 +31,19 @@ def app():
 
         def load_new():
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=["Title","UHID",
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=[
+                            "Title","UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Consultation Status",
+                            "Consultation Date",
+                            "Dispatched status",
+                            "Dispatched Date",
+                            "Dispatched By",
+                            "Received Date",
+                            "Received By",
                             "Received Status",
-                            "New",
                             "Dispensed By",
                             "Collection status",
                             "Collection Date",
