@@ -139,7 +139,34 @@ def app():
             response = supabase.table('Patient_Booking').select('*').execute()
             rawbook_df = pd.DataFrame(response.data)
             
+            
+            # Define the columns to filter
+            filter_columns = ["Patientname", "UHID"]
+
+            # Create five columnss for arranging widgets horizontally
+            col1, col2 = st.columns(2)
+            
+            # Create a dictionary to store filter values
+            filters = {column: '' for column in filter_columns}
+            
+
+            # Create text input widgets for each filter column and arrange them horizontally
+            with col1:
+                filters[filter_columns[0]] = st.text_input(f"Filter {filter_columns[0]}", filters[filter_columns[0]])
+            with col2:
+                filters[filter_columns[1]] = st.text_input(f"Filter {filter_columns[1]}", filters[filter_columns[1]])
+            
+            
+            # Apply filters to the DataFrame
+            booking_df = rawbook_df
+            
+            for column, filter_value in filters.items():
+                if filter_value:
+                    booking_df = booking_df[booking_df[column].str.contains(filter_value, case=False)]
+
+
             booking_df=rawbook_df[~rawbook_df['Patientname'].isin(unique_titles_list)]
+            
             
            # Add default value for 'Patientname' column where it is empty
             booking_df['Booking Date'] = booking_df['Booking Date'].fillna(formatted_date)
@@ -147,9 +174,7 @@ def app():
             # Assuming Allsales_df is your DataFrame
             booking_df['Booked on'] = pd.to_datetime(booking_df['Booked on'], dayfirst=True)
             
-            
             booking_df['Booked on'] = booking_df['Booked on']
-            
             
             booking_df['Booked By']=staffname
             
@@ -270,6 +295,9 @@ def app():
 
             # Create a GridOptionsBuilder object from our DataFrame
             gd = GridOptionsBuilder.from_dataframe(booking_df)
+            
+             # Configure the default column to be editable
+            gd.configure_default_column(editable=True,minWidth=150, flex=0,filter=True)
 
             # List of columns to hide
             hidden_columns = [
@@ -340,13 +368,11 @@ def app():
             
             gd.configure_column('Booking status',editable=False, cellRenderer=checkbox_renderer,pinned='right',minWidth=50)
             gd.configure_column("Booked on", editable=False, cellRenderer=date_renderer)
-            gd.configure_column('Patientname', editable=False)
-            gd.configure_column('UHID', editable=False)
+            gd.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+            gd.configure_column('UHID', editable=False,filter="agTextColumnFilter")
     
             
-            # Configure the default column to be editable
-            gd.configure_default_column(editable=True,minWidth=150, flex=0)
-
+           
             # Build the grid options
             gridoptions = gd.build()
          

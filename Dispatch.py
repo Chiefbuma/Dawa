@@ -256,7 +256,7 @@ def app():
                     
             ]
             for column in non_editable_columns:
-                gb.configure_column(column, editable=False)
+                gb.configure_column(column, editable=False,filter=True)
 
             # Configure specific columns with additional settings
             gb.configure_column('Dispatched status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
@@ -266,6 +266,9 @@ def app():
                 cellRenderer=cellRenderer_link,
                 allow_unsafe_jscode=True
             )
+            gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+            gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+
 
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
