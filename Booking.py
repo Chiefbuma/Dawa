@@ -138,35 +138,8 @@ def app():
             # Query the MTD_Revenue table with the filter for location_name and Month
             response = supabase.table('Patient_Booking').select('*').execute()
             rawbook_df = pd.DataFrame(response.data)
-            
-            
-            # Define the columns to filter
-            filter_columns = ["Patientname", "UHID"]
-
-            # Create five columnss for arranging widgets horizontally
-            col1, col2 = st.columns(2)
-            
-            # Create a dictionary to store filter values
-            filters = {column: '' for column in filter_columns}
-            
-
-            # Create text input widgets for each filter column and arrange them horizontally
-            with col1:
-                filters[filter_columns[0]] = st.text_input(f"Filter {filter_columns[0]}", filters[filter_columns[0]])
-            with col2:
-                filters[filter_columns[1]] = st.text_input(f"Filter {filter_columns[1]}", filters[filter_columns[1]])
-            
-            
-            # Apply filters to the DataFrame
-            booking_df = rawbook_df
-            
-            for column, filter_value in filters.items():
-                if filter_value:
-                    booking_df = booking_df[booking_df[column].str.contains(filter_value, case=False)]
-
 
             booking_df=rawbook_df[~rawbook_df['Patientname'].isin(unique_titles_list)]
-            
             
            # Add default value for 'Patientname' column where it is empty
             booking_df['Booking Date'] = booking_df['Booking Date'].fillna(formatted_date)
