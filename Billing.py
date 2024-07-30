@@ -67,7 +67,7 @@ def app():
             
         AllTrans_df= load_new()
 
-     
+        #st.write(AllTrans_df)
         
         #st.write(AllTrans_df)
         current_date = datetime.today().date()
@@ -304,7 +304,7 @@ def app():
                 allow_unsafe_jscode=True
             )
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-            gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+            gb.configure_column('UHID', editable=False,filter="agTextColumnFilter")
 
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
@@ -343,13 +343,9 @@ def app():
                     )
                     
                 selected_row = response['selected_rows']
-                
                 if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name =  selected_row[0]['Patientname']
-                    #st.write(Patient_name)
-                   
-                    
-                if selected_row and len(selected_row) > 0:
+                    st.session_state.Patient_name = '' 
+                if selected_row:
                     st.session_state.Patient_name = selected_row[0]['Patientname']
                     #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
