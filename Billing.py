@@ -344,7 +344,8 @@ def app():
                     
                 selected_row = response['selected_rows']
                 
-                rowcount=len(selected_row)
+                rowcount=len(Trans_df)
+                
                 st.write(rowcount)
                 
                 # Initialize session state if not already done
