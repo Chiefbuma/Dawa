@@ -349,7 +349,7 @@ def app():
                     st.session_state.Patient_name = ''
 
                 
-                if not selected_row:
+                if  selected_row:
                     try:
                         patient_name = selected_row.iloc[0]['Patientname']
                         st.session_state.Patient_name = patient_name
