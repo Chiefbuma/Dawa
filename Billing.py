@@ -344,9 +344,9 @@ def app():
                     
                 selected_row = response['selected_rows']
                 if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = '' 
+                    st.session_state.Patient_name = 'Mrs. LILIAN CHEBET' 
                 if selected_row:
-                    st.session_state.Patient_name = selected_row[0]['Patientname']
+                    st.session_state.Patient_name = 'Mrs. LILIAN CHEBET'
                     #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
                 #else:
