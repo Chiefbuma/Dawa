@@ -343,6 +343,9 @@ def app():
                     )
                     
                 selected_row = response['selected_rows']
+                
+                st.write(selected_row)
+                
                 if 'Patient_name' not in st.session_state:
                     st.session_state.Patient_name = '' 
                 if selected_row:
