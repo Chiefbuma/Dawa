@@ -349,15 +349,16 @@ def app():
                     st.session_state.Patient_name = ''
 
                 
-                if selected_row and len(selected_row) > 0:
+                if len(selected_row) > 0:
                     try:
                         patient_name = selected_row.iloc[0]['Patientname']
                         st.session_state.Patient_name = patient_name
                         st.write(st.session_state.Patient_name)
+                    except IndexError:
+                        pass  # Suppress IndexError silently
                     except KeyError:
-                        st.write("")
-                else:
-                    st.write("")
+                        pass  # Suppress KeyError silently
+                               
                     #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
                 #else:
