@@ -297,14 +297,26 @@ def app():
                     
                
                 selected_row = response['selected_rows']
+                
+                Selecetd_dataframe=pd.DataFrame(selected_row)
+                
+                rowcount=len(Selecetd_dataframe)
+                
+                #st.write(Selecetd_dataframe)
+                
+                # Initialize session state if not already done
                 if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = '' 
-                if selected_row:
-                    st.session_state.Patient_name = selected_row[0]['Patientname']
-                    #st.write(Patient_name)
-                    #st.write("Selected Row:", selected_row)
-                #else:
-                    #st.write("No row selected")
+                    st.session_state.Patient_name = ''
+                                
+                if rowcount > 0:
+                    try:
+                        patient_name = selected_row.iloc[0]['Patientname']
+                        st.session_state.Patient_name = patient_name
+                        st.write(st.session_state.Patient_name)
+                    except IndexError:
+                        pass  # Suppress IndexError silently
+                    except KeyError:
+                        pass  # Suppress KeyError silently
                 
                                
                 # JavaScript function to add a new row to the AgGrid table

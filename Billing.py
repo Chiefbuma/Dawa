@@ -348,7 +348,7 @@ def app():
                 
                 rowcount=len(Selecetd_dataframe)
                 
-                st.write(Selecetd_dataframe)
+                #st.write(Selecetd_dataframe)
                 
                 # Initialize session state if not already done
                 if 'Patient_name' not in st.session_state:
