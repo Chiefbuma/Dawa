@@ -344,12 +344,14 @@ def app():
                     
                 selected_row = response['selected_rows']
                 
+                rowcount=len(selected_row)
+                st.write(rowcount)
+                
                 # Initialize session state if not already done
                 if 'Patient_name' not in st.session_state:
                     st.session_state.Patient_name = ''
-
-                
-                if  selected_row:
+                                
+                if rowcount > 0:
                     try:
                         patient_name = selected_row.iloc[0]['Patientname']
                         st.session_state.Patient_name = patient_name
