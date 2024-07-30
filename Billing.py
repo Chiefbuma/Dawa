@@ -344,13 +344,17 @@ def app():
                     
                 selected_row = response['selected_rows']
                 
-                st.write(selected_row)
-                
-                if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = ''
-                     
                 if not selected_row.empty:
-                    st.session_state.Patient_name = selected_row[0]['Patientname']
+                    try:
+                        patient_name = selected_row.iloc[0]['Patientname']
+                        st.session_state.Patient_name = patient_name
+                        st.write(st.session_state.Patient_name)
+                    except IndexError:
+                        st.write(" No selection")
+                    except KeyError:
+                        st.write("")
+                else:
+                    st.write("")
                     #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
                 #else:
