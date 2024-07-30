@@ -344,9 +344,9 @@ def app():
                     
                 selected_row = response['selected_rows']
                 
-                rowcount=len(Trans_df)
+                rowcount=len(selected_row)
                 
-                st.write(rowcount)
+                st.write(selected_row)
                 
                 # Initialize session state if not already done
                 if 'Patient_name' not in st.session_state:
