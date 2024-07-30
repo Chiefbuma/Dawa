@@ -342,13 +342,15 @@ def app():
                         fit_columns_on_grid_load=True
                     )
                     
-                selected_row = response['selected_rows']
+                selected_row = response.get('selected_rows')
+                
                 if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = '' 
-                    
-                if  len(selected_row) > 0:
+                    st.session_state.Patient_name = ''
+
+                # Check if selected_row is not None and not empty
+                if selected_row is not None and len(selected_row) > 0:
                     st.session_state.Patient_name = selected_row[0]['Patientname']
-                    #st.write(Patient_name)
+                                    #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
                 #else:
                     #st.write("No row selected")
