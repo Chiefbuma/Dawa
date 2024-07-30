@@ -346,7 +346,7 @@ def app():
                 if 'Patient_name' not in st.session_state:
                     st.session_state.Patient_name = '' 
                     
-                if selected_row and len(selected_row) > 0:
+                if  len(selected_row) > 0:
                     st.session_state.Patient_name = selected_row[0]['Patientname']
                     #st.write(Patient_name)
                     #st.write("Selected Row:", selected_row)
