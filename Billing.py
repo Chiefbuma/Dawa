@@ -344,9 +344,11 @@ def app():
                     
                 selected_row = response['selected_rows']
                 
-                rowcount=len(selected_row)
+                Selecetd_dataframe=pd.DataFrame(selected_row)
                 
-                st.write(selected_row)
+                rowcount=len(Selecetd_dataframe)
+                
+                st.write(Selecetd_dataframe)
                 
                 # Initialize session state if not already done
                 if 'Patient_name' not in st.session_state:
