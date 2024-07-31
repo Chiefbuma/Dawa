@@ -255,7 +255,9 @@ def app():
                         "URL Path",
                         "Approval Status",
                         "mobile",
-                        "Cycle"
+                        "MVC",
+                        "Cycle",
+                        "Collection Comments"
 
             ]
            
