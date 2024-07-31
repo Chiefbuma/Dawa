@@ -417,7 +417,7 @@ def app():
                     except KeyError:
                         pass  # Suppress KeyError silently
                     
-                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
+                st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
                 
             with card_container(key="Main1"):
                 try:
