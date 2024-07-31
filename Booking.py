@@ -299,10 +299,7 @@ def app():
                 'Title',
                 'TransactionType',
                 'Month',
-                "MVC",
-                "Cycle",
-                "Collection Comments",
-                'Max_Cycle',
+                'MVC',
                 'CollectionComments',
                 'Year',
                 'S.No'
