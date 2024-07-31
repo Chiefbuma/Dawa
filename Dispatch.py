@@ -56,7 +56,7 @@ def app():
                         "Collection status",
                         "Collection Date",
                          "MVC",
-                        "Cycle",
+                         "Cycle"
                         "Collection Comments",
                         "Month",
                         "Transaction Type",
@@ -225,6 +225,7 @@ def app():
                         "Month",
                         "Transaction Type",
                         "Year",
+                        "Cycle",
                        "Modified",
                         "Modified By",
                         "Level",
@@ -242,6 +243,8 @@ def app():
                         "URL Path",
                         "Approval Status",
                         "mobile"
+                         "MVC",
+                        "Collection Comments"
             ]
            
             # Hide specified columns
