@@ -56,6 +56,9 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
+                         "MVC",
+                        "Cycle",
+                        "Collection Comments",
                         "Month",
                         "Transaction Type",
                         "Year"
@@ -251,7 +254,8 @@ def app():
                         "ScopeId",
                         "URL Path",
                         "Approval Status",
-                        "mobile"
+                        "mobile",
+                        "Cycle"
 
             ]
            
@@ -267,7 +271,8 @@ def app():
                     "mobile",
                     "Booking status",
                     "DoctorName",
-                    "Consultation Date"
+                    "Consultation Date",
+                     "Cycle"
                     
 
             ]
@@ -559,7 +564,7 @@ def app():
                                         "Consultation Date",
                                         "Month",
                                         "Year",
-                                        "Transaction Type"]]
+                                        "Transaction Type", "Cycle"]]
                         
                         with card_container(key="bill"):
                             cols = st.columns(1)

@@ -28,7 +28,7 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-
+        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
         def load_new():
                 try:
                     clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=[
@@ -54,6 +54,9 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
+                         "MVC",
+                        "Cycle",
+                        "Collection Comments",
                         "Month",
                         "Transaction Type",
                         "Year"
@@ -104,6 +107,7 @@ def app():
                     (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['Received Status'].isnull())]
             
+            st.write(Trans_df)
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
@@ -218,6 +222,8 @@ def app():
                         "Item Type",
                         "Property Bag",
                         "ID",
+                         "MVC",
+                        "Cycle",
                         "owshiddenversion",
                         "Created",
                         "Title",
@@ -316,8 +322,7 @@ def app():
                         pass  # Suppress IndexError silently
                     except KeyError:
                         pass  # Suppress KeyError silently
-                
-                    #st.write(Patient_name)
+                       
                     #st.write("Selected Row:", selected_row)
                 #else:
                     #st.write("No row selected")
@@ -512,7 +517,8 @@ def app():
                                         "Received Status",
                                         "Month",
                                         "Year",
-                                        "Transaction Type"]]
+                                        "Transaction Type",
+                                         "Cycle",]]
                         
                         # Display the filtered DataFrame
                         #st.dataframe(Appointment_df)

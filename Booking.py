@@ -67,6 +67,9 @@ def app():
                         "Collection status",
                         "Collection Date",
                         "Month",
+                        "MVC",
+                        "Cycle",
+                        "Collection Comments",
                         "Transaction Type",
                         "Year"
 
@@ -80,14 +83,19 @@ def app():
         
         #st.write(book_df)
         
+        Max_df = book_df.groupby('Patientname', as_index=False).agg(
+                 Max_Cycle=('Cycle', 'max')
+        )
         
-       
+        
+        #st.write(Max_df)
+        
         #st.write(book_df)
         # Get unique titles
-        Title_names = book_df['Patientname'].unique()
+        #Title_names = book_df['Patientname'].unique()
 
         # Convert to a list if needed
-        unique_titles_list = Title_names.tolist()
+        #unique_titles_list = Title_names.tolist()
         #st.write(book_df) 
                 
         @st.cache_resource
@@ -133,16 +141,24 @@ def app():
             staffname = usersD_df['StaffName'].iloc[0]
             
             #st.write(staffname)
-            
             import calendar
             # Query the MTD_Revenue table with the filter for location_name and Month
             response = supabase.table('Patient_Booking').select('*').execute()
             rawbook_df = pd.DataFrame(response.data)
+            
+            #st.write(rawbook_df)
+            # Merge Max_df onto rawbook_df along 'Patientname'
+            
+            booking_df = rawbook_df.merge(Max_df, on='Patientname', how='left')
+            
+            #st.write(booking_df)
 
-            booking_df=rawbook_df[~rawbook_df['Patientname'].isin(unique_titles_list)]
             
            # Add default value for 'Patientname' column where it is empty
             booking_df['Booking Date'] = booking_df['Booking Date'].fillna(formatted_date)
+            
+            
+            booking_df['Max_Cycle'] = booking_df['Max_Cycle'].fillna(1)
             
             # Assuming Allsales_df is your DataFrame
             booking_df['Booked on'] = pd.to_datetime(booking_df['Booked on'], dayfirst=True)
@@ -151,13 +167,15 @@ def app():
             
             booking_df['Booked By']=staffname
             
+            booking_df['Cycle'] = booking_df['Max_Cycle'].astype(int)+1
+            
             # Add 'Month' column with full month name
             booking_df['Month'] = datetime.now().strftime("%B")
             
             # Assuming Allsales_df is your DataFrame
             booking_df['Year'] =  datetime.now().year
                         
-            booking_df['Title']=booking_df['Patientname'].astype(str).str.cat(booking_df['Month'])
+            booking_df['Title']=booking_df['Patientname'].astype(str)  + booking_df['Month']  + booking_df['Cycle'].astype(str)
             
             booking_df['TransactionType'] ="Booking"
             
@@ -281,6 +299,9 @@ def app():
                 'Title',
                 'TransactionType',
                 'Month',
+                'MVC',
+                'Max_Cycle',
+                'CollectionComments',
                 'Year',
                 'S.No'
             ]
@@ -344,7 +365,6 @@ def app():
             gd.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gd.configure_column('UHID', editable=False,filter="agTextColumnFilter")
     
-            
            
             # Build the grid options
             gridoptions = gd.build()
@@ -398,7 +418,7 @@ def app():
                     Appointment_df = df[df['Booking status'] == 'Booked']
                     
                     Appointment_df=Appointment_df[['Title','UHID',	'Patientname','mobile','DoctorName','Booking status','Booking Date',	
-                                    'Booked on','Booked By'	,'Month','Year',"TransactionType"]]
+                                    'Booked on','Booked By'	,'Month','Year','TransactionType','Cycle']]
 
                     
                     # Display the filtered DataFrame
@@ -438,7 +458,8 @@ def app():
                                 'Booked By': Appointment_df.at[ind, 'Booked By'],
                                 'Transaction Type': Appointment_df.at[ind, 'TransactionType'],
                                 'Month': Appointment_df.at[ind, 'Month'],
-                                 'Year': Appointment_df.at[ind, 'Year']
+                                 'Year': Appointment_df.at[ind, 'Year'],
+                                 'Cycle': Appointment_df.at[ind, 'Cycle']
                             
                             }
                             target_list.UpdateListItems(data=[item_creation_info], kind='New')

@@ -55,6 +55,9 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
+                         "MVC",
+                        "Cycle",
+                        "Collection Comments",
                         "Month",
                         "Transaction Type",
                         "Year"
@@ -229,6 +232,7 @@ def app():
                         "Item Type",
                         "Property Bag",
                         "ID",
+                        "Cycle",
                         "owshiddenversion",
                         "Created",
                         "Title",
@@ -526,7 +530,7 @@ def app():
                                          "Dispatched By",
                                         "Month",
                                         "Year",
-                                        "Transaction Type"]]
+                                        "Transaction Type","Cycle"]]
         
                         
                         # Display the filtered DataFrame
