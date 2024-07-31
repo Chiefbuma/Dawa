@@ -301,7 +301,7 @@ def app():
                 'Month',
                 'MVC',
                 'Max_Cycle',
-                'CollectionComments',
+                'Collection Comments',
                 'Year',
                 'S.No'
             ]
@@ -393,6 +393,15 @@ def app():
                                 theme = 'balham',
                                 height = 200,
                                 fit_columns_on_grid_load = True)
+                
+                
+                selected_row = response['selected_rows']
+                
+                Selecetd_dataframe=pd.DataFrame(selected_row)
+                
+                st.write(selected_row)
+                
+                rowcount=len(Selecetd_dataframe)
                 
                 cols = st.columns(6)
                 with cols[5]:
