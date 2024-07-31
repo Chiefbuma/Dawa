@@ -300,6 +300,7 @@ def app():
                 'TransactionType',
                 'Month',
                 'MVC',
+                'Max_Cycle',
                 'CollectionComments',
                 'Year',
                 'S.No'
