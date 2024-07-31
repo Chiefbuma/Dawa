@@ -373,52 +373,46 @@ def app():
             # Streamlit Form helps from rerunning on every widget-click
             # Also helps in providing layout       
             with st.form('Booking Patient') as f:
-                st.header('Book  Patient🔖')
+                st.header('Book Patient🔖')
                 
-            # Inside the form, we are displaying an AgGrid table using the AgGrid function. 
-            # The allow_unsafe_jscode parameter is set to True, 
-            # which allows us to use JavaScript code in the AgGrid configuration
-            # The theme parameter is set to 'balham', 
-            # which applies the Balham theme to the table
-            # The height parameter is set to 200, 
-            # which specifies the height of the table in pixels.
-            # The fit_columns_on_grid_load parameter is set to True, 
-            # which ensures that the columns of the table are resized to fit 
-            # the width of the table when it is first displayed
+                # Display the grid and capture the response
+                response = AgGrid(
+                    booking_df,
+                    gridOptions=gridoptions, 
+                    editable=True,
+                    allow_unsafe_jscode=True, 
+                    theme='balham',
+                    height=200,
+                    fit_columns_on_grid_load=True
+                )
                 
-                response = AgGrid(booking_df,
-                                gridOptions = gridoptions, 
-                                editable=True,
-                                allow_unsafe_jscode = True, 
-                                theme = 'balham',
-                                height = 200,
-                                fit_columns_on_grid_load = True)
+                # Extract the selected and possibly edited rows
+                selected_row = response['selected_rows']
+                selected_dataframe = pd.DataFrame(selected_row)
                 
-                
-                
+                # Display the selected data for debugging
+                st.write(selected_dataframe)
+
+                # List of columns to check for empty values
+                columns_to_check = ['Doctorname', 'Booked on']
+
+                # Check if any of the specified columns have empty cells
+                is_empty_cell = selected_dataframe[columns_to_check].isnull().any(axis=1).any()
+
+                # Conditional form submission button
                 cols = st.columns(6)
                 with cols[5]:
-                    selected_row = response['selected_rows']
-            
-                    Selecetd_dataframe=pd.DataFrame(selected_row)
-                
-                    rowcount=len(Selecetd_dataframe)
-                
-                if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = ''
-                                
-                if rowcount > 0:
-                    try:
-                        patient_name = selected_row.iloc[0]['Patientname']
-                        st.session_state.Patient_name = patient_name
-                        st.write(st.session_state.Patient_name)
-                    except IndexError:
-                        pass  # Suppress IndexError silently
-                    except KeyError:
-                        pass  # Suppress KeyError silently
-                    
-                st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
-                
+                    confirm_button = st.form_submit_button("Confirm Booking(s) 🔒", type="primary")
+                    if is_empty_cell:
+                        st.warning("Please fill in all values for 'Doctorname' and 'Appointment Date' before confirming.")
+                        confirm_button = None  # Disable form submission if any required fields are missing
+                    else:
+                        st.success("All required fields are filled.")
+
+                # Handle form submission
+                if confirm_button:
+                    st.write("Form submitted!")
+                            
             with card_container(key="Main1"):
                 try:
                     
