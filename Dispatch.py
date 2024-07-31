@@ -56,7 +56,7 @@ def app():
                         "Collection status",
                         "Collection Date",
                          "MVC",
-                         "Cycle"
+                         "Cycle",
                         "Collection Comments",
                         "Month",
                         "Transaction Type",
@@ -242,8 +242,8 @@ def app():
                         "ScopeId",
                         "URL Path",
                         "Approval Status",
-                        "mobile"
-                         "MVC",
+                        "mobile",
+                         "MVC", 
                         "Collection Comments"
             ]
            
