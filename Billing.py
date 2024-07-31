@@ -128,7 +128,7 @@ def app():
             Trans_df['Consultation Date'] = Trans_df['Consultation Date'].dt.strftime('%d/%m/%Y')
             
             # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
-            Trans_df['Transaction Type']="Booking"
+            Trans_df['Transaction Type']="Consult"
             #st.write(staffname)
             
             #st.write(Trans_df)
@@ -198,44 +198,47 @@ def app():
             unique_item_descriptions = get_unique_item_descriptions()
 
             dropdown_renderer = JsCode(f"""
-            class DropdownRenderer {{
-                init(params) {{
-                    this.params = params;
-                    this.eGui = document.createElement('select');
+           class DropdownRenderer {{
+                    init(params) {{
+                        this.params = params;
+                        this.eGui = document.createElement('select');
 
-                    // Add an empty option as the default
-                    let emptyOption = document.createElement('option');
-                    emptyOption.value = '';
-                    emptyOption.innerHTML = '--Select--';
-                    this.eGui.appendChild(emptyOption);
+                        // Add an empty option as the default
+                        let emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.innerHTML = '--Select--';
+                        this.eGui.appendChild(emptyOption);
 
-                    // Add options from the predefined list
-                    const options = {unique_item_descriptions};
-                    options.forEach(option => {{
-                        let optionElement = document.createElement('option');
-                        optionElement.value = option;
-                        optionElement.innerHTML = option;
-                        this.eGui.appendChild(optionElement);
-                    }});
+                        // Add options from the predefined list
+                        const options = {unique_item_descriptions};
+                        options.forEach(option => {{
+                            let optionElement = document.createElement('option');
+                            optionElement.value = option;
+                            optionElement.innerHTML = option;
+                            this.eGui.appendChild(optionElement);
+                        }});
 
-                    this.eGui.value = this.params.value || '';
+                        this.eGui.value = this.params.value || '';
 
-                    this.eGui.addEventListener('change', (event) => {{
-                        this.params.setValue(event.target.value);
-                    }});
+                        // Set the width of the dropdown
+                        this.eGui.style.width = '200px'; // Adjust the width as needed
+
+                        this.eGui.addEventListener('change', (event) => {{
+                            this.params.setValue(event.target.value);
+                        }});
+                    }}
+
+                    getGui() {{
+                        return this.eGui;
+                    }}
                 }}
-
-                getGui() {{
-                    return this.eGui;
-                }}
-            }}
-            """)
+""")
 
             
             st.markdown("""
                 <style>
                     .stExpander, .stContainer {
-                    margin-bottom: 0px; /* Adjust bottom margin to create space between widgets */
+                    margin-bottom: 100px; /* Adjust bottom margin to create space between widgets */
                 }
                     .stExpander, .stContainer {
                     padding: 0px; /* Optional: Add padding inside the widget */
@@ -317,11 +320,9 @@ def app():
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('UHID', editable=False,filter="agTextColumnFilter")
             # Configure the 'DoctorName' column with the dropdown renderer
-            gb.configure_column('Location', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer)
+            gb.configure_column('Location', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer, cellStyle={'width': '300px'} )
 
-            # Configure the default column to be editable
-            gb.configure_default_column(editable=True, minWidth=150, flex=0)
-
+            
             # Build the grid options
             gridoptions = gb.build()
             
@@ -351,21 +352,19 @@ def app():
 )
             with st.form('Bill') as f:
                 st.header('Consult Patient🔖')
-                
-                with card_container(key="collect2"):
                     
-                    response = AgGrid(Trans_df,
-                                    gridOptions = gridoptions, 
-                                    editable=True,
-                                    allow_unsafe_jscode = True, 
-                                    theme = 'balham',
-                                    height = 200,
-                                    fit_columns_on_grid_load = True)
+                response = AgGrid(Trans_df,
+                                gridOptions = gridoptions, 
+                                editable=True,
+                                allow_unsafe_jscode = True, 
+                                theme = 'balham',
+                                height = 120,
+                                fit_columns_on_grid_load = True)
 
                     
-                    cols = st.columns(6)
-                    with cols[5]:
-                        st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
+                cols = st.columns(6)
+                with cols[5]:
+                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
     
                     
             selected_row = response['selected_rows']
@@ -384,7 +383,7 @@ def app():
                 try:
                     patient_name = Selecetd_dataframe.iloc[0]['Patientname']
                     st.session_state.Patient_name = patient_name
-                    st.write(st.session_state.Patient_name)
+                    #st.write(st.session_state.Patient_name)
                 except IndexError:
                     pass  # Suppress IndexError silently
                 except KeyError:
@@ -445,12 +444,12 @@ def app():
                     }
                 };
                 ''')
- 
+
             # Handle child grid display using Streamlit components
             selected_category = st.session_state.Patient_name
                 
             if selected_category:
-                        st.write(f"Prescription for: {selected_category}")
+                        #st.write(f"Prescription for: {selected_category}")
                         with card_container(key="Billpre" f"Prescription for: {selected_category}"):
                             filtered_child_data = Details_df[Details_df['Patientname'] == selected_category]
                             
@@ -502,16 +501,16 @@ def app():
                             # Build the grid options
                             gridoptions = gd.build()
 
+                            
+                        with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=True):
                             # Inject custom CSS for solid border
-
-                            # Display the AgGrid table
                             response3 = AgGrid(
                                 filtered_child_data,
                                 gridOptions=gridoptions,
                                 editable=True,
                                 allow_unsafe_jscode=True,
                                 theme='balham',
-                                height=200,
+                                height=120,
                                 fit_columns_on_grid_load=True
                             )
                                 
@@ -544,21 +543,11 @@ def app():
                                     except Exception as e:
                                             st.error(f"Failed to update to SharePoint: {str(e)}")
                                             st.stop()
-                                    
-                            
-                            
-                                # Submit button within expander
-                                cols = st.columns(6)
-                                with cols[5]:
-                                    submit_button = st.button("Save 🔒", type="primary")
-
-                                if submit_button:
-                                    update_supabase_table(filtered_prescription, "Dawa_Details", "sn")
 
                             except Exception as e:
                                 st.error(f"Failed to update to SharePoint: {str(e)}")
                                 st.stop()
-                
+            
                     
             with card_container(key="Main12"):
                 
@@ -585,18 +574,36 @@ def app():
                                     "Year",
                                     "Transaction Type",]]
                     
-                    with card_container(key="bill"):
-                        cols = st.columns(1)
-                        with cols[0]:
-                            with card_container(key="bil1"):
-                                ui.table(data=pres_df, maxHeight=300)
-                
+                    cols = st.columns(1)
+                    with cols[0]:
+                        with card_container(key="bil1"):
+                            ui.table(data=pres_df, maxHeight=300)
+            
                 
                 except Exception as e:
                     st.error(f"Failed to update to SharePoint: {str(e)}")
                     st.stop() 
                 
-                def submit_to_sharepoint(pres_df):
+              
+              
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
+                    invalid_rows = df[df['Location']=="None"].index.tolist()
+                    if invalid_rows:
+                        return False, invalid_rows
+                    return True, []
+
+                def submit_to_sharepoint(Appointment_df):
+                    # Validate data before submission
+                    is_valid, invalid_rows = validate_appointment_data(Appointment_df)
+                    
+                    if not is_valid:
+                        st.error(f"Location is blank in rows: {invalid_rows}")
+                        return
+
                     try:
                         sp = SharePoint()
                         site = sp.auth()
@@ -608,7 +615,6 @@ def app():
                             consultation_status = pres_df.at[ind, 'Consultation Status']
                             consultation_date = pres_df.at[ind, 'Consultation Date']
                             Location = pres_df.at[ind, 'Location']
-                            
                             
 
                             item_creation_info = {
