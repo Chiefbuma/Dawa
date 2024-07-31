@@ -236,17 +236,27 @@ def app():
             
             
                         
-                        # Custom checkbox renderer
+            # Custom checkbox renderer
+            # Define the JavaScript code for the custom checkbox renderer
+            # Define the JavaScript code for the custom checkbox renderer
             checkbox_renderer = JsCode("""
             class CheckboxRenderer {
                 init(params) {
                     this.params = params;
                     this.eGui = document.createElement('input');
                     this.eGui.setAttribute('type', 'checkbox');
-                    
-                    // Default the checkbox to unchecked
-                    this.eGui.checked = params.value === '';
-                    
+
+                    // Check only specific columns, e.g., 'DoctorName' and 'Booked on'
+                    const requiredFields = ['DoctorName', 'Booked on'];
+                    const allRequiredFieldsFilled = requiredFields.every(field => {
+                        const value = params.data[field];
+                        return value !== '' && value !== null && value !== undefined;
+                    });
+
+                    // Enable or disable the checkbox based on required fields
+                    this.eGui.disabled = !allRequiredFieldsFilled;
+                    this.eGui.checked = params.value === 'Booked';
+
                     this.eGui.addEventListener('click', (event) => {
                         if (event.target.checked) {
                             params.setValue('Booked');
@@ -263,6 +273,16 @@ def app():
                 refresh(params) {
                     // Update the checkbox state when the cell is refreshed
                     this.eGui.checked = params.value === 'Booked';
+
+                    // Check only specific columns again during refresh
+                    const requiredFields = ['DoctorName', 'Booked on'];
+                    const allRequiredFieldsFilled = requiredFields.every(field => {
+                        const value = params.data[field];
+                        return value !== '' && value !== null && value !== undefined;
+                    });
+
+                    // Enable or disable the checkbox based on required fields
+                    this.eGui.disabled = !allRequiredFieldsFilled;
                 }
             }
             """)
@@ -369,55 +389,30 @@ def app():
             gd.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gd.configure_column('UHID', editable=False,filter="agTextColumnFilter")
     
-           
+    
             # Build the grid options
             gridoptions = gd.build()
-         
+    
             # AgGrid Table with Button Feature
             # Streamlit Form helps from rerunning on every widget-click
+            
+            
             # Also helps in providing layout       
             with card_container(key="Booking"):
-                st.header('Book Patient 🔖')
+                st.header('Book Patient🔖')
+                
             
-                # Display the grid and capture the response
-                response = AgGrid(
-                    booking_df,
-                    gridOptions=gridoptions, 
-                    editable=True,
-                    allow_unsafe_jscode=True, 
-                    theme='balham',
-                    height=200,
-                    fit_columns_on_grid_load=True
-                )
+    
+                response = AgGrid(booking_df,
+                                gridOptions = gridoptions, 
+                                editable=True,
+                                allow_unsafe_jscode = True, 
+                                theme = 'balham',
+                                height = 200,
+                                fit_columns_on_grid_load = True)
+
+            
                 
-                # Extract the selected and possibly edited rows
-                selected_row = response['selected_rows']
-                selected_dataframe = pd.DataFrame(selected_row)
-                
-                # Display the selected data for debugging
-                st.write(selected_dataframe)
-
-                # List of columns to check for empty values
-                columns_to_check = ['Doctorname', 'Booked on']
-
-                # Check if any of the specified columns have empty cells
-                is_empty_cell = selected_dataframe[columns_to_check].isnull().any(axis=1).any()
-
-                # Conditional form submission button
-                cols = st.columns(6)
-                with cols[5]:
-                    confirm_button = st.button("Confirm Booking(s) 🔒", type="primary")
-                    if is_empty_cell:
-                        st.warning("Please fill in all values for 'Doctorname' and 'Appointment Date' before confirming.")
-                        confirm_button = None  # Disable form submission if any required fields are missing
-                    else:
-                        st.success("All required fields are filled.")
-
-            # Handle form submission
-            if confirm_button:
-                st.write("Form submitted!")
-                
-                        
             with card_container(key="Main1"):
                 try:
                     
