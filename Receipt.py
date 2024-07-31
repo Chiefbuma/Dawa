@@ -107,7 +107,7 @@ def app():
                     (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['Received Status'].isnull())]
             
-            st.write(Trans_df)
+            #st.write(Trans_df)
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
@@ -209,8 +209,10 @@ def app():
                         "Collection status",
                         "Collection Date",
                         "Dispatched Date",
+                        "Dispensed By",
                         "Dispatched By",
-                         "Received Date",
+                        "Consultation Date",
+                        "Received Date",
                         "Received By",
                         "Month",
                         "Transaction Type",
@@ -223,7 +225,7 @@ def app():
                         "Property Bag",
                         "ID",
                          "MVC",
-                        "Cycle",
+                        "Collection Comments",
                         "owshiddenversion",
                         "Created",
                         "Title",
