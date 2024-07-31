@@ -395,17 +395,26 @@ def app():
                                 fit_columns_on_grid_load = True)
                 
                 
+                #Extract the selected and possibly edited rows
                 selected_row = response['selected_rows']
-                
-                Selecetd_dataframe=pd.DataFrame(selected_row)
-                
-                st.write(selected_row)
-                
-                rowcount=len(Selecetd_dataframe)
-                
+                selected_dataframe = pd.DataFrame(selected_row)
+
+                st.write(selected_dataframe)
+
+                # List of columns to check for empty values
+               
+                columns_to_check = ['Booked on',  'DoctorName'] 
+
+                # Check if any of the specified columns have empty cells
+                is_empty_cell = selected_dataframe[columns_to_check].isnull().any(axis=1).any()
+                 
                 cols = st.columns(6)
                 with cols[5]:
-                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
+                    # Display message and button
+                    if is_empty_cell:
+                        st.warning(f"Please fill in all values in the columns: {', '.join(columns_to_check)} before confirming.")
+                    else:
+                        st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
                 
             with card_container(key="Main1"):
                 try:
