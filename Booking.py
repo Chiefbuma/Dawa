@@ -200,135 +200,8 @@ def app():
             # https://blog.ag-grid.com/cell-renderers-in-ag-grid-every-different-flavour/
             # https://www.w3schools.com/css/css3_buttons.asp
 
-            cellRenderer_addButton = JsCode('''
-                class BtnCellRenderer {
-                    init(params) {
-                        this.params = params;
-                        this.eGui = document.createElement('div');
-                        this.eGui.innerHTML = `
-                        <span>
-                            <style>
-                            .btn_add {
-                                background-color: #71DC87;
-                                border: 2px solid black;
-                                color: #D05732;
-                                text-align: center;
-                                display: inline-block;
-                                font-size: 12px;
-                                font-weight: bold;
-                                height: 2em;
-                                width: 10em;
-                                border-radius: 12px;
-                                padding: 0px;
-                            }
-                            </style>
-                            <button id='click-button' 
-                                class="btn_add" 
-                                >&#x2193; Add</button>
-                        </span>
-                    `;
-                    }
-                    getGui() {
-                        return this.eGui;
-                    }
-                };
-                ''')
+            # Define JavaScript code for the custom dropdown renderer
             
-            
-                        
-            # Custom checkbox renderer
-            # Define the JavaScript code for the custom checkbox renderer
-            # Define the JavaScript code for the custom checkbox renderer
-            checkbox_renderer = JsCode("""
-            class CheckboxRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'checkbox');
-
-                    // Check only specific columns, e.g., 'DoctorName' and 'Booked on'
-                    const requiredFields = ['DoctorName', 'Booked on'];
-                    const allRequiredFieldsFilled = requiredFields.every(field => {
-                        const value = params.data[field];
-                        return value !== '' && value !== null && value !== undefined;
-                    });
-
-                    // Enable or disable the checkbox based on required fields
-                    this.eGui.disabled = !allRequiredFieldsFilled;
-                    this.eGui.checked = params.value === 'Booked';
-
-                    this.eGui.addEventListener('click', (event) => {
-                        if (event.target.checked) {
-                            params.setValue('Booked');
-                        } else {
-                            params.setValue('');
-                        }
-                    });
-                }
-
-                getGui() {
-                    return this.eGui;
-                }
-
-                refresh(params) {
-                    // Update the checkbox state when the cell is refreshed
-                    this.eGui.checked = params.value === 'Booked';
-
-                    // Check only specific columns again during refresh
-                    const requiredFields = ['DoctorName', 'Booked on'];
-                    const allRequiredFieldsFilled = requiredFields.every(field => {
-                        const value = params.data[field];
-                        return value !== '' && value !== null && value !== undefined;
-                    });
-
-                    // Enable or disable the checkbox based on required fields
-                    this.eGui.disabled = !allRequiredFieldsFilled;
-                }
-            }
-            """)
-                       
-            date_renderer = JsCode('''
-                class DateRenderer {
-                    init(params) {
-                        this.params = params;
-                        this.eGui = document.createElement('input');
-                        this.eGui.type = 'date';
-                        if (params.value) {
-                            this.eGui.value = params.value;
-                        }
-                        this.eGui.addEventListener('change', e => {
-                            this.params.node.setDataValue(this.params.colDef.field, e.target.value);
-                        });
-                    }
-                    getGui() {
-                        return this.eGui;
-                    }
-                }
-            ''')
-            
-            
-
-            # Create a GridOptionsBuilder object from our DataFrame
-            gd = GridOptionsBuilder.from_dataframe(booking_df)
-            
-             # Configure the default column to be editable
-            gd.configure_default_column(editable=True,minWidth=150, flex=0,filter=True)
-
-            # List of columns to hide
-            hidden_columns = [
-                'Booked By',
-                'Booking Date',
-                'Location',
-                'TeleDoctor',
-                'Title',
-                'TransactionType',
-                'Month',
-                'MVC',
-                'Max_Cycle',
-                'Collection Comments',
-                'Year',
-                'S.No'
-            ]
             
             # Define the list of names for the dropdown
             names_list = [
@@ -367,18 +240,132 @@ def app():
                 "Yuvy Nalse Mochama"
 
             ]
+            dropdown_renderer = JsCode(f"""
+            class DropdownRenderer {{
+                init(params) {{
+                    this.params = params;
+                    this.eGui = document.createElement('select');
 
-            # Define dropdown options for the specified column
-            dropdown_options = {
-                'DoctorName': names_list
+                    // Add an empty option as the default
+                    let emptyOption = document.createElement('option');
+                    emptyOption.value = '';
+                    emptyOption.innerHTML = '--Select--';
+                    this.eGui.appendChild(emptyOption);
+
+                    // Add options from the predefined list
+                    const options = {names_list};
+                    options.forEach(option => {{
+                        let optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.innerHTML = option;
+                        this.eGui.appendChild(optionElement);
+                    }});
+
+                    this.eGui.value = this.params.value || '';
+
+                    this.eGui.addEventListener('change', (event) => {{
+                        this.params.setValue(event.target.value);
+                    }});
+                }}
+
+                getGui() {{
+                    return this.eGui;
+                }}
+            }}
+            """)
+
+            
+            
+                        
+            # Custom checkbox renderer
+            checkbox_renderer = JsCode("""
+            class CheckboxRenderer {
+                init(params) {
+                    this.params = params;
+                    this.eGui = document.createElement('input');
+                    this.eGui.setAttribute('type', 'checkbox');
+                    
+                    // Default the checkbox to unchecked
+                    this.eGui.checked = params.value === '';
+                    
+                    this.eGui.addEventListener('click', (event) => {
+                        if (event.target.checked) {
+                            params.setValue('Booked');
+                        } else {
+                            params.setValue('');
+                        }
+                    });
+                }
+
+                getGui() {
+                    return this.eGui;
+                }
+
+                refresh(params) {
+                    // Update the checkbox state when the cell is refreshed
+                    this.eGui.checked = params.value === 'Booked';
+                }
             }
+            """)
+                       
+            date_renderer = JsCode('''
+                    class DateRenderer {
+                        init(params) {
+                            this.params = params;
+                            this.eGui = document.createElement('input');
+                            this.eGui.type = 'date';
+                            
+                            // Set the date value to the provided value or default to empty if not provided
+                            this.eGui.value = params.value || '';  // Default to empty if params.value is undefined or null
+                            
+                            // Add event listener for change events
+                            this.eGui.addEventListener('change', e => {
+                                const newValue = e.target.value || '';  // Ensure empty string if no value is selected
+                                this.params.node.setDataValue(this.params.colDef.field, newValue);
+                            });
+                        }
 
-            # Configure the column with the dropdown options
-            for col, options in dropdown_options.items():
-                gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
+                        getGui() {
+                            return this.eGui;
+                        }
+
+                        refresh(params) {
+                            // Update the date input value on refresh
+                            this.eGui.value = params.value || '';  // Default to empty if params.value is undefined or null
+                        }
+                    }
+                ''')
 
             
 
+            # Create a GridOptionsBuilder object from our DataFrame
+            gd = GridOptionsBuilder.from_dataframe(booking_df)
+            
+             # Configure the default column to be editable
+            gd.configure_default_column(editable=True,minWidth=150, flex=0,filter=True)
+
+            # List of columns to hide
+            hidden_columns = [
+                'Booked By',
+                'Booking Date',
+                'Location',
+                'TeleDoctor',
+                'Title',
+                'TransactionType',
+                'Month',
+                'MVC',
+                'Max_Cycle',
+                'Collection Comments',
+                'Year',
+                'S.No'
+            ]
+            
+            
+
+           # Configure the 'DoctorName' column with the dropdown renderer
+            gd.configure_column('DoctorName', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
+
+            
             # Hide specified columns
             for col in hidden_columns:
                 gd.configure_column(field=col, hide=True,pinned='right')
@@ -389,20 +376,17 @@ def app():
             gd.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gd.configure_column('UHID', editable=False,filter="agTextColumnFilter")
     
-    
+           
             # Build the grid options
             gridoptions = gd.build()
-    
+         
             # AgGrid Table with Button Feature
             # Streamlit Form helps from rerunning on every widget-click
-            
-            
-            # Also helps in providing layout       
-            with card_container(key="Booking"):
-                st.header('Book Patient🔖')
+            # Also helps in providing layout  
+                 
+            with st.form('Booking Patient') as f:
+                st.header('Book  Patient🔖')
                 
-            
-    
                 response = AgGrid(booking_df,
                                 gridOptions = gridoptions, 
                                 editable=True,
@@ -411,7 +395,10 @@ def app():
                                 height = 200,
                                 fit_columns_on_grid_load = True)
 
-            
+                
+                cols = st.columns(6)
+                with cols[5]:
+                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
                 
             with card_container(key="Main1"):
                 try:
@@ -432,6 +419,8 @@ def app():
                     # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                     Appointment_df = df[df['Booking status'] == 'Booked']
                     
+                    #st.write(Appointment_df)
+                    
                     Appointment_df=Appointment_df[['Title','UHID',	'Patientname','mobile','DoctorName','Booking status','Booking Date',	
                                     'Booked on','Booked By'	,'Month','Year','TransactionType','Cycle']]
 
@@ -451,9 +440,25 @@ def app():
                     st.error(f"Failed to update to SharePoint: {str(e)}")
                     st.stop()
                     
-                
-                
+               
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
+                    invalid_rows = df[df['DoctorName'] == "None"].index.tolist()
+                    if invalid_rows:
+                        return False, invalid_rows
+                    return True, []
+
                 def submit_to_sharepoint(Appointment_df):
+                    # Validate data before submission
+                    is_valid, invalid_rows = validate_appointment_data(Appointment_df)
+                    
+                    if not is_valid:
+                        st.error(f"'DoctorName' is blank in rows: {invalid_rows}")
+                        return
+
                     try:
                         sp = SharePoint()
                         site = sp.auth()
@@ -473,9 +478,8 @@ def app():
                                 'Booked By': Appointment_df.at[ind, 'Booked By'],
                                 'Transaction Type': Appointment_df.at[ind, 'TransactionType'],
                                 'Month': Appointment_df.at[ind, 'Month'],
-                                 'Year': Appointment_df.at[ind, 'Year'],
-                                 'Cycle': Appointment_df.at[ind, 'Cycle']
-                            
+                                'Year': Appointment_df.at[ind, 'Year'],
+                                'Cycle': Appointment_df.at[ind, 'Cycle']
                             }
                             target_list.UpdateListItems(data=[item_creation_info], kind='New')
                         
@@ -483,6 +487,8 @@ def app():
                     except Exception as e:
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
+
+
 
             cols=st.columns(12)
             with cols[6]:

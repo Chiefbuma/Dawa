@@ -112,7 +112,7 @@ def app():
             Trans_df = AllTrans_df[
                 (AllTrans_df['DoctorName'] == staffname) &
                 (AllTrans_df['Booking status'] == 'Booked') &  
-                (AllTrans_df['Consultation Status'].isnull())]
+                (AllTrans_df['Consultation Status']=='Pending')]
                 
             
             #st.write(Trans_df)
@@ -184,27 +184,53 @@ def app():
                 }
             }
             """)
-
-            # JavaScript for date renderer
-            date_renderer = JsCode("""
-            class DateRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.type = 'date';
-                    if (params.value) {
-                        this.eGui.value = params.value;
-                    }
-                    this.eGui.addEventListener('change', e => {
-                        this.params.node.setDataValue(this.params.colDef.field, e.target.value);
-                    });
-                }
-                getGui() {
-                    return this.eGui;
-                }
-            }
-            """)
             
+            response = supabase.table('facilities').select("*").execute()
+
+            location_df = pd.DataFrame(response.data)
+            
+            
+            @st.cache_data
+            def get_unique_item_descriptions():
+                return location_df['Location'].unique().tolist()
+
+            # Fetch unique item descriptions
+            unique_item_descriptions = get_unique_item_descriptions()
+
+            dropdown_renderer = JsCode(f"""
+            class DropdownRenderer {{
+                init(params) {{
+                    this.params = params;
+                    this.eGui = document.createElement('select');
+
+                    // Add an empty option as the default
+                    let emptyOption = document.createElement('option');
+                    emptyOption.value = '';
+                    emptyOption.innerHTML = '--Select--';
+                    this.eGui.appendChild(emptyOption);
+
+                    // Add options from the predefined list
+                    const options = {unique_item_descriptions};
+                    options.forEach(option => {{
+                        let optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.innerHTML = option;
+                        this.eGui.appendChild(optionElement);
+                    }});
+
+                    this.eGui.value = this.params.value || '';
+
+                    this.eGui.addEventListener('change', (event) => {{
+                        this.params.setValue(event.target.value);
+                    }});
+                }}
+
+                getGui() {{
+                    return this.eGui;
+                }}
+            }}
+            """)
+
             
             st.markdown("""
                 <style>
@@ -255,9 +281,7 @@ def app():
                         "URL Path",
                         "Approval Status",
                         "mobile",
-                        "MVC",
-                        "Cycle",
-                        "Collection Comments"
+                        "Cycle"
 
             ]
            
@@ -282,27 +306,7 @@ def app():
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False,filter=True)
         
-            response = supabase.table('facilities').select("*").execute()
-
-            location_df = pd.DataFrame(response.data)
-            
-            @st.cache_data
-            def get_unique_item_descriptions():
-                return location_df['Location'].unique().tolist()
-
-            # Fetch unique item descriptions
-            unique_item_descriptions = get_unique_item_descriptions()
-            
-            # Define dropdown options for specified columns
-            dropdown_options = {
-                'Location': unique_item_descriptions
- 
-            }
-            
-            for col, options in dropdown_options.items():
-                gb.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
-            
-            # Configure specific columns with additional settings
+             # Configure specific columns with additional settings
             gb.configure_column('Consultation Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
@@ -312,6 +316,8 @@ def app():
             )
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('UHID', editable=False,filter="agTextColumnFilter")
+            # Configure the 'DoctorName' column with the dropdown renderer
+            gb.configure_column('Location', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer)
 
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
@@ -332,107 +338,120 @@ def app():
             })
 
             # Streamlit app
-
-            # Streamlit container to act as card
-            with card_container(key="Bill"):
-                st.header('Consult Patient 🔖')
+            
+            st.markdown(
+                    """
+                    <style>
+                    .ag-theme-balham {
+                        height: 30px; /* Set height for AgGrid container */
+                    }
+                    </style>
+                    """,
+                    unsafe_allow_html=True
+)
+            with st.form('Bill') as f:
+                st.header('Consult Patient🔖')
                 
-                with card_container(key="Bill"):
-                    # Display the AgGrid table
-                    response = AgGrid(
-                        Trans_df,
-                        gridOptions=gridoptions,
-                        editable=True,
-                        allow_unsafe_jscode=True,
-                        theme='balham',
-                        height=300,
-                        fit_columns_on_grid_load=True
-                    )
+                with card_container(key="collect2"):
                     
-                selected_row = response['selected_rows']
-                
-                Selecetd_dataframe=pd.DataFrame(selected_row)
-                
-                rowcount=len(Selecetd_dataframe)
-                
-                #st.write(Selecetd_dataframe)
-                
-                # Initialize session state if not already done
-                if 'Patient_name' not in st.session_state:
-                    st.session_state.Patient_name = ''
-                                
-                if rowcount > 0:
-                    try:
-                        patient_name = selected_row.iloc[0]['Patientname']
-                        st.session_state.Patient_name = patient_name
-                        st.write(st.session_state.Patient_name)
-                    except IndexError:
-                        pass  # Suppress IndexError silently
-                    except KeyError:
-                        pass  # Suppress KeyError silently
-                               
-                    #st.write(Patient_name)
-                    #st.write("Selected Row:", selected_row)
-                #else:
-                    #st.write("No row selected")
-                
-                               
-                # JavaScript function to add a new row to the AgGrid table
-                js_add_row = JsCode("""
-                function(e) {
-                    let api = e.api;
-                    let rowPos = e.rowIndex + 1; 
-                    api.applyTransaction({addIndex: rowPos, add: [{}]})    
+                    response = AgGrid(Trans_df,
+                                    gridOptions = gridoptions, 
+                                    editable=True,
+                                    allow_unsafe_jscode = True, 
+                                    theme = 'balham',
+                                    height = 200,
+                                    fit_columns_on_grid_load = True)
+
+                    
+                    cols = st.columns(6)
+                    with cols[5]:
+                        st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
+    
+                    
+            selected_row = response['selected_rows']
+            
+            Selecetd_dataframe=pd.DataFrame(selected_row)
+            
+            rowcount=len(Selecetd_dataframe)
+            
+            #st.write(Selecetd_dataframe)
+            
+            # Initialize session state if not already done
+            if 'Patient_name' not in st.session_state:
+                st.session_state.Patient_name = ''
+                            
+            if rowcount > 0:
+                try:
+                    patient_name = Selecetd_dataframe.iloc[0]['Patientname']
+                    st.session_state.Patient_name = patient_name
+                    st.write(st.session_state.Patient_name)
+                except IndexError:
+                    pass  # Suppress IndexError silently
+                except KeyError:
+                    pass  # Suppress KeyError silently
+                            
+                #st.write(Patient_name)
+                #st.write("Selected Row:", selected_row)
+            #else:
+                #st.write("No row selected")
+            
+                            
+            # JavaScript function to add a new row to the AgGrid table
+            js_add_row = JsCode("""
+            function(e) {
+                let api = e.api;
+                let rowPos = e.rowIndex + 1; 
+                api.applyTransaction({addIndex: rowPos, add: [{}]})    
+            };
+            """     
+            )
+
+            # Cell renderer for the '🔧' column to render a button
+
+            # Resources to refer:
+            # https://blog.ag-grid.com/cell-renderers-in-ag-grid-every-different-flavour/
+            # https://www.w3schools.com/css/css3_buttons.asp
+
+            cellRenderer_addButton = JsCode('''
+                class BtnCellRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('div');
+                        this.eGui.innerHTML = `
+                        <span>
+                            <style>
+                            .btn_add {
+                                background-color: #71DC87;
+                                border: 2px solid black;
+                                color: #D05732;
+                                text-align: center;
+                                display: inline-block;
+                                font-size: 12px;
+                                font-weight: bold;
+                                height: 2em;
+                                width: 10em;
+                                border-radius: 12px;
+                                padding: 0px;
+                            }
+                            </style>
+                            <button id='click-button' 
+                                class="btn_add" 
+                                >&#x2193; Add</button>
+                        </span>
+                    `;
+                    }
+                    getGui() {
+                        return this.eGui;
+                    }
                 };
-                """     
-                )
-
-                # Cell renderer for the '🔧' column to render a button
-
-                # Resources to refer:
-                # https://blog.ag-grid.com/cell-renderers-in-ag-grid-every-different-flavour/
-                # https://www.w3schools.com/css/css3_buttons.asp
-
-                cellRenderer_addButton = JsCode('''
-                    class BtnCellRenderer {
-                        init(params) {
-                            this.params = params;
-                            this.eGui = document.createElement('div');
-                            this.eGui.innerHTML = `
-                            <span>
-                                <style>
-                                .btn_add {
-                                    background-color: #71DC87;
-                                    border: 2px solid black;
-                                    color: #D05732;
-                                    text-align: center;
-                                    display: inline-block;
-                                    font-size: 12px;
-                                    font-weight: bold;
-                                    height: 2em;
-                                    width: 10em;
-                                    border-radius: 12px;
-                                    padding: 0px;
-                                }
-                                </style>
-                                <button id='click-button' 
-                                    class="btn_add" 
-                                    >&#x2193; Add</button>
-                            </span>
-                        `;
-                        }
-                        getGui() {
-                            return this.eGui;
-                        }
-                    };
-                    ''')
-
-                # Handle child grid display using Streamlit components
-                selected_category = st.session_state.Patient_name
-                    
-                if selected_category:
-                         st.write(f"Prescription for: {selected_category}")
-                         with card_container(key="Billpre" f"Prescription for: {selected_category}"):
+                ''')
+ 
+            # Handle child grid display using Streamlit components
+            selected_category = st.session_state.Patient_name
+                
+            if selected_category:
+                        st.write(f"Prescription for: {selected_category}")
+                        with card_container(key="Billpre" f"Prescription for: {selected_category}"):
                             filtered_child_data = Details_df[Details_df['Patientname'] == selected_category]
                             
                             gd = GridOptionsBuilder.from_dataframe(filtered_child_data)
@@ -461,7 +480,7 @@ def app():
                             # Define dropdown options for specified columns
                             dropdown_options = {
                                 'Itemname': unique_item_descriptions
-                }    
+                        }    
                             
                             for col, options in dropdown_options.items():
                                 gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
@@ -525,11 +544,9 @@ def app():
                                     except Exception as e:
                                             st.error(f"Failed to update to SharePoint: {str(e)}")
                                             st.stop()
-                                        
-                               
-                               
-                               
-                               
+                                    
+                            
+                            
                                 # Submit button within expander
                                 cols = st.columns(6)
                                 with cols[5]:
@@ -541,88 +558,88 @@ def app():
                             except Exception as e:
                                 st.error(f"Failed to update to SharePoint: {str(e)}")
                                 st.stop()
-                     
-                    
-                with card_container(key="Main12"):
-                    
-                    try:
-                        
-                        # Fetch the data from the AgGrid Table
-                        res = response['data']
-                        #st.table(res)
-                        
-                        df = pd.DataFrame(res)
                 
-                        # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['Consultation Status'] == 'Consulted']
-                        
-                        pres_df=pres_df[[
-                                        "ID",
-                                        "Title",
-                                        "UHID",
-                                        "Patientname",
-                                        "Location",
-                                        "Consultation Status",
-                                        "Consultation Date",
-                                        "Month",
-                                        "Year",
-                                        "Transaction Type", "Cycle"]]
-                        
-                        with card_container(key="bill"):
-                            cols = st.columns(1)
-                            with cols[0]:
-                                with card_container(key="bil1"):
-                                    ui.table(data=pres_df, maxHeight=300)
                     
+            with card_container(key="Main12"):
+                
+                try:
                     
+                    # Fetch the data from the AgGrid Table
+                    res = response['data']
+                    #st.table(res)
+                    
+                    df = pd.DataFrame(res)
+            
+                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
+                    pres_df = df[df['Consultation Status'] == 'Consulted']
+                    
+                    pres_df=pres_df[[
+                                    "ID",
+                                    "Title",
+                                    "UHID",
+                                    "Patientname",
+                                    "Location",
+                                    "Consultation Status",
+                                    "Consultation Date",
+                                    "Month",
+                                    "Year",
+                                    "Transaction Type",]]
+                    
+                    with card_container(key="bill"):
+                        cols = st.columns(1)
+                        with cols[0]:
+                            with card_container(key="bil1"):
+                                ui.table(data=pres_df, maxHeight=300)
+                
+                
+                except Exception as e:
+                    st.error(f"Failed to update to SharePoint: {str(e)}")
+                    st.stop() 
+                
+                def submit_to_sharepoint(pres_df):
+                    try:
+                        sp = SharePoint()
+                        site = sp.auth()
+                        target_list = site.List(list_name='Home Delivery')
+
+                        # Iterate over the DataFrame and update items in the SharePoint list
+                        for ind in pres_df.index:
+                            item_id = pres_df.at[ind, 'ID']
+                            consultation_status = pres_df.at[ind, 'Consultation Status']
+                            consultation_date = pres_df.at[ind, 'Consultation Date']
+                            Location = pres_df.at[ind, 'Location']
+                            
+                            
+
+                            item_creation_info = {
+                                'ID': item_id, 
+                                'Consultation Status': consultation_status,
+                                'Consultation Date': consultation_date,
+                                'Location':Location
+                            }
+
+                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+
+                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                            logging.info(f"Response for index {ind}: {response}")
+
+                        st.success("Updated to Database", icon="✅")
                     except Exception as e:
+                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
                         st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop() 
-                    
-                    def submit_to_sharepoint(pres_df):
-                        try:
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
+                        st.stop()
 
-                            # Iterate over the DataFrame and update items in the SharePoint list
-                            for ind in pres_df.index:
-                                item_id = pres_df.at[ind, 'ID']
-                                consultation_status = pres_df.at[ind, 'Consultation Status']
-                                consultation_date = pres_df.at[ind, 'Consultation Date']
-                                Location = pres_df.at[ind, 'Location']
-                                
-                                
-
-                                item_creation_info = {
-                                    'ID': item_id, 
-                                    'Consultation Status': consultation_status,
-                                    'Consultation Date': consultation_date,
-                                    'Location':Location
-                                }
-
-                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
-
-                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                                logging.info(f"Response for index {ind}: {response}")
-
-                            st.success("Updated to Database", icon="✅")
-                        except Exception as e:
-                            logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
-                            st.error(f"Failed to update to SharePoint: {str(e)}")
-                            st.stop()
-
-                    cols = st.columns(12)
-                    with cols[6]:
-                        ui_result = ui.button("Clear", key="btn")
-                        if ui_result:
-                            st.cache_data.clear()
-                                        
-                    with cols[5]:
-                    # Button to submit DataFrame to SharePoint
-                        ui_but = ui.button("Submit ", key="subbtn")
-                        if ui_but:
-                            submit_to_sharepoint(pres_df)    
+                cols = st.columns(12)
+                with cols[6]:
+                    ui_result = ui.button("Clear", key="btn")
+                    if ui_result:
+                        st.cache_data.clear()
+                                    
+                with cols[5]:
+                # Button to submit DataFrame to SharePoint
+                    ui_but = ui.button("Submit ", key="subbtn")
+                    if ui_but:
+                        submit_to_sharepoint(pres_df)    
         
               
         else:
