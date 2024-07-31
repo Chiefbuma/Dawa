@@ -68,7 +68,7 @@ def app():
             
         AllTrans_df= load_new()
         
-        st.write(AllTrans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
@@ -218,7 +218,6 @@ def app():
                         "Dispatched status",
                         "Dispatched Date",
                         "Dispatched By",
-                        "Cycle",
                         "Received Date",
                         "Dispensed  By",
                         "Received By",
@@ -335,8 +334,6 @@ def app():
                                         "Dispensed By",
                                         "Collection Comments",
                                         "MVC",
-                                        "Month",
-                                        "Year",
                                         "Transaction Type"]]
 
                         
