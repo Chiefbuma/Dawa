@@ -70,7 +70,7 @@ def app():
         AllTrans_df= load_new()
         
         
-        st.write(AllTrans_df)
+        #st.write(AllTrans_df)
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
@@ -106,7 +106,7 @@ def app():
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status'].isnull())]
+                    (AllTrans_df['Received Status']=='Pending')]
             
             #st.write(Trans_df)
             
@@ -171,7 +171,7 @@ def app():
                         this.eGui = document.createElement('textarea');
                         
                         // Set the width and height of the textarea
-                        this.eGui.style.width = '150px'; // Adjust the width as needed
+                        this.eGui.style.width = '120px'; // Adjust the width as needed
                         this.eGui.style.height = '20px'; // Adjust the height as needed
 
                         this.eGui.value = this.params.value || '';

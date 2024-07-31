@@ -105,7 +105,7 @@ def app():
                 (AllTrans_df['Location'] == location) &
                 (AllTrans_df['Collection status'].isnull())]
                        
-            Trans_df['Dispensed  By']=staffname
+            Trans_df['Dispensed By']=staffname
             
             Trans_df['Transaction Type']= "Collection"
             
@@ -113,7 +113,11 @@ def app():
             
             
             #st.write(staffname)
-            
+            names_list = [
+                "Full",
+                "Partial",
+                "Returned"
+            ]
             #st.write(chronic_df)
             
             # JavaScript for link renderer
@@ -186,6 +190,94 @@ def app():
             }
             """)
             
+            textarea_renderer = JsCode("""
+                class TextareaRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('textarea');
+                        
+                        // Set the width and height of the textarea
+                        this.eGui.style.width = '200px'; // Adjust the width as needed
+                        this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                        this.eGui.value = this.params.value || '';
+
+                        this.eGui.addEventListener('change', (event) => {
+                            this.params.setValue(event.target.value);
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+                }
+                """)
+            
+            
+            textarea_renderer2 = JsCode("""
+                    class SingleLineTextRenderer {
+                        init(params) {
+                            this.params = params;
+                            this.eGui = document.createElement('input');
+                            this.eGui.type = 'text'; // Set the input type to text for single-line input
+
+                            // Set the width of the input
+                            this.eGui.style.width = '200px'; // Adjust the width as needed
+                            this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                            this.eGui.value = this.params.value || '';
+
+                            this.eGui.addEventListener('change', (event) => {
+                                this.params.setValue(event.target.value);
+                            });
+                        }
+
+                        getGui() {
+                            return this.eGui;
+                        }
+                    }
+                    """)
+            
+            
+            dropdown_renderer = JsCode(f"""
+                class DropdownRenderer {{
+                    init(params) {{
+                        this.params = params;
+                        this.eGui = document.createElement('select');
+
+                        // Set the width and height of the dropdown
+                        this.eGui.style.width = '200px'; // Adjust the width as needed
+                        this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                        // Add an empty option as the default
+                        let emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.innerHTML = '--Select--';
+                        this.eGui.appendChild(emptyOption);
+
+                        // Add options from the predefined list
+                        const options = {names_list};
+                        options.forEach(option => {{
+                            let optionElement = document.createElement('option');
+                            optionElement.value = option;
+                            optionElement.innerHTML = option;
+                            this.eGui.appendChild(optionElement);
+                        }});
+
+                        this.eGui.value = this.params.value || '';
+
+                        this.eGui.addEventListener('change', (event) => {{
+                            this.params.setValue(event.target.value);
+                        }});
+                    }}
+
+                    getGui() {{
+                        return this.eGui;
+                    }}
+                }}
+                """)
+
+            
             
             st.markdown("""
                 <style>
@@ -247,32 +339,14 @@ def app():
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
                 
-            names_list = [
-                "Full",
-                "Partial",
-                "Returned"
-            ]
-
-            # Define dropdown options for the specified column
-            dropdown_options = {
-                'Collection status': names_list
-            }
-
-            # Configure the column with the dropdown options
-            for col, options in dropdown_options.items():
-                gb.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
- 
- 
-            gb.configure_selection(selection_mode='single')
-            gb.configure_column(
-                field='Prescription',
-                cellRenderer=cellRenderer_link,
-                allow_unsafe_jscode=True
-            )
+            
+         
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-
- 
+            gb.configure_column('Collection status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
+            gb.configure_column('MVC', editable=False, cellRenderer=textarea_renderer2, pinned='right', minWidth=50)
+            gb.configure_column('Collection Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=100)
+           
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
@@ -295,9 +369,9 @@ def app():
             # Streamlit app
 
             # Streamlit container to act as card
-            with card_container(key="collec1"):
-                st.header('Collect package 🔖')
-                
+            with st.form('colle2') as f:
+                st.header('Collect  Package🔖')
+               
                 with card_container(key="collect2"):
                     # Display the AgGrid table
                     response = AgGrid(
@@ -309,97 +383,126 @@ def app():
                         height=300,
                         fit_columns_on_grid_load=True
                     )
-              
                     
-                with card_container(key="colecnew"):
-                    
-                    try:
-                        
-                        # Fetch the data from the AgGrid Table
-                        res = response['data']
-                        #st.table(res)
-                        
-                        df = pd.DataFrame(res)
-                
-                        # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                        pres_df = df[df['Collection status'] == 'Collected']
-                        
-                        pres_df=pres_df[[
-                                        "ID",
-                                        "Title",
-                                        "UHID",
-                                        "Patientname",
-                                        "Location",
-                                        "Collection status",
-                                        "Collection Date",
-                                        "Dispensed By",
-                                        "Collection Comments",
-                                        "MVC",
-                                        "Transaction Type"]]
-
-                        
-                        # Display the filtered DataFrame
-                        #st.dataframe(Appointment_df)
-                        
-                        with card_container(key="colec4"):
-                            cols = st.columns(1)
-                            with cols[0]:
-                                with card_container(key="collec5"):
-                                    ui.table(data=pres_df, maxHeight=300)
-                    
-                    
-                    except Exception as e:
-                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop() 
-                    
-                    def submit_to_sharepoint(pres_df):
-                        try:
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
-
-                            # Iterate over the DataFrame and update items in the SharePoint list
-                            for ind in pres_df.index:
-                                item_id = pres_df.at[ind, 'ID']
-                                collection_status = pres_df.at[ind, 'Collection status']
-                                collection_date = pres_df.at[ind, 'Collection Date']
-                                collection_by = pres_df.at[ind, 'Dispensed By']
-                                Transaction_by = pres_df.at[ind, 'Transaction Type'] 
-                                Comments_by = pres_df.at[ind, 'Collection Comments']   
-                                MVC_by = pres_df.at[ind, 'MVC']   
-
-
-                                item_creation_info = {
-                                    'ID': item_id, 
-                                    'Collection status': collection_status,
-                                    'Collection Date': collection_date,
-                                    'Dispensed By': collection_by,
-                                    'Transaction Type': Transaction_by,
-                                    'Collection Comments': Comments_by,
-                                    'MVC':MVC_by
-                                }
-
-                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
-
-                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                                logging.info(f"Response for index {ind}: {response}")
-
-                            st.success("Updated to Database", icon="✅")
-                        except Exception as e:
-                            logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
-                            st.error(f"Failed to update to SharePoint: {str(e)}")
-                            st.stop()
-
-                    cols = st.columns(12)
-                    with cols[6]:
-                        ui_result = ui.button("Clear", key="btn")
-                        if ui_result:
-                            st.cache_data.clear()
-                                        
+                    cols = st.columns(6)
                     with cols[5]:
-                    # Button to submit DataFrame to SharePoint
-                        ui_but = ui.button("Submit ", key="subbtn")
-                        if ui_but:
-                            submit_to_sharepoint(pres_df)    
-        else:
-            st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
+                        st.form_submit_button(" Confirm Receipt 🔒", type="primary")  
+                
+                    
+            with card_container(key="colecnew"):
+                
+                try:
+                    
+                    # Fetch the data from the AgGrid Table
+                    res = response['data']
+                    #st.table(res)
+                    
+                    df = pd.DataFrame(res)
+            
+                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
+                    pres_df = df[df['Collection status'].isin(['Full','Partial','Returned',''])]
+                    
+                    pres_df=pres_df[[
+                                    "ID",
+                                    "Title",
+                                    "UHID",
+                                    "Patientname",
+                                    "Location",
+                                    "Collection status",
+                                    "Collection Date",
+                                    "Dispensed By",
+                                    "Collection Comments",
+                                    "MVC",
+                                    "Transaction Type"]]
+
+                    
+                    # Display the filtered DataFrame
+                    #st.dataframe(Appointment_df)
+                    
+                    with card_container(key="colec4"):
+                        cols = st.columns(1)
+                        with cols[0]:
+                            with card_container(key="collec5"):
+                                ui.table(data=pres_df, maxHeight=300)
+                
+                
+                except Exception as e:
+                    st.error(f"Failed to update to SharePoint: {str(e)}")
+                    st.stop() 
+                
+                
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
+                   # Find rows where 'MVC' is empty
+                    invalid_mvc_rows = df[df['MVC'] == ''].index.tolist()
+
+                    # Find rows where 'Collection status' is 'None'
+                    invalid_collection_status_rows = df[df['Collection status'] == ''].index.tolist()
+
+                    # Combine the lists of indices
+                    invalid_rows = invalid_mvc_rows + invalid_collection_status_rows
+                    
+                    if invalid_rows:
+                        return False, invalid_rows
+                    return True, []
+
+                def submit_to_sharepoint(Appointment_df):
+                    # Validate data before submission
+                    is_valid, invalid_rows = validate_appointment_data(Appointment_df)
+                    
+                    if not is_valid:
+                        st.error(f"Required field(s) is blank in rows: {invalid_rows}")
+                        return
+                    try:
+                        sp = SharePoint()
+                        site = sp.auth()
+                        target_list = site.List(list_name='Home Delivery')
+
+                        # Iterate over the DataFrame and update items in the SharePoint list
+                        for ind in pres_df.index:
+                            item_id = pres_df.at[ind, 'ID']
+                            collection_status = pres_df.at[ind, 'Collection status']
+                            collection_date = pres_df.at[ind, 'Collection Date']
+                            collection_by = pres_df.at[ind, 'Dispensed By']
+                            Transaction_by = pres_df.at[ind, 'Transaction Type'] 
+                            Comments_by = pres_df.at[ind, 'Collection Comments']   
+                            MVC_by = pres_df.at[ind, 'MVC']   
+
+
+                            item_creation_info = {
+                                'ID': item_id, 
+                                'Collection status': collection_status,
+                                'Collection Date': collection_date,
+                                'Dispensed By': collection_by,
+                                'Transaction Type': Transaction_by,
+                                'Collection Comments': Comments_by,
+                                'MVC':MVC_by
+                            }
+
+                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+
+                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                            logging.info(f"Response for index {ind}: {response}")
+
+                        st.success("Updated to Database", icon="✅")
+                    except Exception as e:
+                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
+                        st.error(f"Failed to update to SharePoint: {str(e)}")
+                        st.stop()
+
+                cols = st.columns(12)
+                with cols[6]:
+                    ui_result = ui.button("Clear", key="btn")
+                    if ui_result:
+                        st.cache_data.clear()
+                                    
+                with cols[5]:
+                # Button to submit DataFrame to SharePoint
+                    ui_but = ui.button("Submit ", key="subbtn")
+                    if ui_but:
+                        submit_to_sharepoint(pres_df)    
+    else:
+        st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
