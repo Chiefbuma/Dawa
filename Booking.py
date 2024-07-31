@@ -360,7 +360,17 @@ def app():
                 'S.No'
             ]
             
-            
+             # Configure non-editable columns
+            non_editable_columns = [
+                    "UHID",
+                    "Patientname",
+                    "Location",
+                    "Cycle",
+          
+          
+            ]
+            for column in non_editable_columns:
+                gd.configure_column(column, editable=False)
 
            # Configure the 'DoctorName' column with the dropdown renderer
             gd.configure_column('DoctorName', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
@@ -442,6 +452,7 @@ def app():
                     
                
                 def validate_appointment_data(df):
+                    
                     """
                     Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
@@ -460,43 +471,39 @@ def app():
                         return
 
                     try:
-                        sp = SharePoint()
-                        site = sp.auth()
-                        target_list = site.List(list_name='Home Delivery')
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
 
-                        # Iterate over the DataFrame and create items in the SharePoint list
-                        for ind in Appointment_df.index:
-                            item_creation_info = {
-                                'Title': Appointment_df.at[ind, 'Title'],  # Replace 'Title' with your field name
-                                'UHID': Appointment_df.at[ind, 'UHID'],
-                                'Patientname': Appointment_df.at[ind, 'Patientname'],
-                                'mobile': Appointment_df.at[ind, 'mobile'],
-                                'DoctorName': Appointment_df.at[ind, 'DoctorName'],
-                                'Booking status': Appointment_df.at[ind, 'Booking status'],
-                                'Booking Date': Appointment_df.at[ind, 'Booking Date'],
-                                'Booked on': Appointment_df.at[ind, 'Booked on'],
-                                'Booked By': Appointment_df.at[ind, 'Booked By'],
-                                'Transaction Type': Appointment_df.at[ind, 'TransactionType'],
-                                'Month': Appointment_df.at[ind, 'Month'],
-                                'Year': Appointment_df.at[ind, 'Year'],
-                                'Cycle': Appointment_df.at[ind, 'Cycle']
-                            }
-                            target_list.UpdateListItems(data=[item_creation_info], kind='New')
-                        
-                        st.success("Updated to Database", icon="✅")
+                            # Iterate over the DataFrame and create items in the SharePoint list
+                            for ind in Appointment_df.index:
+                                item_creation_info = {
+                                    'Title': Appointment_df.at[ind, 'Title'],  # Replace 'Title' with your field name
+                                    'UHID': Appointment_df.at[ind, 'UHID'],
+                                    'Patientname': Appointment_df.at[ind, 'Patientname'],
+                                    'mobile': Appointment_df.at[ind, 'mobile'],
+                                    'DoctorName': Appointment_df.at[ind, 'DoctorName'],
+                                    'Booking status': Appointment_df.at[ind, 'Booking status'],
+                                    'Booking Date': Appointment_df.at[ind, 'Booking Date'],
+                                    'Booked on': Appointment_df.at[ind, 'Booked on'],
+                                    'Booked By': Appointment_df.at[ind, 'Booked By'],
+                                    'Transaction Type': Appointment_df.at[ind, 'TransactionType'],
+                                    'Month': Appointment_df.at[ind, 'Month'],
+                                    'Year': Appointment_df.at[ind, 'Year'],
+                                    'Cycle': Appointment_df.at[ind, 'Cycle']
+                                }
+                                target_list.UpdateListItems(data=[item_creation_info], kind='New')
+                            
+                            st.success("Updated to Database", icon="✅")
                     except Exception as e:
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
 
 
-            cols=st.columns(12)
-            with cols[6]:
-                ui_result = ui.button("Clear", key="btn")  
-                if ui_result:   
-                    st.cache_data.clear()
-                    
-            with cols[5]:
+            cols=st.columns(4)
+            with cols[2]:
             # Button to submit DataFrame to SharePoint
                 ui_but = ui.button("Submit ", key="subbtn")
                 if ui_but:

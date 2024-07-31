@@ -568,64 +568,43 @@ def app():
                     st.stop() 
                 
                 
-                def validate_appointment_data(df):
-                    """
-                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
-                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                    """
-                    invalid_rows = len(df)
-                    if invalid_rows > 0 :
-                        return False, invalid_rows
-                    return True, []
-
                 def submit_to_sharepoint(Appointment_df):
-                    
-                    # Validate data before submission
-                    is_valid, invalid_rows = validate_appointment_data(Appointment_df)
-                    
-                    if not is_valid:
-                        st.error(f"Dispatch Status is blank in rows: {invalid_rows}")
-                        return
-
                     try:
-                        sp = SharePoint()
-                        site = sp.auth()
-                        target_list = site.List(list_name='Home Delivery')
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
 
-                        # Iterate over the DataFrame and update items in the SharePoint list
-                        for ind in pres_df.index:
-                            item_id = pres_df.at[ind, 'ID']
-                            Dispatch_status = pres_df.at[ind, 'Dispatched status']
-                            Dispatch_date = pres_df.at[ind, 'Dispatched Date']
-                            Dispatch_by = pres_df.at[ind, 'Dispatched By']
-                            Transaction_by = pres_df.at[ind, 'Transaction Type']
+                            # Iterate over the DataFrame and update items in the SharePoint list
+                            for ind in pres_df.index:
+                                item_id = pres_df.at[ind, 'ID']
+                                Dispatch_status = pres_df.at[ind, 'Dispatched status']
+                                Dispatch_date = pres_df.at[ind, 'Dispatched Date']
+                                Dispatch_by = pres_df.at[ind, 'Dispatched By']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type']
 
-                            item_creation_info = {
-                                'ID': item_id, 
-                                'Dispatched status':Dispatch_status,
-                                'Dispatched Date': Dispatch_date,
+                                item_creation_info = {
+                                    'ID': item_id, 
+                                    'Dispatched status':Dispatch_status,
                                     'Dispatched Date': Dispatch_date,
-                                'Transaction Type': Transaction_by
-                            }
+                                        'Dispatched Date': Dispatch_date,
+                                    'Transaction Type': Transaction_by
+                                }
 
-                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
 
-                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                            logging.info(f"Response for index {ind}: {response}")
+                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                                logging.info(f"Response for index {ind}: {response}")
 
-                        st.success("Updated to Database", icon="✅")
+                        st.success("Succefully submitted", icon="✅")
                     except Exception as e:
                         logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
-                cols = st.columns(12)
-                with cols[6]:
-                    ui_result = ui.button("Clear", key="btn")
-                    if ui_result:
-                        st.cache_data.clear()
-                                    
-                with cols[5]:
+                cols = st.columns(4)
+
+                with cols[2]:
                 # Button to submit DataFrame to SharePoint
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:

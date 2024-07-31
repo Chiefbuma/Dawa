@@ -103,7 +103,7 @@ def app():
             Trans_df = AllTrans_df[
                 (AllTrans_df['Received Status'] == 'Received') &
                 (AllTrans_df['Location'] == location) &
-                (AllTrans_df['Collection status'].isnull())]
+                (AllTrans_df['Collection status']=='Pending')]
                        
             Trans_df['Dispensed By']=staffname
             
@@ -333,7 +333,7 @@ def app():
                     "Received Status",
                     "Month",
                     "Dispensed By",
-                    "Year",
+                    "Year"
           
             ]
             for column in non_editable_columns:
@@ -457,49 +457,45 @@ def app():
                         st.error(f"Required field(s) is blank in rows: {invalid_rows}")
                         return
                     try:
-                        sp = SharePoint()
-                        site = sp.auth()
-                        target_list = site.List(list_name='Home Delivery')
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
 
-                        # Iterate over the DataFrame and update items in the SharePoint list
-                        for ind in pres_df.index:
-                            item_id = pres_df.at[ind, 'ID']
-                            collection_status = pres_df.at[ind, 'Collection status']
-                            collection_date = pres_df.at[ind, 'Collection Date']
-                            collection_by = pres_df.at[ind, 'Dispensed By']
-                            Transaction_by = pres_df.at[ind, 'Transaction Type'] 
-                            Comments_by = pres_df.at[ind, 'Collection Comments']   
-                            MVC_by = pres_df.at[ind, 'MVC']   
+                            # Iterate over the DataFrame and update items in the SharePoint list
+                            for ind in pres_df.index:
+                                item_id = pres_df.at[ind, 'ID']
+                                collection_status = pres_df.at[ind, 'Collection status']
+                                collection_date = pres_df.at[ind, 'Collection Date']
+                                collection_by = pres_df.at[ind, 'Dispensed By']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type'] 
+                                Comments_by = pres_df.at[ind, 'Collection Comments']   
+                                MVC_by = pres_df.at[ind, 'MVC']   
 
 
-                            item_creation_info = {
-                                'ID': item_id, 
-                                'Collection status': collection_status,
-                                'Collection Date': collection_date,
-                                'Dispensed By': collection_by,
-                                'Transaction Type': Transaction_by,
-                                'Collection Comments': Comments_by,
-                                'MVC':MVC_by
-                            }
+                                item_creation_info = {
+                                    'ID': item_id, 
+                                    'Collection status': collection_status,
+                                    'Collection Date': collection_date,
+                                    'Dispensed By': collection_by,
+                                    'Transaction Type': Transaction_by,
+                                    'Collection Comments': Comments_by,
+                                    'MVC':MVC_by
+                                }
 
-                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
 
-                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                            logging.info(f"Response for index {ind}: {response}")
+                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                                logging.info(f"Response for index {ind}: {response}")
 
-                        st.success("Updated to Database", icon="✅")
+                            st.success("Sucessfully submitted", icon="✅")
                     except Exception as e:
                         logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
-                cols = st.columns(12)
-                with cols[6]:
-                    ui_result = ui.button("Clear", key="btn")
-                    if ui_result:
-                        st.cache_data.clear()
-                                    
-                with cols[5]:
+                cols = st.columns(4)
+                with cols[2]:
                 # Button to submit DataFrame to SharePoint
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:

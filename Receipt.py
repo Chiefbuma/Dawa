@@ -560,47 +560,43 @@ def app():
                 def submit_to_sharepoint(pres_df):
                     
                     try:
-                        sp = SharePoint()
-                        site = sp.auth()
-                        target_list = site.List(list_name='Home Delivery')
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
 
-                        # Iterate over the DataFrame and update items in the SharePoint list
-                        for ind in pres_df.index:
-                            item_id = pres_df.at[ind, 'ID']  
-                            Received_status = pres_df.at[ind, 'Received Status']
-                            Received_date = pres_df.at[ind, 'Received Date']
-                            Received_by = pres_df.at[ind, 'Received By']
-                            Transaction_by = pres_df.at[ind, 'Transaction Type'] 
-                            Recevived_by = pres_df.at[ind, 'Received Comments']
-                        
+                            # Iterate over the DataFrame and update items in the SharePoint list
+                            for ind in pres_df.index:
+                                item_id = pres_df.at[ind, 'ID']  
+                                Received_status = pres_df.at[ind, 'Received Status']
+                                Received_date = pres_df.at[ind, 'Received Date']
+                                Received_by = pres_df.at[ind, 'Received By']
+                                Transaction_by = pres_df.at[ind, 'Transaction Type'] 
+                                Recevived_by = pres_df.at[ind, 'Received Comments']
+                            
 
-                            item_creation_info = {
-                                'ID': item_id, 
-                                'Received Status':Received_status,
-                                'Received Date': Received_date,
-                                'Received By': Received_by,
-                                'Transaction Type':Transaction_by,
-                                'Received Comments': Recevived_by 
-                            }
+                                item_creation_info = {
+                                    'ID': item_id, 
+                                    'Received Status':Received_status,
+                                    'Received Date': Received_date,
+                                    'Received By': Received_by,
+                                    'Transaction Type':Transaction_by,
+                                    'Received Comments': Recevived_by 
+                                }
 
-                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
 
-                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                            logging.info(f"Response for index {ind}: {response}")
+                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                                logging.info(f"Response for index {ind}: {response}")
 
-                        st.success("Updated to Database", icon="✅")
+                            st.success("Succesfully submitted", icon="✅")
                     except Exception as e:
                         logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
-                cols = st.columns(12)
-                with cols[6]:
-                    ui_result = ui.button("Clear", key="btn")
-                    if ui_result:
-                        st.cache_data.clear()
-                                    
-                with cols[5]:
+                cols = st.columns(4)
+                with cols[2]:
                 # Button to submit DataFrame to SharePoint
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:
