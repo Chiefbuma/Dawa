@@ -395,34 +395,29 @@ def app():
                                 fit_columns_on_grid_load = True)
                 
                 
+                
                 cols = st.columns(6)
                 with cols[5]:
-                    #Extract the selected and possibly edited rows
                     selected_row = response['selected_rows']
-                    selected_dataframe = pd.DataFrame(selected_row)
-
-                    st.write(selected_dataframe)
-
-                    # List of columns to check for empty values
+            
+                    Selecetd_dataframe=pd.DataFrame(selected_row)
                 
-                    columns_to_check = ['Booked on',  'DoctorName'] 
-
-                    # Check if any of the specified columns have empty cells
-                    is_empty_cell = selected_dataframe[columns_to_check].isnull().any(axis=1).any()
+                    rowcount=len(Selecetd_dataframe)
+                
+                if 'Patient_name' not in st.session_state:
+                    st.session_state.Patient_name = ''
+                                
+                if rowcount > 0:
+                    try:
+                        patient_name = selected_row.iloc[0]['Patientname']
+                        st.session_state.Patient_name = patient_name
+                        st.write(st.session_state.Patient_name)
+                    except IndexError:
+                        pass  # Suppress IndexError silently
+                    except KeyError:
+                        pass  # Suppress KeyError silently
                     
-                        # Display message and button
-                    if is_empty_cell:
-                        st.warning(f"Please fill in all values in the columns: {', '.join(columns_to_check)} before confirming.")
-                    else:
-                         st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
-                
-                
-                
-
-                
-
-                
-                
+                    st.form_submit_button(" Confirm Booking(s) 🔒", type="primary")
                 
             with card_container(key="Main1"):
                 try:
