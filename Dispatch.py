@@ -170,6 +170,29 @@ def app():
                     }
                 }
                 """)
+            
+            textarea_renderer = JsCode("""
+                class TextareaRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('textarea');
+                        
+                        // Set the width and height of the textarea
+                        this.eGui.style.width = '300px'; // Adjust the width as needed
+                        this.eGui.style.height = '100px'; // Adjust the height as needed
+
+                        this.eGui.value = this.params.value || '';
+
+                        this.eGui.addEventListener('change', (event) => {
+                            this.params.setValue(event.target.value);
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+                }
+                """)
 
             # JavaScript for date renderer
             date_renderer = JsCode("""
@@ -190,6 +213,8 @@ def app():
                 }
             }
             """)
+            
+            
             
             
             st.markdown("""

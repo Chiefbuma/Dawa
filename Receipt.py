@@ -163,6 +163,29 @@ def app():
                 }
             }
             """)
+            
+            textarea_renderer = JsCode("""
+                class TextareaRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('textarea');
+                        
+                        // Set the width and height of the textarea
+                        this.eGui.style.width = '150px'; // Adjust the width as needed
+                        this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                        this.eGui.value = this.params.value || '';
+
+                        this.eGui.addEventListener('change', (event) => {
+                            this.params.setValue(event.target.value);
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+                }
+                """)
 
             # JavaScript for date renderer
             date_renderer = JsCode("""
@@ -249,13 +272,16 @@ def app():
                     "mobile",
                     "Location",
                     "DoctorName",
-                    "Received Status"
+                    "Cycle",
+                    "Dispatched status"
+                    
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
             gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
             gb.configure_column(
                 field='Prescription',
@@ -344,6 +370,8 @@ def app():
             };
             """     
             )
+            
+            
 
             # Cell renderer for the '🔧' column to render a button
 
@@ -529,25 +557,8 @@ def app():
                     st.error(f"Failed to update to SharePoint: {str(e)}")
                     st.stop() 
                 
-                 
-                def validate_appointment_data(df):
-                    """
-                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
-                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                    """
-                    invalid_rows = len(df)
-                    if invalid_rows > 0 :
-                        return False, invalid_rows
-                    return True, []
-
-                def submit_to_sharepoint(Appointment_df):
+                def submit_to_sharepoint(pres_df):
                     
-                    # Validate data before submission
-                    is_valid, invalid_rows = validate_appointment_data(Appointment_df)
-                    
-                    if not is_valid:
-                        st.error(f"Received Status is blank in rows: {invalid_rows}")
-                        return
                     try:
                         sp = SharePoint()
                         site = sp.auth()
@@ -561,7 +572,7 @@ def app():
                             Received_by = pres_df.at[ind, 'Received By']
                             Transaction_by = pres_df.at[ind, 'Transaction Type'] 
                             Recevived_by = pres_df.at[ind, 'Received Comments']
-                             
+                        
 
                             item_creation_info = {
                                 'ID': item_id, 
