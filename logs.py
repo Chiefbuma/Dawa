@@ -35,6 +35,10 @@ def app():
         if 'staffnumber' not in st.session_state:
             st.session_state.staffnumber= ''
             
+        if 'staffname' not in st.session_state:
+            st.session_state.staffname= ''
+            
+            
         # Initialize session state if it doesn't exist
         
         def init_connection():
@@ -62,9 +66,10 @@ def app():
             login_df = pd.DataFrame(response.data)
             return login_df
 
-        def add_userdata(staffnumber, password, location, region,department):
+        def add_userdata(staffnumber, password, location, region,department,staffname):
             data = {
                 'staffnumber': staffnumber,
+                'staffname': staffname,
                 'password': password,
                 'location': location,
                 'region': region,
@@ -85,11 +90,13 @@ def app():
                 if not facilities_df.empty:
                     location = facilities_df['location'].iloc[0]
                     region = facilities_df['region'].iloc[0]
+                    staffname = facilities_df['staffname'].iloc[0]
                     department= facilities_df['department'].iloc[0]
                     st.session_state.Location = location
                     st.session_state.Region =region
                     st.session_state.Department = department
-                    st.session_state.staffnumber = staffnumber  
+                    st.session_state.staffnumber = staffnumber
+                    st.session_state.staffname= staffname
 
                     if password == facilities_df['password'].iloc[0]:
                         return True, region, location,department
@@ -136,7 +143,7 @@ def app():
                             
                             if LogIn:
                                 st.session_state.logged_in= True
-                                result, location, region,department = login_user(staffnumber, password)
+                                result, location, region,department,staffname= login_user(staffnumber, password)
                                 if result:
                                     st.success("Logged In successfully")
                                     st.write(f"Location: {location}, Region: {region}")
@@ -147,6 +154,7 @@ def app():
                                     st.session_state.Location = location
                                     st.session_state.Region =region
                                     st.session_state.Department=department
+                                    st.session_state.staffname= staffname
 
                                     form_container.empty()
 
@@ -159,6 +167,7 @@ def app():
                     with form_container:
                         with st.form("Sign-up Form"): 
                             staffnumber = st.text_input('Staff Number')
+                            staffname=st.text_input('Staff Name')
                             location = st.selectbox("Select Location", location_names)
                             selected_location_row = location_df[location_df['Location'] == location]
                             region = selected_location_row['Region'].iloc[0] if not selected_location_row.empty else None
@@ -194,11 +203,12 @@ def app():
                             
                             if signup_btn:
                                 st.session_state.Sign_up= True
-                                add_userdata(staffnumber, password, location, region,department)
+                                add_userdata(staffnumber, password, location, region,department,staffname)
                                 st.success("You have created a new account")
                                 st.session_state.is_authenticated=True
                                 st.session_state.Location = location
                                 st.session_state.Region =region
+                                st.session_state.staffname =staffname
                                 st.session_state.Department = department
                                 st.session_state.staffnumber = staffnumber  
 
@@ -212,6 +222,7 @@ def app():
                             Successfully logged in !!<br>
                             Location: <strong>{st.session_state.Location}</strong><br>
                             Staffnumber: <strong>{st.session_state.staffnumber}</strong><br>
+                            Staffname: <strong>{st.session_state.staffname}</strong><br>
                             Department: <strong>{st.session_state.Department}</strong><br>
                            \
                             <br>

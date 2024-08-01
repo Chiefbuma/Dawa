@@ -100,10 +100,8 @@ def app():
             
             staffname = usersD_df['StaffName'].iloc[0]
             
-            Trans_df = AllTrans_df[
-                (AllTrans_df['Received Status'] == 'Received') &
-                (AllTrans_df['Location'] == location) &
-                (AllTrans_df['Collection status']=='Pending')]
+            Trans_df = AllTrans_df
+                
                        
             Trans_df['Dispensed By']=staffname
             
