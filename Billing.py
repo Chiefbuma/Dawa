@@ -221,7 +221,7 @@ def app():
                         this.eGui.value = this.params.value || '';
 
                         // Set the width of the dropdown
-                        this.eGui.style.width = '200px'; // Adjust the width as needed
+                        this.eGui.style.width = '150px'; // Adjust the width as needed
 
                         this.eGui.addEventListener('change', (event) => {{
                             this.params.setValue(event.target.value);
