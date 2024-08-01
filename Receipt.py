@@ -280,7 +280,7 @@ def app():
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=500)
             gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer)
             gb.configure_column(
                 field='Prescription',
