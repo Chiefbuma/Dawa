@@ -135,10 +135,10 @@ def app():
             Details_df = pd.DataFrame(Allresponse.data)
             
                    
-            response = supabase.from_('StaffList').select('*').eq('StaffNumber', staffnumber).execute()
+            response = supabase.from_('usersD').select('*').eq('Staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
-            staffname = usersD_df['StaffName'].iloc[0]
+            staffname = usersD_df['Staffname'].iloc[0]
             
             #st.write(staffname)
             import calendar
@@ -495,7 +495,7 @@ def app():
                                 }
                                 target_list.UpdateListItems(data=[item_creation_info], kind='New')
                             
-                            st.success("Updated to Database", icon="✅")
+                            st.success("Succesfully submitted", icon="✅")
                     except Exception as e:
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
