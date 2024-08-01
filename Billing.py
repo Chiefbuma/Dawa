@@ -254,7 +254,7 @@ def app():
                         "Booking Date",
                         "Booked on",
                         "Booked By",
-                        "DoctorName",
+                        "Collection Comments",
                         "Dispatched status",
                         "Dispatched Date",
                         "Dispatched By",
@@ -573,9 +573,10 @@ def app():
                                     "Location",
                                     "Consultation Status",
                                     "Consultation Date",
+                                    "DoctorName",
                                     "Month",
                                     "Year",
-                                    "Transaction Type",]]
+                                    "Transaction Type"]]
                     
                     cols = st.columns(1)
                     with cols[0]:
