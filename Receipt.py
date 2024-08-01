@@ -281,8 +281,7 @@ def app():
 
             # Configure specific columns with additional settings
             gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
-            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=50)
-            gb.configure_selection(selection_mode='single')
+            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer)
             gb.configure_column(
                 field='Prescription',
                 cellRenderer=cellRenderer_link,
