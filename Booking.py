@@ -135,10 +135,10 @@ def app():
             Details_df = pd.DataFrame(Allresponse.data)
             
                    
-            response = supabase.from_('usersD').select('*').eq('Staffnumber', staffnumber).execute()
+            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
-            staffname = usersD_df['Staffname'].iloc[0]
+            staffname = usersD_df['staffname'].iloc[0]
             
             #st.write(staffname)
             import calendar
