@@ -168,6 +168,8 @@ def app():
                         with st.form("Sign-up Form"): 
                             staffnumber = st.text_input('Staff Number')
                             staffname=st.text_input('Staff Name')
+                            if staffname:
+                                  staffname = staffname.title()
                             location = st.selectbox("Select Location", location_names)
                             selected_location_row = location_df[location_df['Location'] == location]
                             region = selected_location_row['Region'].iloc[0] if not selected_location_row.empty else None
