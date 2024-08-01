@@ -99,7 +99,7 @@ def app():
                     st.session_state.staffname= staffname
 
                     if password == facilities_df['password'].iloc[0]:
-                        return True, region, location,department
+                        return True, region, location,department,staffname
                     return False, None, None
                 
             except APIError as e:
