@@ -384,7 +384,7 @@ def app():
                     
                     cols = st.columns(6)
                     with cols[5]:
-                        st.form_submit_button(" Confirm Receipt 🔒", type="primary")  
+                        st.form_submit_button(" Confirm 🔒", type="primary")  
                 
                     
             with card_container(key="colecnew"):
