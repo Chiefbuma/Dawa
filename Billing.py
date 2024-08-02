@@ -96,14 +96,14 @@ def app():
                     
                     if usersD_df.empty:
                         st.error("You do not have permission to transact")
-                        st.stop()
+                        pass
                     
                     staffname = usersD_df['StaffName'].iloc[0]
                     return staffname
 
                 except APIError as e:
                     st.error("Not allowed")
-                    st.stop()
+                    pass
                 except Exception as e:  # Handle any other exceptions
                     st.error(f"An error occurred: {str(e)}")
                     st.stop()
