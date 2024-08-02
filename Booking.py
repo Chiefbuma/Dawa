@@ -113,7 +113,7 @@ def app():
         
         # Check if the connection is successful
         if init_connection():
-        
+           
             
             st.session_state.logged_in= True
             # Dropdown for selecting the year
