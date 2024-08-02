@@ -29,6 +29,8 @@ def app():
         department = st.session_state.Department
         staffname=st.session_state.staffname
         
+        st.write(staffnumber)
+        
         
         #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
         @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -94,14 +96,24 @@ def app():
             
             Tele_df = pd.DataFrame(response.data)
             
-            merged_df = pd.merge(Tele_df, AllTrans_df, left_on='StaffName', right_on='DoctorName', how='left')
+            # Merge Tele_df into AllTrans_df
+            merged_df = pd.merge(AllTrans_df, Tele_df, left_on='DoctorName', right_on='StaffName', how='left')
             
-            #st.write(merged_df)
+            
+            # Ensure that 'StaffNumber' column is also of integer type
+            merged_df['StaffNumber'] = merged_df['StaffNumber'].astype(int)
+
+            
+            
+            st.write(merged_df)
             
             
             #staffname = gettaff_name(staffnumber)
             
             #st.write(staffname)
+            
+            staffnumber=int(staffnumber)
+            
             
             Trans_df = merged_df[
                 (merged_df['StaffNumber'] == staffnumber) &
@@ -109,7 +121,9 @@ def app():
                 (merged_df['Consultation Status']=='Pending')]
                 
             
-            #st.write(Trans_df)
+            st.write(Trans_df)
+            
+            
             Trans_df['DoctorName']=staffname
                 
            # Convert 'Consultation Date' to datetime
