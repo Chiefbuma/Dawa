@@ -27,6 +27,7 @@ def app():
         location=st.session_state.Region
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
+        staffname=st.session_state.staffname
         
         
         #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
@@ -88,34 +89,24 @@ def app():
             Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
             chronic_df = pd.DataFrame(Allresponse2.data)
             
+
+            response = supabase.from_('StaffList').select('*').execute()
             
-            def get_staff_name(staffnumber):
-                try:
-                    response = supabase.from_('StaffList').select('*').eq('StaffNumber', staffnumber).execute()
-                    usersD_df = pd.DataFrame(response.data)
-                    
-                    if usersD_df.empty:
-                        st.error("You do not have permission to transact")
-                        pass
-                    
-                    staffname = usersD_df['StaffName'].iloc[0]
-                    return staffname
-
-                except APIError as e:
-                    st.error("Not allowed")
-                    pass
-                except Exception as e:  # Handle any other exceptions
-                    st.error(f"An error occurred: {str(e)}")
-                    st.stop()
-
-            staffname = get_staff_name(staffnumber)
+            Tele_df = pd.DataFrame(response.data)
+            
+            merged_df = pd.merge(Tele_df, AllTrans_df, left_on='StaffName', right_on='DoctorName', how='left')
+            
+            #st.write(merged_df)
+            
+            
+            #staffname = gettaff_name(staffnumber)
             
             #st.write(staffname)
             
-            Trans_df = AllTrans_df[
-                (AllTrans_df['DoctorName'] == staffname) &
-                (AllTrans_df['Booking status'] == 'Booked') &  
-                (AllTrans_df['Consultation Status']=='Pending')]
+            Trans_df = merged_df[
+                (merged_df['StaffNumber'] == staffnumber) &
+                (merged_df['Booking status'] == 'Booked') &  
+                (merged_df['Consultation Status']=='Pending')]
                 
             
             #st.write(Trans_df)
