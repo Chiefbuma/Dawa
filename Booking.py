@@ -120,7 +120,7 @@ def app():
             Allresponse = supabase.from_('Dawa_Details').select('*').execute()
             Details_df = pd.DataFrame(Allresponse.data)
             
-            
+                   
             def get_staff_name(staffnumber):
                 try:
                     response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
@@ -130,8 +130,11 @@ def app():
                         st.error("You do not have permission to transact")
                         st.stop()
                     
-                    staffname = usersD_df['StaffName'].iloc[0]
-                    return staffname
+                    staffname = usersD_df['staffname'].iloc[0]
+                    department = usersD_df['department'].iloc[0]
+    
+                    
+                    return staffname, department
 
                 except APIError as e:
                     st.error("Not allowed")
@@ -139,8 +142,9 @@ def app():
                 except Exception as e:  # Handle any other exceptions
                     st.error(f"An error occurred: {str(e)}")
                     st.stop()
-
-            staffname = get_staff_name(staffnumber)
+        
+            
+            staffname=get_staff_name(staffnumber)
             
             #st.write(staffname)
             import calendar
