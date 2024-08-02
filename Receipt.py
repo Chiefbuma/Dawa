@@ -90,9 +90,9 @@ def app():
             staffname = usersD_df['staffname'].iloc[0]
             
             Trans_df = AllTrans_df[
-
-                    (AllTrans_df['Location'] == location) ]
-                   
+                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                    (AllTrans_df['Location'] == location) & 
+                    (AllTrans_df['Received Status']=='Pending')]
             
             #st.write(Trans_df)
             
