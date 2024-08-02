@@ -97,7 +97,7 @@ def app():
                     staffname = usersD_df['staffname'].iloc[0]
                     department = usersD_df['department'].iloc[0]
                     
-                    if department != 'Pharmacy':
+                    if department != 'Warehouse':
                         st.error("You do not have permission to transact")
                         st.stop()
                     
