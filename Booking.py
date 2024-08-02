@@ -46,7 +46,7 @@ def app():
                 "Title", "ID", "UHID", "Patientname", "mobile", "Location", "Booking status", 
                 "Booking Date", "Booked on", "Booked By", "DoctorName", "Consultation Status", 
                 "Consultation Date", "Dispatched status", "Dispatched Date", "Dispatched By", 
-                "Received Date", "Received By", "Received Status", "Dispensed By", "Collection status", 
+                "Received Date", "Received By","Received Comments", "Received Status", "Dispensed By", "Collection status", 
                 "Collection Date", "MVC", "Cycle", "Collection Comments", "Month", 
                 "Transaction Type", "Year"
             ]
@@ -65,7 +65,7 @@ def app():
                 st.error("Connection not available, check connection")
                 st.stop()
 
-        book_df = load_new()
+        book_df = load_new()    
         
         #st.write(book_df)
         
@@ -121,30 +121,10 @@ def app():
             Details_df = pd.DataFrame(Allresponse.data)
             
                    
-            def get_staff_name(staffnumber):
-                try:
-                    response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
-                    usersD_df = pd.DataFrame(response.data)
-                    
-                    if usersD_df.empty:
-                        st.error("You do not have permission to transact")
-                        st.stop()
-                    
-                    staffname = usersD_df['staffname'].iloc[0]
-                    department = usersD_df['department'].iloc[0]
-    
-                    
-                    return staffname, department
-
-                except APIError as e:
-                    st.error("Not allowed")
-                    st.stop()
-                except Exception as e:  # Handle any other exceptions
-                    st.error(f"An error occurred: {str(e)}")
-                    st.stop()
-        
+            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+            usersD_df = pd.DataFrame(response.data)
             
-            staffname=get_staff_name(staffnumber)
+            staffname = usersD_df['staffname'].iloc[0]
             
             #st.write(staffname)
             import calendar
