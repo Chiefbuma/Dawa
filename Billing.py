@@ -29,7 +29,7 @@ def app():
         department = st.session_state.Department
         staffname=st.session_state.staffname
         
-        st.write(staffnumber)
+        #st.write(staffnumber)
         
         
         #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
@@ -105,7 +105,7 @@ def app():
 
             
             
-            st.write(merged_df)
+            #st.write(merged_df)
             
             
             #staffname = gettaff_name(staffnumber)
@@ -121,7 +121,7 @@ def app():
                 (merged_df['Consultation Status']=='Pending')]
                 
             
-            st.write(Trans_df)
+            #st.write(Trans_df)
             
             
             Trans_df['DoctorName']=staffname
