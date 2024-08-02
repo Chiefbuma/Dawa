@@ -123,7 +123,7 @@ def app():
             
             def get_staff_name(staffnumber):
                 try:
-                    response = supabase.from_('StaffList').select('*').eq('StaffNumber', staffnumber).execute()
+                    response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
                     usersD_df = pd.DataFrame(response.data)
                     
                     if usersD_df.empty:
