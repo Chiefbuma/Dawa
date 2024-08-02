@@ -85,12 +85,33 @@ def app():
             Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
             chronic_df = pd.DataFrame(Allresponse2.data)
             
+            def get_staff_name(staffnumber):
+                try:
+                    response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+                    usersD_df = pd.DataFrame(response.data)
+                    
+                    if usersD_df.empty:
+                        st.error("You do not have permission to transact")
+                        st.stop()
+                    
+                    staffname = usersD_df['staffname'].iloc[0]
+                    department = usersD_df['department'].iloc[0]
+                    
+                    if department != 'Pharmacy':
+                        st.error("You do not have permission to transact")
+                        st.stop()
+                    
+                    return staffname, department
+
+                except APIError as e:
+                    st.error("Not allowed")
+                    st.stop()
+                except Exception as e:  # Handle any other exceptions
+                    st.error(f"An error occurred: {str(e)}")
+                    st.stop()
             
-            response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
-            usersD_df = pd.DataFrame(response.data)
             
-            staffname = usersD_df['staffname'].iloc[0]
-            
+            staffname=get_staff_name(staffnumber)
             
             Trans_df = AllTrans_df[
                     (AllTrans_df['Consultation Status'] == 'Consulted') & 
