@@ -103,8 +103,8 @@ def app():
             #st.write(staffname)
             names_list = [
                 "Full",
-                "Partial",
-                "Returned"
+                "Partial"
+    
             ]
             #st.write(chronic_df)
             
@@ -425,14 +425,14 @@ def app():
                     Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
                     """
-                   # Find rows where 'MVC' is empty
-                    invalid_mvc_rows = df[df['MVC'] == ''].index.tolist()
+                                    # Find rows where 'MVC' is empty
+                    invalid_mvc_rows = df[df['MVC'].isna() | (df['MVC'] == "")].index.tolist()
 
-                    # Find rows where 'Collection status' is 'None'
-                    invalid_collection_status_rows = df[df['Collection status'] == ''].index.tolist()
+                    # Find rows where 'Collection status' is empty
+                    invalid_collection_status_rows = df[df['Collection status'].isna() | (df['Collection status'] == "")].index.tolist()
 
                     # Combine the lists of indices
-                    invalid_rows = invalid_mvc_rows + invalid_collection_status_rows
+                    invalid_rows = list(set(invalid_mvc_rows + invalid_collection_status_rows))
                     
                     if invalid_rows:
                         return False, invalid_rows

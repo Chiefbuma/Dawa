@@ -192,6 +192,48 @@ def app():
                 }
             }
             """)
+            #st.write(staffname)
+            names_list = [
+                "Received",
+                "Returned"
+            ]
+            dropdown_renderer = JsCode(f"""
+                class DropdownRenderer {{
+                    init(params) {{
+                        this.params = params;
+                        this.eGui = document.createElement('select');
+
+                        // Set the width and height of the dropdown
+                        this.eGui.style.width = '150px'; // Adjust the width as needed
+                        this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                        // Add an empty option as the default
+                        let emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.innerHTML = '--Select--';
+                        this.eGui.appendChild(emptyOption);
+
+                        // Add options from the predefined list
+                        const options = {names_list};
+                        options.forEach(option => {{
+                            let optionElement = document.createElement('option');
+                            optionElement.value = option;
+                            optionElement.innerHTML = option;
+                            this.eGui.appendChild(optionElement);
+                        }});
+
+                        this.eGui.value = this.params.value || '';
+
+                        this.eGui.addEventListener('change', (event) => {{
+                            this.params.setValue(event.target.value);
+                        }});
+                    }}
+
+                    getGui() {{
+                        return this.eGui;
+                    }}
+                }}
+                """)
             
             
             st.markdown("""
@@ -266,7 +308,8 @@ def app():
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=100)
+        
+            gb.configure_column('Received Status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
             gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer)
             gb.configure_column(
                 field='Prescription',

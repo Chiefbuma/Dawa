@@ -174,27 +174,11 @@ def app():
                             selected_location_row = location_df[location_df['Location'] == location]
                             region = selected_location_row['Region'].iloc[0] if not selected_location_row.empty else None
                             password = st.text_input('Password',type='password')
-                            department=st.selectbox('Department',[ 'Audit',
-                                                                    'Consultations',
-                                                                    'Dawa Nyumbani',
-                                                                    'Dental',
-                                                                    'ENT',
-                                                                    'Finance',
-                                                                    'Guest',
-                                                                    'Gynacology',
-                                                                    'Laboratory',
-                                                                    'Medical',
-                                                                    'Nursing',
-                                                                    'Nutrition',
-                                                                    'Operations',
-                                                                    'Optical',
-                                                                    'Orthopaedics',
+                            department=st.selectbox('Department',[ 
+                                                                    'Dawa Nyumbani', 
                                                                     'Pharmacy',
-                                                                    'Physician',
-                                                                    'Physiotherapy',
                                                                     'Quality',
-                                                                    'Radiology',
-                                                                    'Security',
+                                                                    'Guest',
                                                                     'Telemedicine',
                                                                     'Warehouse'])
                             
