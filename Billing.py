@@ -118,7 +118,7 @@ def app():
             Trans_df = merged_df[
                 (merged_df['StaffNumber'] == staffnumber) &
                 (merged_df['Booking status'] == 'Booked') &  
-                (merged_df['Consultation Status']=='Pending')]
+                (merged_df['Consultation Status']=='')]
                 
             
             #st.write(Trans_df)
