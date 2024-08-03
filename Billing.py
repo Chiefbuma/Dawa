@@ -653,7 +653,14 @@ def app():
                 # Button to submit DataFrame to SharePoint
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:
-                        submit_to_sharepoint(pres_df)    
+                        submit_to_sharepoint(pres_df) 
+                         
+                with cols[2]:
+                   ui_result = ui.button("Refresh", key="btn")  
+                   if ui_result: 
+                       with st.spinner('Wait! Reloading view...'):  
+                            st.cache_data.clear()
+                            AllTrans_df = load_new()  
         
               
         else:
