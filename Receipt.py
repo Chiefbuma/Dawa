@@ -580,14 +580,14 @@ def app():
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
-                cols = st.columns(4)
+                cols = st.columns(5)
                 with cols[2]:
                 # Button to submit DataFrame to SharePoint
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:
                         submit_to_sharepoint(pres_df)    
            
-                with cols[2]:
+                with cols[4]:
                    ui_result = ui.button("Refresh", key="btn")  
                    if ui_result:   
                        st.cache_data.clear()
