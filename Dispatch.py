@@ -95,7 +95,7 @@ def app():
             Trans_df = AllTrans_df[
                     (AllTrans_df['Consultation Status'] == 'Consulted') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Dispatched status']=='')]
+                    (AllTrans_df['Dispatched status'].isnull())]
             
             
             Trans_df['Dispatched Date'] = Trans_df['Dispatched Date'].fillna(formatted_date)
