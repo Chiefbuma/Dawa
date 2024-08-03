@@ -587,7 +587,7 @@ def app():
                     if ui_but:
                         submit_to_sharepoint(pres_df)    
            
-                with cols[4]:
+                with cols[3]:
                    ui_result = ui.button("Load", key="btn")  
                    if ui_result:   
                        st.cache_data.clear()
