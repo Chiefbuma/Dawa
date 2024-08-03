@@ -590,7 +590,7 @@ def app():
                 with cols[2]:
                    ui_result = ui.button("Refresh", key="btn")  
                    if ui_result: 
-                       with st.spinner('Submitting...'):  
+                       with st.spinner('Wait! Reloading view...'):  
                             st.cache_data.clear()
                             AllTrans_df = load_new()
                        
