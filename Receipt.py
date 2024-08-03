@@ -92,7 +92,7 @@ def app():
             Trans_df = AllTrans_df[
                     (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status']=='')]
+                    (AllTrans_df['Received Status'].isnull())]
             
             #st.write(Trans_df)
             
