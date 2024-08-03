@@ -222,7 +222,7 @@ def app():
         if st.session_state.is_authenticated:
             st.write(f"""<span style="color: green;">
                             Successfully logged in !!<br>
-                            Location: <strong>{st.session_state.Location}</strong><br>
+                            Location: <strong>{st.session_state.Region}</strong><br>
                             Staffnumber: <strong>{st.session_state.staffnumber}</strong><br>
                             Staffname: <strong>{st.session_state.staffname}</strong><br>
                             Department: <strong>{st.session_state.Department}</strong><br>
