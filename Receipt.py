@@ -586,6 +586,12 @@ def app():
                     ui_but = ui.button("Submit ", key="subbtn")
                     if ui_but:
                         submit_to_sharepoint(pres_df)    
-              
+           
+                with cols[4]:
+                   ui_result = ui.button("Load", key="btn")  
+                   if ui_result:   
+                       st.cache_data.clear()
+                       AllTrans_df = load_new()
+                       
         else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
