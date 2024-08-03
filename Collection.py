@@ -89,7 +89,7 @@ def app():
             Trans_df = AllTrans_df[
                     (AllTrans_df['Received Status'] == 'Received') & 
                     (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Collection status']=='Pending')]
+                    (AllTrans_df['Collection status'].isnull())]
             
                 
                        
