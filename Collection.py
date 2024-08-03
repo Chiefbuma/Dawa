@@ -298,6 +298,7 @@ def app():
                         "Dispatched status",
                         "Dispatched Date",
                         "Dispatched By",
+                        "Received Comments",
                         "Cycle",
                         "Received Date",
                         "Dispensed  By",
