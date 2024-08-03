@@ -494,7 +494,7 @@ def app():
                             gridoptions = gd.build()
 
                             
-                        with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=True):
+                        with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=False):
                             # Inject custom CSS for solid border
                             response3 = AgGrid(
                                 filtered_child_data,
