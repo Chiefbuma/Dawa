@@ -185,7 +185,7 @@ def app():
                         this.eGui = document.createElement('textarea');
                         
                         // Set the width and height of the textarea
-                        this.eGui.style.width = '200px'; // Adjust the width as needed
+                        this.eGui.style.width = '150px'; // Adjust the width as needed
                         this.eGui.style.height = '20px'; // Adjust the height as needed
 
                         this.eGui.value = this.params.value || '';
@@ -210,7 +210,7 @@ def app():
                             this.eGui.type = 'text'; // Set the input type to text for single-line input
 
                             // Set the width of the input
-                            this.eGui.style.width = '200px'; // Adjust the width as needed
+                            this.eGui.style.width = '150px'; // Adjust the width as needed
                             this.eGui.style.height = '20px'; // Adjust the height as needed
 
                             this.eGui.value = this.params.value || '';
@@ -234,7 +234,7 @@ def app():
                         this.eGui = document.createElement('select');
 
                         // Set the width and height of the dropdown
-                        this.eGui.style.width = '200px'; // Adjust the width as needed
+                        this.eGui.style.width = '150px'; // Adjust the width as needed
                         this.eGui.style.height = '20px'; // Adjust the height as needed
 
                         // Add an empty option as the default
