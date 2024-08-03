@@ -589,9 +589,10 @@ def app():
            
                 with cols[2]:
                    ui_result = ui.button("Refresh", key="btn")  
-                   if ui_result:   
-                       st.cache_data.clear()
-                       AllTrans_df = load_new()
+                   if ui_result: 
+                       with st.spinner('Submitting...'):  
+                            st.cache_data.clear()
+                            AllTrans_df = load_new()
                        
         else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
