@@ -204,7 +204,7 @@ def app():
                         this.eGui = document.createElement('select');
 
                         // Set the width and height of the dropdown
-                        this.eGui.style.width = '150px'; // Adjust the width as needed
+                        this.eGui.style.width = '100px'; // Adjust the width as needed
                         this.eGui.style.height = '20px'; // Adjust the height as needed
 
                         // Add an empty option as the default
@@ -290,7 +290,7 @@ def app():
            
             # Hide specified columns
             for col in book_columns:
-                gb.configure_column(field=col, hide=True, pinned='right',filter=True)
+                gb.configure_column(field=col, hide=True,filter=True)
 
             # Configure non-editable columns
             non_editable_columns = [
@@ -309,13 +309,9 @@ def app():
 
             # Configure specific columns with additional settings
         
-            gb.configure_column('Received Status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
-            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer)
-            gb.configure_column(
-                field='Prescription',
-                cellRenderer=cellRenderer_link,
-                allow_unsafe_jscode=True
-            )
+            gb.configure_column('Received Status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer, width=100)
+            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer,width=10)
+            
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
 
