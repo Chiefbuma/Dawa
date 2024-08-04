@@ -350,7 +350,7 @@ def app():
                                 height=300,
                                 fit_columns_on_grid_load=True
                             )
-                with st.expander("Expand to see more"):
+                with st.expander("View Transaction Status"):
                     st.write(AllMain_df)
                 
         else:
