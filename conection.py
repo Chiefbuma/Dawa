@@ -18,7 +18,7 @@ from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
 import logs, Booking,Billing,Dispatch,Receipt,Collection,Dashboard
 
-# Set the page configuration
+
 
 
 st.set_page_config(page_title="Bliss Healthcare limited", layout="wide")

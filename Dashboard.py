@@ -122,10 +122,9 @@ def app():
             sorted_df = consulted_df.sort_values(by='Arch%', ascending=False)
             
             
-           # Filter rows where 'Received' is not 'pending'
-            Edit_received = Telesumamry_df[Telesumamry_df['Received'] != 'Pending']
-
-            # Group by 'Medical Centre' and count occurrences of 'Dispatched' and 'Received'
+            #RECEIVED
+            Edit_received=Telesumamry_df['Received'] !='pending'
+            #Group by 'Doctor' and count the occurrences for each status
             Received_df = Edit_received.groupby('Medical Centre').agg({
                 'Dispatched': 'count',
                 'Received': 'count'
