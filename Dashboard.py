@@ -176,8 +176,9 @@ def app():
                     'Received', 'Full_Collection', 'Partial_Collection', 'Returned'
                 ]
 
-                #CONSULTED
                 
+                
+                #CONSULTED
                 # Group by 'Doctor' and count the occurrences for each status
                 consulted_df = Telesumamry_df.groupby('Doctor').agg({
                     'Booked': 'count',
@@ -186,12 +187,15 @@ def app():
                 
                 # Calculate Arch% as the percentage of 'Consulted' against 'Booked'
                 consulted_df['Arch%'] = (consulted_df['Booked'] / consulted_df['Consulted']) * 100
-                
                 # Sort the DataFrame by 'Arch%' in descending order
                 sorted_df = consulted_df.sort_values(by='Arch%', ascending=False)
                 
-        
+                
+                
+                
+                
             
+                
                 #Group by 'Doctor' and count the occurrences for each status
                 Received_df = Telesumamry_df.groupby('Medical Centre').agg({
                     'Dispatched': 'count',
@@ -200,8 +204,7 @@ def app():
                 
     
                 
-                #COLLECTION
-                
+                 #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
                 Collection_df = Telesumamry_df.groupby('Cordinator').agg({
                     'Collected': 'count',
@@ -210,10 +213,13 @@ def app():
                 
                 # Calculate Arch% as the percentage of 'Consulted' against 'Booked'
                 Collection_df['Arch%'] = (Collection_df['Received'] / Collection_df['Collected']) * 100
-                
                 # Sort the DataFrame by 'Arch%' in descending order
                 Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
-                
+            
+            
+
+
+
                 display_only_renderer = JsCode("""
                     class DisplayOnlyRenderer {
                         init(params) {
@@ -328,28 +334,42 @@ def app():
                                 )
                         
                 with coll[1]:
-                        st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
-                        
-                        with card_container(key="table7"):
+                    #st.write(grouped_df)
+                    with card_container(key="DOCS"):
+                            st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
+
+                            selected_option = ui.tabs(options=['Booking','Consultations', 'Dispatch','Receiving', 'Collection'], default_value='', key="kanaries")
                             
+                            if selected_option == "Consultations":
+                                sorted_df=consulted_df
+            
+                            elif selected_option == "Dispatch":
+                                sorted_df=Received_df
+                                    
+                            elif selected_option == "Collection":
+                                sorted_df=Collection_df
+
                             # Configure GridOptions for the main grid
-                            gb = GridOptionsBuilder.from_dataframe(Received_df)
+                            gb = GridOptionsBuilder.from_dataframe(sorted_df)
                             
-                            gb.configure_column('Medical Centre', editable=False, cellRenderer=display_only_renderer, minWidth=200)
+                            # Configure the default column to be editable
+                            gb.configure_default_column(editable=True, minWidth=10, flex=0)
 
                             # Build the grid options
                             gridoptions = gb.build()
                             
-                            # Display the grid with custom CSS
                             response = AgGrid(
-                                Received_df,
-                                gridOptions=gridoptions,
-                                editable=False,
-                                allow_unsafe_jscode=True,
-                                theme='balham',
-                                height=300,
-                                fit_columns_on_grid_load=True
-                            )
+                                            sorted_df,
+                                            gridOptions=gridoptions,
+                                            editable=True,
+                                            allow_unsafe_jscode=True,
+                                            theme='balham',
+                                            height=300,
+                                            width=5,
+                                            fit_columns_on_grid_load=True)
+                    
+                            st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
+                        
                 with st.expander("View Transaction Status"):
                     st.write(AllMain_df)
                 

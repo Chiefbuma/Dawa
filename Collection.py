@@ -430,10 +430,10 @@ def app():
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
                     """
                                     # Find rows where 'MVC' is empty
-                    invalid_mvc_rows = df[df['MVC'].isna() | (df['MVC'] == "")].index.tolist()
+                    invalid_mvc_rows = df[df['MVC']=="None"].index.tolist()
 
                     # Find rows where 'Collection status' is empty
-                    invalid_collection_status_rows = df[df['Collection status'].isna() | (df['Collection status'] == "")].index.tolist()
+                    invalid_collection_status_rows = df[df['Collection status']=="None"].index.tolist()
 
                     # Combine the lists of indices
                     invalid_rows = list(set(invalid_mvc_rows + invalid_collection_status_rows))
