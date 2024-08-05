@@ -191,22 +191,31 @@ def app():
                 sorted_df = consulted_df.sort_values(by='Arch%', ascending=False)
                 
                 
-                
-                
-                
-            
-                
                 #Group by 'Doctor' and count the occurrences for each status
                 Received_df = Telesumamry_df.groupby('Medical Centre').agg({
                     'Dispatched': 'count',
                     'Received': 'count'
                 }).reset_index()
                 
+                
+                 #Group by 'Doctor' and count the occurrences for each status
+                Dispatch_df = Telesumamry_df.groupby('Medical Centre').agg({
+                    'Dispatched': 'count',
+                    'Consulted': 'count'
+                }).reset_index()
+                
     
+                
+                #BOOKING
+                #Group by 'Doctor' and count the occurrences for each status
+                Booking_df = Telesumamry_df.groupby('Cordinator').agg({
+                    'Collected': 'count',
+                    'Booked': 'count'
+                }).reset_index()
                 
                  #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
-                Collection_df = Telesumamry_df.groupby('Cordinator').agg({
+                Collection_df = Telesumamry_df.groupby('Medical Centre').agg({
                     'Collected': 'count',
                     'Received': 'count'
                 }).reset_index()
@@ -216,10 +225,6 @@ def app():
                 # Sort the DataFrame by 'Arch%' in descending order
                 Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
             
-            
-
-
-
                 display_only_renderer = JsCode("""
                     class DisplayOnlyRenderer {
                         init(params) {
@@ -227,7 +232,27 @@ def app():
                             this.eGui = document.createElement('div');
 
                             // Set the width and height of the div
-                            this.eGui.style.width = '150px'; // Adjust the width as needed
+                            this.eGui.style.width = '10px'; // Adjust the width as needed
+                            this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                            this.eGui.innerText = this.params.value || '';
+                        }
+
+                        getGui() {
+                            return this.eGui;
+                        }
+                    }
+                    """)
+                
+                
+                display_only_renderer2 = JsCode("""
+                    class DisplayOnlyRenderer {
+                        init(params) {
+                            this.params = params;
+                            this.eGui = document.createElement('div');
+
+                            // Set the width and height of the div
+                            this.eGui.style.width = 200px'; // Adjust the width as needed
                             this.eGui.style.height = '20px'; // Adjust the height as needed
 
                             this.eGui.innerText = this.params.value || '';
@@ -335,43 +360,27 @@ def app():
                         
                 with coll[1]:
                     #st.write(grouped_df)
-                    with card_container(key="DOCS"):
-                            st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
 
                             selected_option = ui.tabs(options=['Booking','Consultations', 'Dispatch','Receiving', 'Collection'], default_value='', key="kanaries")
                             
                             if selected_option == "Consultations":
                                 sorted_df=consulted_df
-            
+                               
+                                
                             elif selected_option == "Dispatch":
-                                sorted_df=Received_df
-                                    
+                                sorted_df=Dispatch_df
+                                
+                        
                             elif selected_option == "Collection":
                                 sorted_df=Collection_df
-
-                            # Configure GridOptions for the main grid
-                            gb = GridOptionsBuilder.from_dataframe(sorted_df)
+                               
+                            elif selected_option == "Booking":
+                                sorted_df=Booking_df
+                                
                             
-                            # Configure the default column to be editable
-                            gb.configure_default_column(editable=True, minWidth=10, flex=0)
-
-                            # Build the grid options
-                            gridoptions = gb.build()
-                            
-                            response = AgGrid(
-                                            sorted_df,
-                                            gridOptions=gridoptions,
-                                            editable=True,
-                                            allow_unsafe_jscode=True,
-                                            theme='balham',
-                                            height=300,
-                                            width=5,
-                                            fit_columns_on_grid_load=True)
+                            st.write(sorted_df)
                     
-                            st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
-                        
-                with st.expander("View Transaction Status"):
-                    st.write(AllMain_df)
+                           
                 
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
