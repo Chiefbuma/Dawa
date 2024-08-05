@@ -112,6 +112,17 @@ def app():
                     
             with card_container(key="Main1"):
                 
+                
+                # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                Main_df['Full_Collection'] = Main_df['Collection status'].isin(['Full']).astype(int)
+                
+                # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                Main_df['Partial_Collection'] = Main_df['Collection status'].isin(['Partial']).astype(int)
+                
+                # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                #Main_df['Returned'] = Main_df['Received'] == 'Returned'
+                
+                
                 Telesumamry_df = Main_df.rename(columns={
                     'DoctorName': 'Doctor',
                     'Booked By':'Cordinator',
@@ -122,27 +133,12 @@ def app():
                     'Consultation Status': 'Consulted',
                     'Dispatched status': 'Dispatched',
                     'Received Status': 'Received',
+                    'Partial_Collection':'Partial',
+                    'Full_Collection':'Full',
                     'Collection status': 'Collected',
                     'Month': 'Month',
                     "Cycle":'Cycle'
                 })
-                
-                
-                # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                Telesumamry_df['Full_Collection'] = Telesumamry_df['Collected'] == 'Full'
-                
-                # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                Telesumamry_df['Partial_Collection'] = Telesumamry_df['Collected'] == 'Partial'
-                
-                # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                Telesumamry_df['Returned'] = Telesumamry_df['Received'] == 'Returned'
-                
-                
-                Partial_calc = Telesumamry_df [Telesumamry_df['Partial_Collection'] == 'Partial']
-                Partial= int(Partial_calc.shape[0])
-                
-                full_calc = Telesumamry_df [Telesumamry_df['Full_Collection'] == 'Full']
-                Full= int(full_calc.shape[0])
                 
                 Consulted_calc = Telesumamry_df [Telesumamry_df['Consulted'] == 'Consulted']
                 Consulted= int(Consulted_calc.shape[0])
@@ -155,25 +151,31 @@ def app():
                 
                 Booked_calc = Telesumamry_df [Telesumamry_df['Booked'] == 'Booked']
                 Booked= int(Booked_calc.shape[0])
+
                 
+                full_calc =Telesumamry_df['Full'].sum()
+                Full= full_calc
+                
+                Partial_calc = Telesumamry_df['Partial'].sum()
+                Partial= Partial_calc
                 
                 #SUMMARY
                 #Group by 'Cycle' and count the occurrences for each status
                 #Group by 'Cycle' and count the occurrences for each status
                 summary_df = Telesumamry_df.groupby('Cycle').agg({
                     'Booked': 'count',
+                    'Full':'sum',
+                    'Partial':'sum',
                     'Consulted': 'count',
                     'Dispatched': 'count',
-                    'Received': 'count',
-                    'Full_Collection': 'count',
-                    'Partial_Collection':'count', 
-                    'Returned': 'count'
+                    'Received': 'count'
+        
                 }).reset_index()
 
                 # Rename columns for clarity (already clear in this case)
                 summary_df.columns = [
                     'Cycle', 'Booked', 'Consulted', 'Dispatched', 
-                    'Received', 'Full_Collection', 'Partial_Collection', 'Returned'
+                    'Received', 'Full', 'Partial'
                 ]
 
                 
@@ -347,10 +349,10 @@ def app():
                                         <div style="font-size:16px; font-weight:bold; color:black;">
                                             {Collect_label}
                                         </div>
-                                        <div style="font-size:14px; font-weight:bold; color:black;">
+                                        <div style="font-size:18px; font-weight:bold; color:black;">
                                         {full_label} {Full}
                                         </div>
-                                        <div style="font-size:14px; font-weight:bold; color:black;">
+                                        <div style="font-size:18px; font-weight:bold; color:black;">
                                         {Partial_label}{Partial}
                                         </div>
                                     </div>
