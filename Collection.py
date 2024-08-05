@@ -17,6 +17,7 @@ import logging
 from postgrest import APIError
 
 def app():
+    
     if 'is_authenticated' not in st.session_state:
         st.session_state.is_authenticated = False
         st.write(f"""<span style="color:red;">
@@ -292,6 +293,9 @@ def app():
                         "Booked on",
                         "Booked By",
                         "DoctorName",
+                        "Designation",
+                        "Staffnumber",
+                        "Staffname",
                         "Consultation Status",
                         "Collection Date",
                         "Consultation Date",
