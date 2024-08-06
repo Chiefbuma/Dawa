@@ -223,7 +223,7 @@ def app():
                 }).reset_index()
                 
                 # Calculate Arch% as the percentage of 'Consulted' against 'Booked'
-                Collection_df['Arch%'] = (Collection_df['Received'] / Collection_df['Collected']) * 100
+                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received']) * 100
                 # Sort the DataFrame by 'Arch%' in descending order
                 Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
             
