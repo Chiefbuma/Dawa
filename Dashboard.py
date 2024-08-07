@@ -162,11 +162,12 @@ def app():
                 #SUMMARY
                 #Group by 'Cycle' and count the occurrences for each status
                 #Group by 'Cycle' and count the occurrences for each status
-                summary_df = Telesumamry_df.groupby('Cycle').agg({
+                summary_df = Telesumamry_df.groupby(['Cycle','Doctor','Medical Centre','Cordinator']).agg({
                     'Booked': 'count',
                     'Full':'sum',
                     'Partial':'sum',
                     'Consulted': 'count',
+                    'Collected':'count',
                     'Dispatched': 'count',
                     'Received': 'count'
         
@@ -174,59 +175,91 @@ def app():
 
                 # Rename columns for clarity (already clear in this case)
                 summary_df.columns = [
-                    'Cycle', 'Booked', 'Consulted', 'Dispatched', 
-                    'Received', 'Full', 'Partial'
+                    'Cycle', 'Booked', 'Consulted', 'Dispatched', 'Medical Centre','Doctor'
+                    'Received', 'Full', 'Partial','Collected','Cordinator'
                 ]
 
                 
                 
                 #CONSULTED
                 # Group by 'Doctor' and count the occurrences for each status
-                consulted_df = Telesumamry_df.groupby('Doctor').agg({
-                    'Booked': 'count',
-                    'Consulted': 'count'
+                consulted_df = summary_df.groupby('Doctor').agg({
+                    'Consulted': 'sum',
+                    'Booked': 'sum'
+                   
                 }).reset_index()
                 
-                # Calculate Arch% as the percentage of 'Consulted' against 'Booked'
-                consulted_df['Arch%'] = (consulted_df['Booked'] / consulted_df['Consulted']) * 100
-                # Sort the DataFrame by 'Arch%' in descending order
-                sorted_df = consulted_df.sort_values(by='Arch%', ascending=False)
+                # Calculate Arch%
+                consulted_df['Arch%'] = (consulted_df['Consulted'] / consulted_df['Booked'].replace(0, pd.NA)) * 100
+                consulted_df = consulted_df.sort_values(by='Arch%', ascending=False)
+                consulted_df['Arch%'] = consulted_df['Arch%'].fillna(0)  # Replace NaN with 0
+                # Convert to string with % symbol
+                consulted_df['Arch%'] = consulted_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
                 
                 
                 #Group by 'Doctor' and count the occurrences for each status
-                Received_df = Telesumamry_df.groupby('Medical Centre').agg({
-                    'Dispatched': 'count',
-                    'Received': 'count'
+                Received_df = summary_df.groupby('Medical Centre').agg({
+                    'Received': 'sum',
+                    'Dispatched': 'sum'
                 }).reset_index()
                 
                 
-                 #Group by 'Doctor' and count the occurrences for each status
-                Dispatch_df = Telesumamry_df.groupby('Medical Centre').agg({
-                    'Dispatched': 'count',
-                    'Consulted': 'count'
+                # Calculate Arch%
+                Received_df['Arch%'] = (Received_df['Received'] / Received_df['Dispatched'].replace(0, pd.NA)) * 100
+                Received_df = Received_df.sort_values(by='Arch%', ascending=False)
+                Received_df['Arch%'] = Received_df['Arch%'].fillna(0)  # Replace NaN with 0
+                # Convert to string with % symbol
+                Received_df['Arch%'] = Received_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
+                
+                #Group by 'Doctor' and count the occurrences for each status
+                Dispatch_df = summary_df.groupby('Medical Centre').agg({
+                    'Consulted': 'sum',
+                    'Dispatched': 'sum'
                 }).reset_index()
                 
-    
+                # Calculate Arch%
+                Dispatch_df['Arch%'] = (Dispatch_df['Consulted'] / Dispatch_df['Dispatched'].replace(0, pd.NA)) * 100
+                Dispatch_df = Dispatch_df.sort_values(by='Arch%', ascending=False)
+                Dispatch_df['Arch%'] = Dispatch_df['Arch%'].fillna(0)  # Replace NaN with 0
+                # Convert to string with % symbol
+                Dispatch_df['Arch%'] = Dispatch_df['Arch%'].apply(lambda x: f"{x:.0f}%")
                 
+            
                 #BOOKING
                 #Group by 'Doctor' and count the occurrences for each status
-                Booking_df = Telesumamry_df.groupby('Cordinator').agg({
-                    'Collected': 'count',
-                    'Booked': 'count'
+                Booking_df = summary_df.groupby('Cordinator').agg({
+                    'Booked': 'sum'
                 }).reset_index()
                 
-                 #COLLECTION
-                #Group by 'Doctor' and count the occurrences for each status
-                Collection_df = Telesumamry_df.groupby('Medical Centre').agg({
-                    'Collected': 'count',
-                    'Received': 'count'
-                }).reset_index()
+                # Calculate Arch%
+                Booking_df['Target'] = (3921/10)
                 
-                # Calculate Arch% as the percentage of 'Consulted' against 'Booked'
-                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received']) * 100
-                # Sort the DataFrame by 'Arch%' in descending order
-                Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
+                # Calculate Arch%
+                Booking_df['Arch%'] =(Booking_df['Booked'] / Booking_df['Target'].replace(0, pd.NA)) * 100
+                Booking_df['Arch%'] = Booking_df['Arch%'].fillna(0)  # Replace NaN with 0
+                # Convert to string with % symbol
+                Booking_df['Arch%']= Booking_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
             
+                #COLLECTION
+                #Group by 'Doctor' and count the occurrences for each status
+                Collection_df = summary_df.groupby('Medical Centre').agg({
+                    'Received': 'sum',
+                    'Collected': 'sum'
+                   
+                }).reset_index()
+                
+                                # Calculate Arch%
+                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received'].replace(0, pd.NA)) * 100
+                Collection_df['Arch%'] = Collection_df['Arch%'].fillna(0)  # Replace NaN with 0
+                
+                # Convert to string with % symbol
+                Collection_df['Arch%']= Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
+             
+                
                 display_only_renderer = JsCode("""
                     class DisplayOnlyRenderer {
                         init(params) {
@@ -274,7 +307,7 @@ def app():
             
                 coll = st.columns([1,4])
                 with coll[0]:
-                    colm=st.columns(2)
+                    colm=st.columns(3)
                     with colm[0]:
                         with st.container():
                                 Bok_label = "Booked"
@@ -338,7 +371,6 @@ def app():
                                     """, 
                                     unsafe_allow_html=True
                                 )
-                                
                         with st.container():
                                 Collect_label = "Collected"
                                 full_label = "Full-"
@@ -361,29 +393,25 @@ def app():
                                 )
                         
                 with coll[1]:
-                    #st.write(grouped_df)
-
-                            selected_option = ui.tabs(options=['Booking','Consultations', 'Dispatch','Receiving', 'Collection'], default_value='', key="kanaries")
-                            
-                            if selected_option == "Consultations":
-                                sorted_df=consulted_df
-                               
-                                
-                            elif selected_option == "Dispatch":
-                                sorted_df=Dispatch_df
-                                
+                        st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
+                      
+                        selected_option = ui.tabs(options=['Booking Rate','Consultation Rate', 'Receiving Rate', 'Collection Rate'], default_value='', key="reprots")
                         
-                            elif selected_option == "Collection":
-                                sorted_df=Collection_df
-                               
-                            elif selected_option == "Booking":
-                                sorted_df=Booking_df
-                                
+                        if selected_option == "Consultation Rate":
+                            sorted_df=consulted_df
+                            st.dataframe(sorted_df, hide_index=True)
                             
-                            st.write(sorted_df)
-                    
-                           
-                
+                        elif selected_option == "Receiving Rate":
+                            sorted_df=Received_df
+                            st.dataframe(sorted_df, hide_index=True)
+                                
+                        elif selected_option == "Collection Rate":
+                             sorted_df=Dispatch_df
+                             st.dataframe(sorted_df, hide_index=True)
+                            
+                        elif selected_option == "Booking Rate":
+                             sorted_df=Booking_df
+                             st.dataframe(sorted_df, hide_index=True)
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:

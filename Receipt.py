@@ -309,7 +309,7 @@ def app():
 
             # Configure specific columns with additional settings
         
-            gb.configure_column('Received Status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer, width=100)
+            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer,width=10)
             
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
@@ -581,8 +581,27 @@ def app():
                     st.error(f"Failed to update to SharePoint: {str(e)}")
                     st.stop() 
                 
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
+                                    # Find rows where 'MVC' is empty
+                    invalid_rows = df[df['Received Status']=="None"].index.tolist()
+
+                    
+                    if invalid_rows:
+                        return False, invalid_rows
+                    return True, []
+                
                 def submit_to_sharepoint(pres_df):
                     
+                    # Validate data before submission
+                    is_valid, invalid_rows = validate_appointment_data(pres_df)
+                    
+                    if not is_valid:
+                        st.error(f"Required field(s) is blank in rows: {invalid_rows}")
+                        return
                     try:
                         with st.spinner('Submitting...'):
                             sp = SharePoint()

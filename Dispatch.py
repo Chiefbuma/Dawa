@@ -328,7 +328,7 @@ def app():
                     
                     cols = st.columns(6)
                     with cols[5]:
-                        st.form_submit_button(" Confirm  🔒", type="primary")
+                        st.form_submit_button(" Confirm", type="primary")
                         
                
             selected_row = response['selected_rows']
