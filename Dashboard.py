@@ -183,8 +183,9 @@ def app():
                 #CONSULTED
                 # Group by 'Doctor' and count the occurrences for each status
                 consulted_df = Telesumamry_df.groupby('Doctor').agg({
-                    'Consulted': 'count',
-                    'Booked': 'count'
+                    'Booked': 'count',
+                    'Consulted': 'count'
+                    
                    
                 }).reset_index()
                 
@@ -200,8 +201,9 @@ def app():
                 
                 #Group by 'Doctor' and count the occurrences for each status
                 Received_df = Telesumamry_df.groupby('Medical Centre').agg({
-                    'Received': 'count',
-                    'Dispatched': 'count'
+                'Dispatched': 'count',
+                'Received': 'count'
+                    
                 }).reset_index()
                 
                 
@@ -403,7 +405,7 @@ def app():
                             st.dataframe(sorted_df, hide_index=True)
                                 
                         elif selected_option == "Collection":
-                             sorted_df=Dispatch_df
+                             sorted_df=Collection_df
                              st.dataframe(sorted_df, hide_index=True)
                             
                         elif selected_option == "Booking":
