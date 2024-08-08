@@ -234,7 +234,7 @@ def app():
                 }).reset_index()
                 
                 # Calculate Arch%
-                Booking_df['Target'] = (3921/10)
+                Booking_df['Target'] = round(3827 / 10, 0)
                 
                 # Calculate Arch%
                 Booking_df['Arch%'] =(Booking_df['Booked'] / Booking_df['Target'].replace(0, pd.NA)) * 100
