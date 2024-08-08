@@ -254,7 +254,14 @@ def app():
                    
                 }).reset_index()
                 
-                                # Calculate Arch%
+                # Calculate Arch%
+                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received'].replace(0, pd.NA)) * 100
+                Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
+                Collection_df['Arch%'] = Collection_df['Arch%'].fillna(0)  # Replace NaN with 0
+                # Convert to string with % symbol
+                Collection_df['Arch%'] = Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
+                # Calculate Arch%
                
                 
              
