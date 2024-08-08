@@ -35,15 +35,12 @@ def app():
             # Initialize session state if it doesn't exist
                     
         if st.session_state.is_authenticated:
-            
-            
-            #if choice and choice != "Select Month":     
-            # get clients sharepoint list
-            @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
+           
+            #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
+            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
             def load_new():
-                try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery',columns=[
-                        "Title",
+                columns = [
+                     "Title",
                         "UHID",
                         "Patientname",
                         "mobile",
@@ -64,27 +61,37 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
-                        'Transfer Status',
-                        'Transfer From',
-                         'Transfer To',
+                         "Transfer To",
+                         "Transfer Status",
+                         "Transfer From",
                         "Month",
                         "Cycle"
+                ]
+                
+                try:
+                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
+                    df = pd.DataFrame(clients)
+                    
+                    # Ensure all specified columns are in the DataFrame, even if empty
+                    for col in columns:
+                        if col not in df.columns:
+                            df[col] = None
 
-                ])
-                    return pd.DataFrame(clients)
+                    return df
                 except APIError as e:
                     st.error("Connection not available, check connection")
-                    st.stop() 
+                    st.stop()
+
+            cycle_df = load_new()
             
-            cycle_df= load_new()
-            
+            #st.write(cycle_df)
             
             # Get a list of unique values in the 'Cycle' column
             Cycle = cycle_df['Cycle'].unique().tolist()
             
             # Map the month name back to its numeric value
             #month_number = datetime.strptime(choice, "%B").month
-                
+            st.container   
             cols = st.columns([4,1])
             with cols[0]:
                 ui.card(
@@ -133,9 +140,9 @@ def app():
                     'Location':'Medical Centre',
                     'Dispensed By':'Pharmatech.',
                     'Booking status': 'Booked',
-                    'Transfer Status':'Total Transfer',
-                    'Transfer From':'Transfer Out',
-                    'Transfer To':'Transfer In',
+                    'Transfer Status':'Total',
+                    'Transfer From':'TransferOut',
+                    'Transfer To':'TransferIn',
                     'Consultation Status': 'Consulted',
                     'Dispatched status': 'Dispatched',
                     'Received Status': 'Received',
@@ -146,6 +153,7 @@ def app():
                     "Cycle":'Cycle'
                 })
                 
+                #st.write(Telesumamry_df)
                 
                 Target=3827
                 Booked_calc = Main_df [Main_df['Booking status'] == 'Booked']
@@ -296,9 +304,9 @@ def app():
                #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
                 Transfer_df = Telesumamry_df.groupby('Medical Centre').agg({
-                    'Transfer Out': 'count',
-                    'Transfer In': 'count',
-                    'Total Transfer':'count'
+                    'TransferOut': 'count',
+                    'TransferIn': 'count',
+                    'Total':'count'
                    
                 }).reset_index()
                 

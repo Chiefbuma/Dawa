@@ -429,17 +429,14 @@ def app():
                     Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
                     """
-                                    # Find rows where 'MVC' is empty
+                    # Find rows where 'MVC' is empty
                     invalid_mvc_rows = df[df['MVC']=="None"].index.tolist()
 
-                    # Find rows where 'Collection status' is empty
-                    invalid_collection_status_rows = df[df['Collection status']=="None"].index.tolist()
-
-                    # Combine the lists of indices
-                    invalid_rows = list(set(invalid_mvc_rows + invalid_collection_status_rows))
                     
-                    if invalid_rows:
-                        return False, invalid_rows
+                    
+                    
+                    if invalid_mvc_rows:
+                        return False, invalid_mvc_rows
                     return True, []
 
                 def submit_to_sharepoint(Appointment_df):
@@ -447,7 +444,7 @@ def app():
                     is_valid, invalid_rows = validate_appointment_data(Appointment_df)
                     
                     if not is_valid:
-                        st.error(f"Required field(s) is blank in rows: {invalid_rows}")
+                        st.error(f"Required MVC(s) is blank in rows: {invalid_rows}")
                         return
                     try:
                         with st.spinner('Submitting...'):
