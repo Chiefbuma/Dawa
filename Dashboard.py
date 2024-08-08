@@ -149,7 +149,7 @@ def app():
                 Received_calc = Telesumamry_df [Telesumamry_df['Received'] == 'Received']
                 Received= int(Received_calc.shape[0])
                 
-                Booked_calc = Telesumamry_df [Telesumamry_df['Booked'] == 'Booked']
+                Booked_calc = Main_df [Telesumamry_df['Booking status'] == 'Booked']
                 Booked= int(Booked_calc.shape[0])
 
                 
