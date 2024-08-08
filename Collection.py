@@ -430,7 +430,7 @@ def app():
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
                     """
                                     # Find rows where 'MVC' is empty
-                    invalid_rows = df[df['MVC']=="None"].index.tolist()
+                    invalid_rows = df[df['MVC']==""].index.tolist()
 
                     
                     
