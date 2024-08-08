@@ -431,10 +431,12 @@ def app():
                     """
                                     # Find rows where 'MVC' is empty
                     invalid_rows = df[df['MVC']==""].index.tolist()
+                    
+                    invalid_rows2 = df[df['Collection status']==""].index.tolist()
 
                     
                     
-                    if invalid_rows:
+                    if invalid_rows or invalid_rows2:
                         return False, invalid_rows
                     return True, []
 
