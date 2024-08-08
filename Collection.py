@@ -433,7 +433,7 @@ def app():
                     
 
                    # Find rows where 'MVC' is empty or null, or 'Collection status' is "None"
-                    invalid_rows = df[df['MVC'].isna() | (df['Collection status'] == "None")].index.tolist()
+                    invalid_rows = df[df['MVC'].isna()]
 
                     
                     if invalid_rows:
