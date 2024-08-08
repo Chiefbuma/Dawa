@@ -64,6 +64,9 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
+                        'Transfer Status',
+                        'Transfer From',
+                         'Transfer To',
                         "Month",
                         "Cycle"
 
@@ -130,6 +133,9 @@ def app():
                     'Location':'Medical Centre',
                     'Dispensed By':'Pharmatech.',
                     'Booking status': 'Booked',
+                    'Transfer Status':'Total Transfer',
+                    'Transfer From':'Transfer Out',
+                    'Transfer To':'Transfer In',
                     'Consultation Status': 'Consulted',
                     'Dispatched status': 'Dispatched',
                     'Received Status': 'Received',
@@ -140,17 +146,30 @@ def app():
                     "Cycle":'Cycle'
                 })
                 
+                
+                Target=3827
+                Booked_calc = Main_df [Main_df['Booking status'] == 'Booked']
+                Booked= int(Booked_calc.shape[0])
+                Book_rate= (round(Booked/Target,2)*100)
+                Book_rate= "{:.0f}%".format(Book_rate)
+                
+                
                 Consulted_calc = Telesumamry_df [Telesumamry_df['Consulted'] == 'Consulted']
                 Consulted= int(Consulted_calc.shape[0])
+                cons_rate= (round(Consulted/Booked,2)*100)
+                cons_rate= "{:.0f}%".format(cons_rate)
                 
                 Dispatched_calc = Telesumamry_df [Telesumamry_df['Dispatched'] == 'Dispatched']
                 Dispatched= int(Dispatched_calc.shape[0])
+                dip_rate= (round(Dispatched/Consulted,2)*100)
+                dip_rate= "{:.0f}%".format(dip_rate)
+                
                 
                 Received_calc = Telesumamry_df [Telesumamry_df['Received'] == 'Received']
                 Received= int(Received_calc.shape[0])
-                
-                Booked_calc = Main_df [Main_df['Booking status'] == 'Booked']
-                Booked= int(Booked_calc.shape[0])
+                rev_rate= (round(Received/Dispatched,2)*100)
+                rev_rate= "{:.0f}%".format(rev_rate)
+               
 
                 
                 full_calc =Telesumamry_df['Full'].sum()
@@ -158,6 +177,11 @@ def app():
                 
                 Partial_calc = Telesumamry_df['Partial'].sum()
                 Partial= Partial_calc
+                
+                Collected=Partial_calc +full_calc
+                col_rate= (round(Collected/Received,2)*100)
+                col_rate= "{:.0f}%".format(col_rate)
+                
                 
                 #SUMMARY
                 #Group by 'Cycle' and count the occurrences for each status
@@ -254,15 +278,29 @@ def app():
                    
                 }).reset_index()
                 
-                # Calculate Arch%
-                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received'].replace(0, pd.NA)) * 100
-                Collection_df = Collection_df.sort_values(by='Arch%', ascending=False)
-                Collection_df['Arch%'] = Collection_df['Arch%'].fillna(0)  # Replace NaN with 0
-                # Convert to string with % symbol
-                Collection_df['Arch%'] = Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                                # Ensure 'Collected' and 'Received' columns are numeric
+                Collection_df['Collected'] = pd.to_numeric(Collection_df['Collected'], errors='coerce')
+                Collection_df['Received'] = pd.to_numeric(Collection_df['Received'], errors='coerce')
+
+                # Calculate 'Arch%' column
+                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received']) * 100
+
+                # Handle any infinite or NaN values resulting from the division
+                Collection_df['Arch%'].replace([np.inf, -np.inf, pd.NA,np.nan], 0, inplace=True)
                 
                 # Calculate Arch%
-               
+                Collection_df['Arch%']= Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+                
+             
+             
+               #COLLECTION
+                #Group by 'Doctor' and count the occurrences for each status
+                Transfer_df = Telesumamry_df.groupby('Medical Centre').agg({
+                    'Transfer Out': 'count',
+                    'Transfer In': 'count',
+                    'Total Transfer':'count'
+                   
+                }).reset_index()
                 
              
                 
@@ -324,7 +362,7 @@ def app():
                                             {Bok_label}
                                         </div>
                                         <div style="font-size:20px; font-weight:bold; color:black;">
-                                            {Booked}
+                                           {Booked}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{Book_rate}</span>
                                         </div>
                                     </div>
                                     """, 
@@ -340,7 +378,7 @@ def app():
                                             {Con_label}
                                         </div>
                                         <div style="font-size:20px; font-weight:bold; color:black;">
-                                            {Consulted}
+                                            {Consulted}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{cons_rate}</span>
                                         </div>
                                     </div>
                                     """, 
@@ -356,7 +394,7 @@ def app():
                                             {Dis_label}
                                         </div>
                                         <div style="font-size:20px; font-weight:bold; color:black;">
-                                            {Dispatched}
+                                            {Dispatched}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{dip_rate}</span>
                                         </div>
                                     </div>
                                     """, 
@@ -371,7 +409,7 @@ def app():
                                             {Rec_label}
                                         </div>
                                         <div style="font-size:20px; font-weight:bold; color:black;">
-                                            {Received}
+                                            {Received}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{rev_rate}</span>
                                         </div>
                                     </div>
                                     """, 
@@ -391,7 +429,7 @@ def app():
                                         {full_label} {Full}
                                         </div>
                                         <div style="font-size:18px; font-weight:bold; color:black;">
-                                        {Partial_label}{Partial}
+                                        {Partial_label}{Partial}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{col_rate}</span>
                                         </div>
                                     </div>
                                     """, 
@@ -401,7 +439,7 @@ def app():
                 with coll[1]:
                         st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
                       
-                        selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection'], default_value='', key="reprots")
+                        selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection','Transfers'], default_value='', key="reprots")
                         
                         if selected_option == "Consultation":
                             sorted_df=consulted_df
@@ -418,6 +456,11 @@ def app():
                         elif selected_option == "Booking":
                              sorted_df=Booking_df
                              st.dataframe(sorted_df, hide_index=True)
+                             
+                        elif selected_option == "Transfers":
+                             sorted_df=Transfer_df
+                             st.dataframe(sorted_df, hide_index=True)
+                             
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:
