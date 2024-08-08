@@ -248,7 +248,7 @@ def app():
             
                 #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
-                Collection_df = Telesumamry_df.groupby('Cordinator').agg({
+                Collection_df = Telesumamry_df.groupby('Medical Centre').agg({
                     'Received': 'count',
                     'Collected': 'count'
                    
