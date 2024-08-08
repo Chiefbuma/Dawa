@@ -443,7 +443,7 @@ def app():
                     is_valid, invalid_rows = validate_appointment_data(Appointment_df)
                     
                     if not is_valid:
-                        st.error(f"Required field(s) is blank in rows: {invalid_rows}")
+                        st.error(f"MVC is blank in rows: {invalid_rows}")
                         return
                     try:
                         with st.spinner('Submitting...'):
