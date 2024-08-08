@@ -379,7 +379,7 @@ def app():
                     
                     cols = st.columns(6)
                     with cols[5]:
-                        st.form_submit_button(" Confirm", type="primary")  
+                        st.form_submit_button(" Confirm ", type="primary")  
                 
                     
             with card_container(key="colecnew"):
@@ -430,11 +430,9 @@ def app():
                     Returns a boolean indicating if the data is valid and a list of row indices with issues.
                     """
                                     # Find rows where 'MVC' is empty
+                    invalid_rows = df[df['MVC']=="None"].index.tolist()
+
                     
-
-                   # Find rows where 'MVC' is empty or null, or 'Collection status' is "None"
-                    invalid_rows = df[df['MVC'].isna()]
-
                     
                     if invalid_rows:
                         return False, invalid_rows
