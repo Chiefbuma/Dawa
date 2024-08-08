@@ -162,12 +162,11 @@ def app():
                 #SUMMARY
                 #Group by 'Cycle' and count the occurrences for each status
                 #Group by 'Cycle' and count the occurrences for each status
-                summary_df = Telesumamry_df.groupby(['Cycle','Doctor','Medical Centre','Cordinator']).agg({
+                summary_df = Telesumamry_df.groupby('Cycle').agg({
                     'Booked': 'count',
                     'Full':'sum',
                     'Partial':'sum',
                     'Consulted': 'count',
-                    'Collected':'count',
                     'Dispatched': 'count',
                     'Received': 'count'
         
@@ -175,17 +174,17 @@ def app():
 
                 # Rename columns for clarity (already clear in this case)
                 summary_df.columns = [
-                    'Cycle', 'Booked', 'Consulted', 'Dispatched', 'Medical Centre','Doctor'
-                    'Received', 'Full', 'Partial','Collected','Cordinator'
+                    'Cycle', 'Booked', 'Consulted', 'Dispatched', 
+                    'Received', 'Full', 'Partial'
                 ]
 
                 
                 
                 #CONSULTED
                 # Group by 'Doctor' and count the occurrences for each status
-                consulted_df = summary_df.groupby('Doctor').agg({
-                    'Consulted': 'sum',
-                    'Booked': 'sum'
+                consulted_df = Telesumamry_df.groupby('Doctor').agg({
+                    'Consulted': 'count',
+                    'Booked': 'count'
                    
                 }).reset_index()
                 
@@ -198,10 +197,11 @@ def app():
                 
                 
                 
+                
                 #Group by 'Doctor' and count the occurrences for each status
-                Received_df = summary_df.groupby('Medical Centre').agg({
-                    'Received': 'sum',
-                    'Dispatched': 'sum'
+                Received_df = Telesumamry_df.groupby('Medical Centre').agg({
+                    'Received': 'count',
+                    'Dispatched': 'count'
                 }).reset_index()
                 
                 
@@ -214,9 +214,9 @@ def app():
                 
                 
                 #Group by 'Doctor' and count the occurrences for each status
-                Dispatch_df = summary_df.groupby('Medical Centre').agg({
-                    'Consulted': 'sum',
-                    'Dispatched': 'sum'
+                Dispatch_df = Telesumamry_df.groupby('Medical Centre').agg({
+                    'Consulted': 'count',
+                    'Dispatched': 'count'
                 }).reset_index()
                 
                 # Calculate Arch%
@@ -229,8 +229,8 @@ def app():
             
                 #BOOKING
                 #Group by 'Doctor' and count the occurrences for each status
-                Booking_df = summary_df.groupby('Cordinator').agg({
-                    'Booked': 'sum'
+                Booking_df = Telesumamry_df.groupby('Cordinator').agg({
+                    'Booked': 'count'
                 }).reset_index()
                 
                 # Calculate Arch%
@@ -242,21 +242,18 @@ def app():
                 # Convert to string with % symbol
                 Booking_df['Arch%']= Booking_df['Arch%'].apply(lambda x: f"{x:.0f}%")
                 
+                
             
                 #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
-                Collection_df = summary_df.groupby('Medical Centre').agg({
-                    'Received': 'sum',
-                    'Collected': 'sum'
+                Collection_df = Telesumamry_df.groupby('Cordinator').agg({
+                    'Received': 'count',
+                    'Collected': 'count'
                    
                 }).reset_index()
                 
                                 # Calculate Arch%
-                Collection_df['Arch%'] = (Collection_df['Collected'] / Collection_df['Received'].replace(0, pd.NA)) * 100
-                Collection_df['Arch%'] = Collection_df['Arch%'].fillna(0)  # Replace NaN with 0
-                
-                # Convert to string with % symbol
-                Collection_df['Arch%']= Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
+               
                 
              
                 
@@ -395,21 +392,21 @@ def app():
                 with coll[1]:
                         st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
                       
-                        selected_option = ui.tabs(options=['Booking Rate','Consultation Rate', 'Receiving Rate', 'Collection Rate'], default_value='', key="reprots")
+                        selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection'], default_value='', key="reprots")
                         
-                        if selected_option == "Consultation Rate":
+                        if selected_option == "Consultation":
                             sorted_df=consulted_df
                             st.dataframe(sorted_df, hide_index=True)
                             
-                        elif selected_option == "Receiving Rate":
+                        elif selected_option == "Receiving":
                             sorted_df=Received_df
                             st.dataframe(sorted_df, hide_index=True)
                                 
-                        elif selected_option == "Collection Rate":
+                        elif selected_option == "Collection":
                              sorted_df=Dispatch_df
                              st.dataframe(sorted_df, hide_index=True)
                             
-                        elif selected_option == "Booking Rate":
+                        elif selected_option == "Booking":
                              sorted_df=Booking_df
                              st.dataframe(sorted_df, hide_index=True)
         else:
