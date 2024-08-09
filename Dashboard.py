@@ -65,7 +65,8 @@ def app():
                          "Transfer Status",
                          "Transfer From",
                         "Month",
-                        "Cycle"
+                        "Cycle",
+                        "MVC"
                 ]
                 
                 try:
@@ -91,7 +92,10 @@ def app():
             
             # Map the month name back to its numeric value
             #month_number = datetime.strptime(choice, "%B").month
-            st.container   
+            ui.card(
+                        content="",
+                        key="MCcard9"
+                    ).render()  
             cols = st.columns([4,1])
             with cols[0]:
                 ui.card(
@@ -134,6 +138,10 @@ def app():
                 
                 
                 Telesumamry_df = Main_df.rename(columns={
+                    'UHID':'UHID',
+                    'Patientname':'Patientname',
+                    'mobile':'mobile',
+                    'Location':'Location',
                     'DoctorName': 'Doctor',
                     'Booked By':'Cordinator',
                     'Dispatched By':'WareHouse',
@@ -150,6 +158,7 @@ def app():
                     'Full_Collection':'Full',
                     'Collection status': 'Collected',
                     'Month': 'Month',
+                    'MVC':'MVC',
                     "Cycle":'Cycle'
                 })
                 
@@ -276,8 +285,6 @@ def app():
                 # Convert to string with % symbol
                 Booking_df['Arch%']= Booking_df['Arch%'].apply(lambda x: f"{x:.0f}%")
                 
-                
-            
                 #COLLECTION
                 #Group by 'Doctor' and count the occurrences for each status
                 Collection_df = Telesumamry_df.groupby('Medical Centre').agg({
@@ -310,54 +317,12 @@ def app():
                    
                 }).reset_index()
                 
-             
-                
-                display_only_renderer = JsCode("""
-                    class DisplayOnlyRenderer {
-                        init(params) {
-                            this.params = params;
-                            this.eGui = document.createElement('div');
-
-                            // Set the width and height of the div
-                            this.eGui.style.width = '10px'; // Adjust the width as needed
-                            this.eGui.style.height = '20px'; // Adjust the height as needed
-
-                            this.eGui.innerText = this.params.value || '';
-                        }
-
-                        getGui() {
-                            return this.eGui;
-                        }
-                    }
-                    """)
-                
-                
-                display_only_renderer2 = JsCode("""
-                    class DisplayOnlyRenderer {
-                        init(params) {
-                            this.params = params;
-                            this.eGui = document.createElement('div');
-
-                            // Set the width and height of the div
-                            this.eGui.style.width = 200px'; // Adjust the width as needed
-                            this.eGui.style.height = '20px'; // Adjust the height as needed
-
-                            this.eGui.innerText = this.params.value || '';
-                        }
-
-                        getGui() {
-                            return this.eGui;
-                        }
-                    }
-                    """)
-
-
 
                 # This assumes you have a function ui.table to display DataFrames
                 #ui.table(data=Received_df, maxHeight=300)
                 #st.write(grouped_df)   
             
-                coll = st.columns([1,4])
+                coll = st.columns([1,2,2])
                 with coll[0]:
                     colm=st.columns(3)
                     with colm[0]:
@@ -447,7 +412,7 @@ def app():
                 with coll[1]:
                         st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
                       
-                        selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection','Transfers'], default_value='', key="reprots")
+                        selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection','Transfers'], default_value='Collection', key="reprots")
                         
                         if selected_option == "Consultation":
                             sorted_df=consulted_df
@@ -468,7 +433,135 @@ def app():
                         elif selected_option == "Transfers":
                              sorted_df=Transfer_df
                              st.dataframe(sorted_df, hide_index=True)
-                             
+                
+                with coll[2]:
+                    
+                    with card_container(key="table2"):
+                        cols = st.columns(2)
+                        with cols[1]:
+                    
+                            # Get unique items in the "Report" column
+                            unique_reports = Telesumamry_df["Collected"].unique()
+
+                            # Create an empty dictionary to store the sum of approved amounts for each unique report
+                            report_sum = {}
+
+                            # Iterate over each unique report and calculate the sum of approved amounts
+                            for report in unique_reports:
+                                sum_approved_amount = Telesumamry_df["Collected"].notnull().sum()
+                                report_sum[report] = sum_approved_amount
+
+                            # Convert the dictionary to a DataFrame for easier visualization
+                            report_sum_df = pd.DataFrame(list(report_sum.items()), columns=["Footfall", "Revenue"])
+                            st.write(report_sum_df)
+        
+                with st.expander("TRACK  PACKAGE"): 
+                        
+                    display_only_renderer = JsCode("""
+                        class DisplayOnlyRenderer {
+                            init(params) {
+                                this.params = params;
+                                this.eGui = document.createElement('div');
+
+                                // Set the width and height of the div
+                                this.eGui.style.width = '200px'; // Adjust the width as needed
+                                this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                                this.eGui.innerText = this.params.value || '';
+                            }
+
+                            getGui() {
+                                return this.eGui;
+                            }
+                        }
+                        """)
+                    
+                    display_only_rendererView = JsCode("""
+                        class DisplayOnlyRenderer {
+                            init(params) {
+                                this.params = params;
+                                this.eGui = document.createElement('div');
+
+                                // Set the width and height of the div
+                                this.eGui.style.width = '5px'; // Adjust the width as needed
+                                this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                                this.eGui.innerText = this.params.value || '';
+                            }
+
+                            getGui() {
+                                return this.eGui;
+                            }
+                        }
+                        """)
+                    
+                    
+                    # Create the DataFrame with the required columns
+                    status_df = Telesumamry_df[[
+                    "Patientname",
+                        "UHID",
+                        "mobile",
+                        "Medical Centre",
+                        'Booked', 'Consulted', 'Dispatched', 
+                        'Received',
+                        'Collected',
+                        'MVC',
+                        'TransferOut',
+                        'TransferIn'
+                    ]]
+                    
+                   
+                    colsearch = st.columns(4)
+                    with colsearch [1]:
+                    # Create text input widgets for filtering
+                        patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                    with colsearch [0]:
+                         uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
+
+                    # Apply filters to the DataFrame
+                    filtered_df = status_df[
+                        status_df['Patientname'].str.contains(patientname_filter, case=False, na=False) &
+                        status_df['mobile'].str.contains(uhid_filter, case=False, na=False) 
+                
+                    ]
+
+                    # Configure the grid options
+                    gb = GridOptionsBuilder.from_dataframe(filtered_df)
+
+                    # Configure columns with custom renderers
+                    gb.configure_column('Medical Centre', editable=False, cellRenderer=display_only_renderer,minWidth=200,sort='asc', sortedAt=1,filter=True)
+                    gb.configure_column('Patientname', editable=False, cellRenderer=display_only_renderer,pinned='left',minWidth=250,filter=True)
+                    gb.configure_column('UHID', editable=False, cellRenderer=display_only_rendererView,minWidth=50,filter=True)
+                    gb.configure_column('mobile', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Booked', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Consulted', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Dispatched', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Received', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Collected', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('TransferOut', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('MVC', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+
+                    # Build the grid options
+                    gridoptions = gb.build()
+                    
+                    gridoptions['defaultColDef'] = {
+                        'sortable': True  # Enable sorting on all columns by default
+                    }
+                    gridoptions['sortModel'] = [{'colId': 'Medical Centre', 'sort': 'asc'}]  # Sort 'Patientname' column in ascending order
+
+
+                    # Display the grid
+                    response = AgGrid(
+                        filtered_df,
+                        gridOptions=gridoptions,
+                        editable=False,  # Make sure the grid itself is not editable
+                        allow_unsafe_jscode=True,
+                        theme='balham',
+                        height=300,
+                        width='100%',
+                        fit_columns_on_grid_load=True
+                    )
+                                
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:
