@@ -511,145 +511,145 @@ def app():
                                     'y': {'field': 'Revenue', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}}},
                                     
                                 })
-                with card_container(key="mew"):  
+            with card_container(key="mew"):  
+                
+                container = st.container(border=True, height=400)
+                with container:
+                    display_only_renderer = JsCode("""
+                        class DisplayOnlyRenderer {
+                            init(params) {
+                                this.params = params;
+                                this.eGui = document.createElement('div');
+
+                                // Set the width and height of the div
+                                this.eGui.style.width = '200px'; // Adjust the width as needed
+                                this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                                this.eGui.innerText = this.params.value || '';
+                            }
+
+                            getGui() {
+                                return this.eGui;
+                            }
+                        }
+                        """)
                     
-                    container = st.container(border=True, height=400)
-                    with container:
-                        display_only_renderer = JsCode("""
-                            class DisplayOnlyRenderer {
-                                init(params) {
-                                    this.params = params;
-                                    this.eGui = document.createElement('div');
+                    display_only_rendererView = JsCode("""
+                        class DisplayOnlyRenderer {
+                            init(params) {
+                                this.params = params;
+                                this.eGui = document.createElement('div');
 
-                                    // Set the width and height of the div
-                                    this.eGui.style.width = '200px'; // Adjust the width as needed
-                                    this.eGui.style.height = '20px'; // Adjust the height as needed
+                                // Set the width and height of the div
+                                this.eGui.style.width = '5px'; // Adjust the width as needed
+                                this.eGui.style.height = '20px'; // Adjust the height as needed
 
-                                    this.eGui.innerText = this.params.value || '';
-                                }
-
-                                getGui() {
-                                    return this.eGui;
-                                }
+                                this.eGui.innerText = this.params.value || '';
                             }
-                            """)
-                        
-                        display_only_rendererView = JsCode("""
-                            class DisplayOnlyRenderer {
-                                init(params) {
-                                    this.params = params;
-                                    this.eGui = document.createElement('div');
 
-                                    // Set the width and height of the div
-                                    this.eGui.style.width = '5px'; // Adjust the width as needed
-                                    this.eGui.style.height = '20px'; // Adjust the height as needed
-
-                                    this.eGui.innerText = this.params.value || '';
-                                }
-
-                                getGui() {
-                                    return this.eGui;
-                                }
+                            getGui() {
+                                return this.eGui;
                             }
-                            """)
+                        }
+                        """)
+                    
+                    
+                    # Create the DataFrame with the required columns
+                    status_df = Telesumamry_df[[
+                    "Patientname",
+                        "UHID",
+                        "mobile",
+                        "Medical Centre",
+                        'Booked', 'Consulted', 'Dispatched', 
+                        'Received',
+                        'Collected',
+                        'MVC',
+                        'TransferOut',
+                        'TransferIn'
+                    ]]
+                    
+                    with card_container(key="sel"):
+                        colsearch = st.columns(4)
                         
+                        with colsearch [0]:
                         
-                        # Create the DataFrame with the required columns
-                        status_df = Telesumamry_df[[
-                        "Patientname",
-                            "UHID",
-                            "mobile",
-                            "Medical Centre",
-                            'Booked', 'Consulted', 'Dispatched', 
-                            'Received',
-                            'Collected',
-                            'MVC',
-                            'TransferOut',
-                            'TransferIn'
-                        ]]
+                                Collect_label = "TRACK PATIENT PACKAGES HERE"
+                                Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
+                                Rev_fom = "{:,.0f}".format(Rev_tt)
+                                fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
+                                fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
+
+                                st.markdown(
+                                    f"""
+                                    <div style="background-color:white; padding:5px; border-radius:10px; width:530px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                        <div style="font-size:18px; font-weight:bold; color:black;">
+                                            {Collect_label}
+                                        </div>
+                                    """, 
+                                    unsafe_allow_html=True
+                                )
+                                
+                        with colsearch [2]:
+                            
+                        # Create text input widgets for filtering
+                            patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                            
+                        with colsearch [3]:
+                            uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
                         
-                        with card_container(key="Tag"):  
-                            colsearch = st.columns(4)
-                            
-                            with colsearch [0]:
-                            
-                                    Collect_label = "TRACK PATIENT PACKAGES HERE"
-                                    Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
-                                    Rev_fom = "{:,.0f}".format(Rev_tt)
-                                    fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
-                                    fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
-
-                                    st.markdown(
-                                        f"""
-                                        <div style="background-color:white; padding:5px; border-radius:10px; width:530px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                                            <div style="font-size:18px; font-weight:bold; color:black;">
-                                                {Collect_label}
-                                            </div>
-                                        """, 
-                                        unsafe_allow_html=True
-                                    )
-                                    
-                            with colsearch [2]:
-                                
-                            # Create text input widgets for filtering
-                                patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
-                                
-                            with colsearch [3]:
-                                uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
-                            
 
 
+                        
+                        if patientname_filter or uhid_filter:
+                            # Apply filters to the DataFrame
                             
-                            if patientname_filter or uhid_filter:
-                                # Apply filters to the DataFrame
-                                
-                                filtered_df = status_df[
-                                (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
-                                (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
-                                
-                            ]
+                            filtered_df = status_df[
+                            (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
+                            (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
+                            
+                        ]
 
-                                
-                            else:
-                                filtered_df = status_df
-                                
+                            
+                        else:
+                            filtered_df = status_df
+                            
                             
                         # Configure the grid options
-                        gb = GridOptionsBuilder.from_dataframe(filtered_df)
+                    gb = GridOptionsBuilder.from_dataframe(filtered_df)
 
-                        # Configure columns with custom renderers
-                        gb.configure_column('Medical Centre', editable=False, cellRenderer=display_only_renderer,minWidth=200,sort='asc', sortedAt=1,filter=True)
-                        gb.configure_column('Patientname', editable=False, cellRenderer=display_only_renderer,pinned='left',minWidth=250,filter=True)
-                        gb.configure_column('UHID', editable=False, cellRenderer=display_only_rendererView,minWidth=50,filter=True)
-                        gb.configure_column('mobile', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('Booked', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('Consulted', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('Dispatched', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('Received', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('Collected', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('TransferOut', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                        gb.configure_column('MVC', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    # Configure columns with custom renderers
+                    gb.configure_column('Medical Centre', editable=False, cellRenderer=display_only_renderer,minWidth=200,sort='asc', sortedAt=1,filter=True)
+                    gb.configure_column('Patientname', editable=False, cellRenderer=display_only_renderer,pinned='left',minWidth=250,filter=True)
+                    gb.configure_column('UHID', editable=False, cellRenderer=display_only_rendererView,minWidth=50,filter=True)
+                    gb.configure_column('mobile', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Booked', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Consulted', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Dispatched', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Received', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('Collected', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('TransferOut', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
+                    gb.configure_column('MVC', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
 
-                        # Build the grid options
-                        gridoptions = gb.build()
-                        
-                        gridoptions['defaultColDef'] = {
-                            'sortable': True  # Enable sorting on all columns by default
-                        }
-                        gridoptions['sortModel'] = [{'colId': 'Medical Centre', 'sort': 'asc'}]  # Sort 'Patientname' column in ascending order
+                    # Build the grid options
+                    gridoptions = gb.build()
+                    
+                    gridoptions['defaultColDef'] = {
+                        'sortable': True  # Enable sorting on all columns by default
+                    }
+                    gridoptions['sortModel'] = [{'colId': 'Medical Centre', 'sort': 'asc'}]  # Sort 'Patientname' column in ascending order
 
 
-                        # Display the grid
-                        response = AgGrid(
-                            filtered_df,
-                            gridOptions=gridoptions,
-                            editable=False,  # Make sure the grid itself is not editable
-                            allow_unsafe_jscode=True,
-                            theme='balham',
-                            height=300,
-                            width='100%',
-                            fit_columns_on_grid_load=True
-                        )
+                    # Display the grid
+                    response = AgGrid(
+                        filtered_df,
+                        gridOptions=gridoptions,
+                        editable=False,  # Make sure the grid itself is not editable
+                        allow_unsafe_jscode=True,
+                        theme='balham',
+                        height=300,
+                        width='100%',
+                        fit_columns_on_grid_load=True
+                    )
     
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
