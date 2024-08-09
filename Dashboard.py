@@ -513,18 +513,25 @@ def app():
                    
                     colsearch = st.columns(4)
                     with colsearch [1]:
+                        
                     # Create text input widgets for filtering
                         patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                        
                     with colsearch [0]:
                          uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
 
-                    # Apply filters to the DataFrame
-                    filtered_df = status_df[
-                        status_df['Patientname'].str.contains(patientname_filter, case=False, na=False) &
-                        status_df['mobile'].str.contains(uhid_filter, case=False, na=False) 
-                
-                    ]
-
+                    
+                    if patientname_filter or uhid_filter:
+                        # Apply filters to the DataFrame
+                        
+                        filtered_df = status_df[
+                            status_df['Patientname'].str.contains(patientname_filter, case=False, na=False) &
+                            status_df['mobile'].str.contains(uhid_filter, case=False, na=False)
+                        ]
+                    else:
+                         filtered_df = status_df
+                        
+                         
                     # Configure the grid options
                     gb = GridOptionsBuilder.from_dataframe(filtered_df)
 
@@ -561,7 +568,7 @@ def app():
                         width='100%',
                         fit_columns_on_grid_load=True
                     )
-                                
+                                    
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:
