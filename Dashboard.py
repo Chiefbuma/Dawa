@@ -92,10 +92,7 @@ def app():
             
             # Map the month name back to its numeric value
             #month_number = datetime.strptime(choice, "%B").month
-            ui.card(
-                        content="",
-                        key="MCcard9"
-                    ).render()  
+       
             cols = st.columns([4,1])
             with cols[0]:
                 ui.card(
@@ -141,7 +138,6 @@ def app():
                     'UHID':'UHID',
                     'Patientname':'Patientname',
                     'mobile':'mobile',
-                    'Location':'Location',
                     'DoctorName': 'Doctor',
                     'Booked By':'Cordinator',
                     'Dispatched By':'WareHouse',
@@ -286,7 +282,7 @@ def app():
                 Booking_df['Arch%']= Booking_df['Arch%'].apply(lambda x: f"{x:.0f}%")
                 
                 #COLLECTION
-                #Group by 'Doctor' and count the occurrences for each status
+                #Group by 'Doctor' and count the occurrences for each status   
                 Collection_df = Telesumamry_df.groupby('Medical Centre').agg({
                     'Received': 'count',
                     'Collected': 'count'
@@ -305,7 +301,6 @@ def app():
                 
                 # Calculate Arch%
                 Collection_df['Arch%']= Collection_df['Arch%'].apply(lambda x: f"{x:.0f}%")
-                
              
              
                #COLLECTION
@@ -322,7 +317,7 @@ def app():
                 #ui.table(data=Received_df, maxHeight=300)
                 #st.write(grouped_df)   
             
-                coll = st.columns([1,2,2])
+                coll = st.columns([1.5,3,3])
                 with coll[0]:
                     colm=st.columns(3)
                     with colm[0]:
@@ -410,8 +405,11 @@ def app():
                                 )
                         
                 with coll[1]:
-                        st.markdown("<style> .block-container { padding-top: 0px; } </style>", unsafe_allow_html=True) 
-                      
+                       
+                      container = st.container(border=True, height=510)
+                                
+                      with container:
+                            
                         selected_option = ui.tabs(options=['Booking','Consultation', 'Receiving', 'Collection','Transfers'], default_value='Collection', key="reprots")
                         
                         if selected_option == "Consultation":
@@ -435,26 +433,85 @@ def app():
                              st.dataframe(sorted_df, hide_index=True)
                 
                 with coll[2]:
-                    
-                    with card_container(key="table2"):
-                        cols = st.columns(2)
-                        with cols[1]:
-                    
-                            # Get unique items in the "Report" column
-                            unique_reports = Telesumamry_df["Collected"].unique()
+                    with card_container(key="table6"): 
+                        with st.container():
+                            koc=st.columns(2)
+                            with koc[0]:
+                                Collect_label = "FootfalLS"
+                                full_label = "Full-"
+                                Partial_label = "Partial-"
+                                ff_rate=(Full+Partial)/Target*100
+                                ff_rate="{:.0f}%".format(ff_rate)
+                                st.markdown(
+                                    f"""
+                                    <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                        <div style="font-size:14px; font-weight:bold; color:black;">
+                                            {Collect_label}
+                                        </div>
+                                        <div style="font-size:19px; font-weight:bold; color:black;">
+                                        {Full+Partial}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{ff_rate}</span>
+                                    </div>
+                                    """, 
+                                    unsafe_allow_html=True
+                                )
+                            with koc[1]:
+                                Collect_label = "Revenue"
+                                Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
+                                Rev_fom = "{:,.0f}".format(Rev_tt)
+                                fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
+                                fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
 
-                            # Create an empty dictionary to store the sum of approved amounts for each unique report
-                            report_sum = {}
+                                st.markdown(
+                                    f"""
+                                    <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                        <div style="font-size:14px; font-weight:bold; color:black;">
+                                            {Collect_label}
+                                        </div>
+                                        <div style="font-size:19px; font-weight:bold; color:black;">
+                                        {Rev_fom}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green; font-weight:bold;">{fin_rate}</span>
+                                    </div>
+                                    """, 
+                                    unsafe_allow_html=True
+                                )
+                            cols = st.columns(1)
+                            with cols[0]:
+                                
+                                #Group by 'Doctor' and count the occurrences for each status   
+                                MVC_df = AllMain_df.groupby('Cycle').agg({
+                                    'Received Status': 'count',
+                                    'Collection status': 'count'
+                                
+                                }).reset_index()
+                                
+                                MVC_df = MVC_df.rename(columns={
+                                    'Collection status':'Footfalls'})
+                            
+                                MVC_df['Revenue']=MVC_df['Footfalls']*3000
 
-                            # Iterate over each unique report and calculate the sum of approved amounts
-                            for report in unique_reports:
-                                sum_approved_amount = Telesumamry_df["Collected"].notnull().sum()
-                                report_sum[report] = sum_approved_amount
-
-                            # Convert the dictionary to a DataFrame for easier visualization
-                            report_sum_df = pd.DataFrame(list(report_sum.items()), columns=["Footfall", "Revenue"])
-                            st.write(report_sum_df)
-        
+                        
+                                Revenue_df=MVC_df[['Cycle','Footfalls','Revenue']]
+                                
+                                #st.write(Revenue_df)
+                                
+                        with card_container(key="table9"):
+                                
+                            def generate_sales_data():
+                                np.random.seed(0)  # For reproducible results
+                                Cycle = Revenue_df["Cycle"].tolist()
+                                Revenue = Revenue_df["Revenue"].tolist()
+                                Footfalls=Revenue_df["Footfalls"].tolist()
+                                
+                                return pd.DataFrame({'Cycle': Cycle, 'Revenue': Revenue,'Footfalls': Footfalls})
+                        
+                            st.vega_lite_chart(generate_sales_data(), {
+                                'title': 'Revenue based on MVCs generated)',
+                                'mark': {'type': 'bar', 'tooltip': True, 'fill': 'black', 'cornerRadiusEnd': 8 },
+                                'encoding': {
+                                    'x': {'field': 'Cycle', 'type': 'ordinal'},
+                                    'y': {'field': 'Revenue', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}}},
+                                    
+                                })
+                        
                 with st.expander("TRACK  PACKAGE"): 
                         
                     display_only_renderer = JsCode("""
@@ -519,15 +576,21 @@ def app():
                         
                     with colsearch [0]:
                          uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
+                    
+                    with colsearch [2]:
+                         mc_filter =  ui.input( key="Mc", placeholder="Search Medical centre")
 
                     
-                    if patientname_filter or uhid_filter:
+                    if patientname_filter or uhid_filter or mc_filter:
                         # Apply filters to the DataFrame
                         
                         filtered_df = status_df[
-                            status_df['Patientname'].str.contains(patientname_filter, case=False, na=False) &
-                            status_df['mobile'].str.contains(uhid_filter, case=False, na=False)
-                        ]
+                        (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
+                        (status_df['mobile'].str.contains(uhid_filter, case=False, na=False)) &
+                        (status_df['Medical Centre'].str.contains(mc_filter, case=False, na=False))
+                    ]
+
+                        
                     else:
                          filtered_df = status_df
                         
