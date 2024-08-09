@@ -463,7 +463,7 @@ def app():
 
                                 st.markdown(
                                     f"""
-                                    <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                    <div style="background-color:white; padding:5px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
                                         <div style="font-size:14px; font-weight:bold; color:black;">
                                             {Collect_label}
                                         </div>
@@ -511,21 +511,10 @@ def app():
                                     'y': {'field': 'Revenue', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}}},
                                     
                                 })
-                        
-                with st.container():
-                                Collect_label = "CLICK BELOW TO TRACK PACKAGE STATUS"
-                                st.markdown(
-                                    f"""
-                                    <div style="background-color:white; padding:10px; border-radius:10px; width:1360px;height:50px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                                        <div style="font-size:18px;color:green;font-weight:bold; color:black;">
-                                        {Collect_label}
-                                        </div>
-                                    </div>
-                                    """, 
-                                    unsafe_allow_html=True
-                                    )
-                with st.expander("TRACK  PACKAGE"): 
-                            
+                with card_container(key="mew"):  
+                    
+                    container = st.container(border=True, height=400)
+                    with container:
                         display_only_renderer = JsCode("""
                             class DisplayOnlyRenderer {
                                 init(params) {
@@ -579,32 +568,51 @@ def app():
                             'TransferIn'
                         ]]
                         
-                    
-                        colsearch = st.columns(4)
-                        with colsearch [2]:
+                        with card_container(key="Tag"):  
+                            colsearch = st.columns(4)
                             
-                        # Create text input widgets for filtering
-                            patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                            with colsearch [0]:
                             
-                        with colsearch [3]:
-                            uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
-                        
+                                    Collect_label = "TRACK PATIENT PACKAGES HERE"
+                                    Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
+                                    Rev_fom = "{:,.0f}".format(Rev_tt)
+                                    fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
+                                    fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
+
+                                    st.markdown(
+                                        f"""
+                                        <div style="background-color:white; padding:5px; border-radius:10px; width:530px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                            <div style="font-size:18px; font-weight:bold; color:black;">
+                                                {Collect_label}
+                                            </div>
+                                        """, 
+                                        unsafe_allow_html=True
+                                    )
+                                    
+                            with colsearch [2]:
+                                
+                            # Create text input widgets for filtering
+                                patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                                
+                            with colsearch [3]:
+                                uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
+                            
 
 
-                        
-                        if patientname_filter or uhid_filter:
-                            # Apply filters to the DataFrame
                             
-                            filtered_df = status_df[
-                            (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
-                            (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
-                            
-                        ]
+                            if patientname_filter or uhid_filter:
+                                # Apply filters to the DataFrame
+                                
+                                filtered_df = status_df[
+                                (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
+                                (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
+                                
+                            ]
 
-                            
-                        else:
-                            filtered_df = status_df
-                            
+                                
+                            else:
+                                filtered_df = status_df
+                                
                             
                         # Configure the grid options
                         gb = GridOptionsBuilder.from_dataframe(filtered_df)
@@ -642,7 +650,7 @@ def app():
                             width='100%',
                             fit_columns_on_grid_load=True
                         )
-                                        
+    
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:
