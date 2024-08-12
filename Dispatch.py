@@ -94,7 +94,6 @@ def app():
             
             Trans_df = AllTrans_df[
                     (AllTrans_df['Consultation Status'] == 'Consulted') & 
-                    (AllTrans_df['Location'] == location) & 
                     (AllTrans_df['Dispatched status'].isnull())]
             
             
@@ -534,7 +533,7 @@ def app():
                                     "Location",
                                     "Dispatched status",
                                     "Dispatched Date",
-                                        "Dispatched By",
+                                    "Dispatched By",
                                     "Month",
                                     "Year",
                                     "Transaction Type","Cycle"]]

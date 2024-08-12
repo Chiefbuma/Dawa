@@ -670,45 +670,31 @@ def app():
                 #st.table(res)
                 
                 df = pd.DataFrame(res)
-        
-                pres_df = df['Received Status'] == 'Received'
+                
+                if selected_option == "Transfer In":
+                    pres_df = df['Received Status'] == 'Received'
+                else:
+                    pres_df = df['Transfer Status'] == 'Transferred'
 
                 st.write(selected_option)
                 
-                if selected_option =="Transfer In":
-                
-                    pres_df=pres_df[[
-                                    "ID",
-                                    "Title",
-                                    "UHID",
-                                    "Patientname",
-                                    "Location",
-                                    "Transfer From",
-                                    "Transferred By",
-                                    "Transfer Date",
-                                    "Transfer Comments",
-                                    "Received Status",
-                                    "Month",
-                                    "Year",
-                                    "Transaction Type",
-                                    "Cycle",]]
-                else :
-                    
-                    pres_df=pres_df[[
-                                    "ID",
-                                    "Title",
-                                    "UHID",
-                                    "Patientname",
-                                    "Location",
-                                    "Transfer To",
-                                    "Transferred By",
-                                    "Transfer Date",
-                                    "Transfer Status",
-                                    "Transfer Comments",
-                                    "Month",
-                                    "Year",
-                                    "Transaction Type",
-                                    "Cycle"]]
+               
+                pres_df=pres_df[[
+                                "ID",
+                                "Title",
+                                "UHID",
+                                "Patientname",
+                                "Location",
+                                "Transfer From",
+                                "Transferred By",
+                                "Transfer Date",
+                                "Transfer Comments",
+                                "Received Status",
+                                "Month",
+                                "Year",
+                                "Transaction Type",
+                                "Cycle",]]
+              
                     
                 # Display the filtered DataFrame
                 #st.dataframe(Appointment_df)
@@ -734,11 +720,11 @@ def app():
                 # Find rows where 'Collection status' is empty
                 invalid_collection_status_rows = df[df['Transfer To']=="None"].index.tolist()
 
-                # Combine the lists of indices
-                invalid_rows = list(set(invalid_mvc_rows + invalid_collection_status_rows))
                 
-                if invalid_rows:
-                    return False, invalid_rows
+                if invalid_mvc_rows or invalid_collection_status_rows :
+                    
+                    return False, invalid_mvc_rows,invalid_collection_status_rows
+                
                 return True, []
             
             def submit_to_sharepoint(pres_df):
