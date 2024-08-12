@@ -200,7 +200,54 @@ def app():
             }
             """)
             
+            response = supabase.table('facilities').select("*").execute()
+
+            location_df = pd.DataFrame(response.data)
             
+            @st.cache_data
+            def get_unique_item_descriptions():
+                return location_df['Location'].unique().tolist()
+
+            # Fetch unique item descriptions
+            unique_item_descriptions = get_unique_item_descriptions()
+
+            dropdown_renderer = JsCode(f"""
+           class DropdownRenderer {{
+                    init(params) {{
+                        this.params = params;
+                        this.eGui = document.createElement('select');
+
+                        // Add an empty option as the default
+                        let emptyOption = document.createElement('option');
+                        emptyOption.value = '';
+                        emptyOption.innerHTML = '--Select--';
+                        this.eGui.appendChild(emptyOption);
+
+                        // Add options from the predefined list
+                        const options = {unique_item_descriptions};
+                        options.forEach(option => {{
+                            let optionElement = document.createElement('option');
+                            optionElement.value = option;
+                            optionElement.innerHTML = option;
+                            this.eGui.appendChild(optionElement);
+                        }});
+
+                        this.eGui.value = this.params.value || '';
+
+                        // Set the width of the dropdown
+                        this.eGui.style.width = '140px'; // Adjust the width as needed
+
+                        this.eGui.addEventListener('change', (event) => {{
+                            this.params.setValue(event.target.value);
+                        }});
+                    }}
+
+                    getGui() {{
+                        return this.eGui;
+                    }}
+                }}
+""")
+
             
             
             st.markdown("""
@@ -268,9 +315,9 @@ def app():
                     "UHID",
                     "Patientname",
                     "mobile",
-                    "Location",
                     "DoctorName",
-                    "Dispatched Date"
+                    "Dispatched Date",
+                    "Received Comments"
                     
             ]
             for column in non_editable_columns:
@@ -279,15 +326,11 @@ def app():
             # Configure specific columns with additional settings
             gb.configure_column('Dispatched status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
             gb.configure_selection(selection_mode='single')
-            gb.configure_column(
-                field='Prescription',
-                cellRenderer=cellRenderer_link,
-                allow_unsafe_jscode=True
-            )
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+            gb.configure_column('Location', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer, cellStyle={'width': '300px'} )
 
-
+   
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
