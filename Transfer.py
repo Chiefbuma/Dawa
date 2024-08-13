@@ -98,6 +98,9 @@ def app():
                 Trans_df = AllTrans_df[ 
                     (AllTrans_df['Dispatched status']=="Dispatched") &
                     (AllTrans_df['Location'] == location) ]
+                
+                Trans_df['Transfer From']= location
+                
             else :
         
                 Trans_df = AllTrans_df[ 
@@ -107,7 +110,7 @@ def app():
                  
                  
                  
-                Trans_df['Transfer From']= location
+            
                 
             #st.write(Trans_df)
             
