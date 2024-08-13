@@ -275,6 +275,7 @@ def app():
                         "Received Date",
                         "Received By",
                         "Received Status",
+                        "Received Comments",
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
