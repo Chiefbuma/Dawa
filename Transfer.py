@@ -106,6 +106,10 @@ def app():
                 Trans_df = AllTrans_df[ 
                         
                         (AllTrans_df['Transfer To']==location)]
+               
+                Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
+            
+                Trans_df['Received By']=staffname
                         
                  
                  
@@ -114,9 +118,7 @@ def app():
                 
             #st.write(Trans_df)
             
-            Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
-            
-            Trans_df['Received By']=staffname
+           
             
             Trans_df['Transfer Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
