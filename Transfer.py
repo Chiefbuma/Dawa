@@ -93,20 +93,23 @@ def app():
             
             selected_option = ui.tabs(options=['Transfer In','Transfer Out'], default_value='Transfer Out', key="kanaries")
            
-            if selected_option=="Transfer In":
+            if selected_option=="Transfer Out":
 
+                Trans_df = AllTrans_df[ 
+                       
+                        (AllTrans_df['Location']==location)]
+            else :
+                
+                 
+                        
                 Trans_df = AllTrans_df[ 
                         (AllTrans_df['Dispatched status']=="Dispatched") &
                         (AllTrans_df['Transfer To']==location)]
                         
-            else :
-                
-                 Trans_df = AllTrans_df[ 
-                       
-                        (AllTrans_df['Location']==location)]
-                        
-                
-                 Trans_df['Transfer From']= location
+                 
+                 
+                 
+                Trans_df['Transfer From']= location
                 
             #st.write(Trans_df)
             
