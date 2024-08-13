@@ -90,23 +90,36 @@ def app():
             
             staffname = usersD_df['staffname'].iloc[0]
             
-            Trans_df = AllTrans_df[ 
-                    (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status'].isnull())]
             
+            selected_option = ui.tabs(options=['Transfer In','Transfer Out'], default_value='Transfer Out', key="kanaries")
+           
+            if selected_option=="Transfer In":
+
+                Trans_df = AllTrans_df[ 
+                        (AllTrans_df['Dispatched status']=="Dispatched") &
+                        (AllTrans_df['Transfer To']==location) &
+                        (AllTrans_df['Received Status'].isnull())]
+            else :
+                
+                 Trans_df = AllTrans_df[ 
+                        (AllTrans_df['Dispatched status']=="Dispatched") &
+                        (AllTrans_df['Received Status'].isnull())]
+                
+                 Trans_df['Transfer From']= location
+                
             #st.write(Trans_df)
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
             Trans_df['Received By']=staffname
             
-            Trans_df['Transaction Type']= "Receipt"
-            
             Trans_df['Transfer Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
             Trans_df['Transferred By']=staffname
             
-            Trans_df['Transaction Type']= "Transfer"
+    
+            
+        
             
         
             
@@ -173,14 +186,14 @@ def app():
                 init(params) {
                     this.params = params;
                     this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'Transferred');
+                    this.eGui.setAttribute('type', 'checkbox');
                     
                     // Default the checkbox to unchecked
                     this.eGui.checked = params.value === '';
                     
                     this.eGui.addEventListener('click', (event) => {
                         if (event.target.checked) {
-                            params.setValue('');
+                            params.setValue('Transferred');
                         } else {
                             params.setValue('');
                         }
@@ -245,7 +258,6 @@ def app():
 
             location_df = pd.DataFrame(response.data)
             
-            
             @st.cache_data
             def get_unique_item_descriptions():
                 return location_df['Location'].unique().tolist()
@@ -302,21 +314,20 @@ def app():
                 """, unsafe_allow_html=True)
             
             # Configure GridOptions for the main grid
-            gb = GridOptionsBuilder.from_dataframe(Trans_df)
-           
-            selected_option = ui.tabs(options=['Transfer In','Transfer Out'], default_value='Transfer Out', key="kanaries")
-                        
+                   
             if selected_option == "Transfer In":
-                sorted_df= Trans_df
                 
-                sorted_df['Transfer To']= location
-                    
+
+                Trans_df['Transfer To']= location
+                Trans_df['Transaction Type']= "Transfer In"
+                
+                gb = GridOptionsBuilder.from_dataframe(Trans_df)
                 
                 gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+                gb.configure_column('Transfer From', editable=False)
                 gb.configure_column('Transfer Comments', editable=False, cellRenderer=textarea_renderer,width=10)
                 gb.configure_column('Transfer To', editable=False)
-                gb.configure_column('Transfer From', editable=False)
                 gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
                 # List of columns to hide
                 book_columns = [
@@ -331,7 +342,6 @@ def app():
                             "Collection status",
                             "Collection Date",
                             "Dispatched Date",
-                            "Dispatched Status",
                             "Dispensed By",
                             "Dispatched By",
                             "Consultation Date",
@@ -359,12 +369,16 @@ def app():
                             "Effective Permissions Mask",
                             "ScopeId",
                             "URL Path",
+                            "Cycle",
                             "Approval Status",
                             "mobile" ]
                     
             elif selected_option == "Transfer Out":
-                    sorted_df= Trans_df
-                    sorted_df['Transfer From']= location
+                    
+                    Trans_df['Transaction Type']= "Transfer Out"
+                
+                    Trans_df['Transfer From']= location
+                    
                     # List of columns to hide
                     book_columns = [
                             "Booking Date",
@@ -401,6 +415,7 @@ def app():
                             "owshiddenversion",
                             "Created",
                             "Title",
+                            "Cycle",
                             "Name",
                             "Effective Permissions Mask",
                             "ScopeId",
@@ -408,12 +423,16 @@ def app():
                             "Approval Status",
                             "mobile" ]
                     
+                    
+                    gb = GridOptionsBuilder.from_dataframe(Trans_df)
+                    
                     gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                     gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                     gb.configure_column('Transfer Comments', editable=False, cellRenderer=textarea_renderer,width=10)
                     gb.configure_column('Transfer From', editable=False)
                     gb.configure_column('Transfer To', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer, cellStyle={'width': '300px'} )
-                    gb.configure_column('Transfer Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
+                    gb.configure_column('Transfer Status', editable=False, cellRenderer=checkbox_renderer2, pinned='right', minWidth=50)
+            
             
             with st.form('Transfer') as f:
                 st.header('Transfer/Return  Package🔖')
@@ -428,7 +447,6 @@ def app():
                         "UHID",
                         "Patientname",
                         "mobile",
-                        "Location",
                         "Cycle"
                    
                     
@@ -439,16 +457,13 @@ def app():
 
                 # Configure specific columns with additional settings
             
-                 
-                
                 # Configure the default column to be editable
                 gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
                 # Build the grid options
                 gridoptions = gb.build()
                 
-                
-                #Add manual selection configuration
+                 #Add manual selection configuration
                 gridoptions.update({
                     'rowSelection': 'single',
                     'onSelectionChanged': JsCode("""
@@ -460,12 +475,10 @@ def app():
                     """)
                 })
 
-                
-                
                 with card_container(key="transfernew"):
                     # Display the AgGrid table
                     response = AgGrid(
-                        sorted_df,
+                        Trans_df,
                         gridOptions=gridoptions,
                         editable=True,
                         allow_unsafe_jscode=True,
@@ -477,54 +490,7 @@ def app():
                 cols = st.columns(6)
                 with cols[5]:
                     st.form_submit_button("Confirm", type="primary")  
-                
-        
-        selected_row = response['selected_rows']
-        
-        Selecetd_dataframe=pd.DataFrame(selected_row)
-        
-        rowcount=len(Selecetd_dataframe)
-        
-        #st.write(Selecetd_dataframe)
-        
-        # Initialize session state if not already done
-        if 'Patient_name' not in st.session_state:
-            st.session_state.Patient_name = ''
-                        
-        if rowcount > 0:
-            try:
-                patient_name = Selecetd_dataframe.iloc[0]['Patientname']
-                st.session_state.Patient_name = patient_name
-                #st.write(st.session_state.Patient_name)
-            except IndexError:
-                pass  # Suppress IndexError silently
-            except KeyError:
-                pass  # Suppress KeyError silently
-                        
-            #st.write(Patient_name)
-            #st.write("Selected Row:", selected_row)
-        #else:
-            #st.write("No row selected")
-        
-                        
-        # JavaScript function to add a new row to the AgGrid table
-        js_add_row = JsCode("""
-        function(e) {
-            let api = e.api;
-            let rowPos = e.rowIndex + 1; 
-            api.applyTransaction({addIndex: rowPos, add: [{}]})    
-        };
-        """     
-        )
-        
-        
-
-        # Cell renderer for the '🔧' column to render a button
-
-        # Resources to refer:
-        # https://blog.ag-grid.com/cell-renderers-in-ag-grid-every-different-flavour/
-        # https://www.w3schools.com/css/css3_buttons.asp
-
+            
         cellRenderer_addButton = JsCode('''
             class BtnCellRenderer {
                 init(params) {
@@ -559,108 +525,6 @@ def app():
             };
             ''')
 
-        # Handle child grid display using Streamlit components
-        selected_category = st.session_state.Patient_name
-            
-        if selected_category:
-                    #st.write(f"Prescription for: {selected_category}")
-                    with card_container(key="Billpre" f"Prescription for: {selected_category}"):
-                        filtered_child_data = Details_df[Details_df['Patientname'] == selected_category]
-                        
-                        gd = GridOptionsBuilder.from_dataframe(filtered_child_data)
-                        
-                        # List of columns to hide
-                        details_columns = [
-                            "mobile", "Company Type", "RateContract", "Speciality",    
-                            "DoctorName", "Location", "Medical Centre", "TeleDoctor",
-                            "Facility", "UHID", "Patientname","S.No"
-                        ]
-                        
-                        # Hide specified columns
-                        for col in details_columns:
-                            gd.configure_column(field=col, hide=True, pinned='right')
-                            
-                        @st.cache_data
-                        def get_unique_item_descriptions():
-                            return chronic_df['Drugs'].unique().tolist()
-
-                        # Fetch unique item descriptions
-                        unique_item_descriptions = get_unique_item_descriptions()
-                        
-                        
-                        
-                        # Define dropdown options for specified columns
-                        dropdown_options = {
-                            'Itemname': unique_item_descriptions
-                    }    
-                        
-                        for col, options in dropdown_options.items():
-                            gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
-
-
-                        # Configure editable columns
-                        editable_columns = ["Itemname", "Quantity"]
-                        for column in editable_columns:
-                            gd.configure_column(column, editable=True)
-                            
-                        
-                        # Configure the default column to be editable
-                        gd.configure_default_column(editable=True,minWidth=100, flex=0)    
-                            
-            
-                        # Configure the default column to be editable
-                        gd.configure_default_column(editable=True, minWidth=150, flex=0)
-
-                        # Build the grid options
-                        gridoptions = gd.build()
-
-
-                    with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=False):
-                        # Inject custom CSS for solid border
-                        response3 = AgGrid(
-                            filtered_child_data,
-                            gridOptions=gridoptions,
-                            editable=True,
-                            allow_unsafe_jscode=True,
-                            theme='balham',
-                            height=120,
-                            fit_columns_on_grid_load=True
-                        )
-                        
-                        try:
-                            res3 = response3['data']
-                            filtered_prescription = pd.DataFrame(res3)
-
-                            def update_supabase_table(dataframe: pd.DataFrame, table_name: str, id_column: str):
-                                """
-                                Update Supabase table records using data from a DataFrame.
-
-                                Args:
-                                - dataframe: pd.DataFrame containing the data to update.
-                                - table_name: str, name of the Supabase table to update.
-                                - id_column: str, the column name in the DataFrame that contains unique IDs.
-                                """
-                                try:
-                                    for index, row in dataframe.iterrows():
-                                        # Convert the row to a dictionary
-                                        record = row.to_dict()
-                                        record_id = record.pop(id_column)
-                                        
-                                        # Update the Supabase table record
-                                        response = supabase.table(table_name).update(record).eq(id_column, record_id).execute()
-                                        if response.get('status') != 200:
-                                            print(f"Failed to update record ID {record_id}: {response.get('error', 'Unknown error')}")
-                                        else:
-                                            print(f"Successfully updated record ID {record_id}")
-
-                                except Exception as e:
-                                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                                        st.stop()
-
-                        except Exception as e:
-                            st.error(f"Failed to update to SharePoint: {str(e)}")
-                            st.stop()
-                            
                 
         with card_container(key="reveived" f"CONFIRM TRANSFER"):
             try:
@@ -671,31 +535,47 @@ def app():
                 
                 df = pd.DataFrame(res)
                 
-                if selected_option == "Transfer In":
-                    pres_df = df['Received Status'] == 'Received'
-                else:
-                    pres_df = df['Transfer Status'] == 'Transferred'
-
-                st.write(selected_option)
+                # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                 
-               
-                pres_df=pres_df[[
+                
+                if selected_option == "Transfer In":
+                    
+                    pres_df = df[df['Received Status'] == 'Received']
+                    
+                    pres_df=pres_df[[
                                 "ID",
-                                "Title",
                                 "UHID",
                                 "Patientname",
-                                "Location",
+                                "Transfer To",
                                 "Transfer From",
+                                "Received Status",
                                 "Transferred By",
                                 "Transfer Date",
                                 "Transfer Comments",
-                                "Received Status",
                                 "Month",
                                 "Year",
                                 "Transaction Type",
-                                "Cycle",]]
-              
+                                "Cycle"]]
+                else:
                     
+                    pres_df = df[df['Transfer Status'] == 'Transferred']
+                    
+                    pres_df=pres_df[[
+                                "ID",
+                                "UHID",
+                                "Patientname",
+                                "Transfer From",
+                                "Transfer To",
+                                "Transferred By",
+                                "Transfer Date",
+                                "Transfer Comments",
+                                "Transfer Status",
+                                "Month",
+                                "Year",
+                                "Transaction Type",
+                                "Cycle"]]
+
+                #st.write(pres_df)
                 # Display the filtered DataFrame
                 #st.dataframe(Appointment_df)
                 
@@ -708,83 +588,144 @@ def app():
             except Exception as e:
                 st.error(f"Failed to update to SharePoint: {str(e)}")
                 st.stop() 
-            
-            def validate_appointment_data(df):
-                """
-                Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
-                Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                """
-                                # Find rows where 'MVC' is empty
-                invalid_mvc_rows = df[df['Transfer Status']=="None"].index.tolist()
-
-                # Find rows where 'Collection status' is empty
-                invalid_collection_status_rows = df[df['Transfer To']=="None"].index.tolist()
-
                 
-                if invalid_mvc_rows or invalid_collection_status_rows :
+            if selected_option == "Transfer Out":
+
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for specific conditions based on the selected option.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
                     
-                    return False, invalid_mvc_rows,invalid_collection_status_rows
-                
-                return True, []
+                    invalid_mvc_rows = df[df['Transfer To'].isna() | (df['Transfer To'] == "None")].index.tolist()
             
-            def submit_to_sharepoint(pres_df):
+                    if invalid_mvc_rows:
+                        return False, invalid_mvc_rows
+
+                    return True, []
+
+                def submit_to_sharepoint(pres_df):
+                    # Validate data before submission
+                    is_valid, invalid_mvc_rows = validate_appointment_data(pres_df)
+
+                    if not is_valid:
+                        st.error(f"Status is blank in rows: {invalid_mvc_rows}")
+                        return
+
+                    try:
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
+
+                            # Iterate over the DataFrame and update items in the SharePoint list
+                            for ind in pres_df.index:
+                                item_id = pres_df.at[ind, 'ID']
+                                Transfer_status = pres_df.at[ind, 'Transfer Status']
+                                Transfer_date = pres_df.at[ind, 'Transfer Date']
+                                Transfer_from = pres_df.at[ind, 'Transfer From']
+                                Transfer_by = pres_df.at[ind, 'Transferred By']
+                                Transaction_type = pres_df.at[ind, 'Transaction Type']
+                                Transfer_comments = pres_df.at[ind, 'Transfer Comments']
+                                Transfer_to = pres_df.at[ind, 'Transfer To']
+
+                                item_creation_info = {
+                                    'ID': item_id,
+                                    'Transfer Status': Transfer_status,
+                                    'Transfer Date': Transfer_date,
+                                    'Transferred By': Transfer_by,
+                                    'Transaction Type': Transaction_type,
+                                    'Transfer Comments': Transfer_comments,
+                                    'Transfer To': Transfer_to,
+                                    'Transfer From': Transfer_from
+                                }
+
+                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+
+                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                                logging.info(f"Response for index {ind}: {response}")
+
+                            st.success("Successfully submitted", icon="✅")
+                    except Exception as e:
+                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
+                        st.error(f"Failed to update to SharePoint: {str(e)}")
+                        st.stop()
+                        
+            if selected_option=="Transfer In":
                 
-                # Validate data before submission
-                is_valid, invalid_rows = validate_appointment_data(pres_df)
-                
-                if not is_valid:
-                    st.error(f"Required field(s) is blank in rows: {invalid_rows}")
-                    return
-                try:
-                    with st.spinner('Submitting...'):
-                        sp = SharePoint()
-                        site = sp.auth()
-                        target_list = site.List(list_name='Home Delivery')
+                def validate_appointment_data(df):
+                    """
+                    Validate the Appointment_df DataFrame to check for specific conditions based on the selected option.
+                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
+                    """
+                    
+                    invalid_mvc_rows = df[df['Received Status'].isna() | (df['Received Status'] == "None")].index.tolist()
+            
+                    if invalid_mvc_rows:
+                        return False, invalid_mvc_rows
 
-                        # Iterate over the DataFrame and update items in the SharePoint list
-                        for ind in pres_df.index:
-                            item_id = pres_df.at[ind, 'ID']  
-                            Transfer_status = pres_df.at[ind, 'Transfer Status']
-                            Transfer_date = pres_df.at[ind, 'Transfer Date']
-                            Transfer_by = pres_df.at[ind, 'Transferred By']
-                            Transaction_type = pres_df.at[ind, 'Transaction Type'] 
-                            Transfer_by = pres_df.at[ind, 'Transfer Comments']
-                            Transfer_to = pres_df.at[ind, 'Transfer To']
-                            
-                            item_creation_info = {
-                                'ID': item_id, 
-                                'Transfer Status':Transfer_status,
-                                'Transfer Date': Transfer_date,
-                                'Transferred By': Transfer_by,
-                                'Transaction Type':Transaction_type,
-                                'Transfer Comments': Transfer_by, 
-                                'Transfer To': Transfer_to 
-                            }
+                    return True, []
 
-                            logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+                def submit_to_sharepoint(pres_df):
+                    # Validate data before submission
+                    is_valid, invalid_mvc_rows = validate_appointment_data(pres_df)
 
-                            response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                            logging.info(f"Response for index {ind}: {response}")
+                    if not is_valid:
+                        st.error(f"Transfer To is blank in rows: {invalid_mvc_rows}")
+                        return
 
-                        st.success("Succesfully submitted", icon="✅")
-                except Exception as e:
-                    logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
-                    st.error(f"Failed to update to SharePoint: {str(e)}")
-                    st.stop()
+                    try:
+                        with st.spinner('Submitting...'):
+                            sp = SharePoint()
+                            site = sp.auth()
+                            target_list = site.List(list_name='Home Delivery')
 
+                            # Iterate over the DataFrame and update items in the SharePoint list
+                            for ind in pres_df.index:
+                                item_id = pres_df.at[ind, 'ID']
+                                Transfer_received = pres_df.at[ind, 'Received Status']
+                                Transfer_date = pres_df.at[ind, 'Transfer Date']
+                                Transfer_by = pres_df.at[ind, 'Transferred By']
+                                Transaction_type = pres_df.at[ind, 'Transaction Type']
+                                Transfer_comments = pres_df.at[ind, 'Transfer Comments']
+                                Transfer_to = pres_df.at[ind, 'Transfer To']
+                                Transfer_From = pres_df.at[ind, 'Transfer From']
+
+                                item_creation_info = {
+                                    'ID': item_id,
+                                    'Received Status': Transfer_received,
+                                    'Transfer Date': Transfer_date,
+                                    'Transferred By': Transfer_by,
+                                    'Transaction Type': Transaction_type,
+                                    'Transfer Comments': Transfer_comments,
+                                    'Transfer To': Transfer_to,
+                                    'Transfer From': Transfer_From
+                                }
+
+                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+
+                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
+                                logging.info(f"Response for index {ind}: {response}")
+
+                            st.success("Successfully submitted", icon="✅")
+                    except Exception as e:
+                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
+                        st.error(f"Failed to update to SharePoint: {str(e)}")
+                        st.stop()
+            
             cols = st.columns(4)
             with cols[2]:
-            # Button to submit DataFrame to SharePoint
-                ui_but = ui.button("Submit ", key="subbtn")
+                ui_but = ui.button("Submit", key="subbtn")
                 if ui_but:
-                    submit_to_sharepoint(pres_df)    
-        
+                    submit_to_sharepoint(pres_df)
+
+                    
             with cols[2]:
                 ui_result = ui.button("Refresh", key="btn")  
                 if ui_result: 
                     with st.spinner('Wait! Reloading view...'):  
                         st.cache_data.clear()
-                        AllTrans_df = load_new()
-                       
+                        AllTrans_df = load_new()  
+                    
     else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
