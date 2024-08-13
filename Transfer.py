@@ -103,7 +103,8 @@ def app():
                 
                  Trans_df = AllTrans_df[ 
                         (AllTrans_df['Dispatched status']=="Dispatched") &
-                        (AllTrans_df['Received Status'].isnull())]
+                        (AllTrans_df['Transfer To']==location)]
+                        
                 
                  Trans_df['Transfer From']= location
                 
