@@ -320,6 +320,8 @@ def app():
 
                 Trans_df['Transfer To']= location
                 Trans_df['Transaction Type']= "Transfer In"
+                Trans_df['Received Date']= "Transfer In"
+                
                 
                 gb = GridOptionsBuilder.from_dataframe(Trans_df)
                 
@@ -549,6 +551,8 @@ def app():
                                 "Transfer To",
                                 "Transfer From",
                                 "Received Status",
+                                "Received Date",
+                                "Received By",
                                 "Transferred By",
                                 "Transfer Date",
                                 "Transfer Comments",
@@ -684,6 +688,8 @@ def app():
                             for ind in pres_df.index:
                                 item_id = pres_df.at[ind, 'ID']
                                 Transfer_received = pres_df.at[ind, 'Received Status']
+                                Received_by = pres_df.at[ind, 'Received By']
+                                Received_date = pres_df.at[ind, 'Received Date']
                                 Transfer_date = pres_df.at[ind, 'Transfer Date']
                                 Transfer_by = pres_df.at[ind, 'Transferred By']
                                 Transaction_type = pres_df.at[ind, 'Transaction Type']
@@ -694,6 +700,8 @@ def app():
                                 item_creation_info = {
                                     'ID': item_id,
                                     'Received Status': Transfer_received,
+                                    'Received By': Received_by,
+                                    'Received Date': Received_date,
                                     'Transfer Date': Transfer_date,
                                     'Transferred By': Transfer_by,
                                     'Transaction Type': Transaction_type,
