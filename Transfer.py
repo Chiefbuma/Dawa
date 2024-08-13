@@ -102,7 +102,7 @@ def app():
             else :
                 
                  Trans_df = AllTrans_df[ 
-                        (AllTrans_df['Dispatched status']=="Dispatched") &
+                       
                         (AllTrans_df['Location']==location)]
                         
                 
