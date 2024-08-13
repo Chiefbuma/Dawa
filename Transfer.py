@@ -321,6 +321,7 @@ def app():
                 
 
                 Trans_df['Transfer To']= location
+                Trans_df['Location']= location
                 Trans_df['Transaction Type']= "Transfer In"
                 Trans_df['Received Date']= "Transfer In"
                 
@@ -554,6 +555,7 @@ def app():
                                 "Transfer From",
                                 "Received Status",
                                 "Received Date",
+                                "Location",
                                 "Received By",
                                 "Transferred By",
                                 "Transfer Date",
@@ -691,6 +693,7 @@ def app():
                                 item_id = pres_df.at[ind, 'ID']
                                 Transfer_received = pres_df.at[ind, 'Received Status']
                                 Received_by = pres_df.at[ind, 'Received By']
+                                Trans_Location = pres_df.at[ind, 'Location']
                                 Received_date = pres_df.at[ind, 'Received Date']
                                 Transfer_date = pres_df.at[ind, 'Transfer Date']
                                 Transfer_by = pres_df.at[ind, 'Transferred By']
@@ -703,6 +706,7 @@ def app():
                                     'ID': item_id,
                                     'Received Status': Transfer_received,
                                     'Received By': Received_by,
+                                    'Location':Trans_Location,
                                     'Received Date': Received_date,
                                     'Transfer Date': Transfer_date,
                                     'Transferred By': Transfer_by,
