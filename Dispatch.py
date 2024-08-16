@@ -611,14 +611,18 @@ def app():
                                 Dispatch_status = pres_df.at[ind, 'Dispatched status']
                                 Dispatch_date = pres_df.at[ind, 'Dispatched Date']
                                 Dispatch_by = pres_df.at[ind, 'Dispatched By']
+                                Location = pres_df.at[ind, 'Location']
                                 Transaction_by = pres_df.at[ind, 'Transaction Type']
 
                                 item_creation_info = {
                                     'ID': item_id, 
                                     'Dispatched status':Dispatch_status,
                                     'Dispatched Date': Dispatch_date,
-                                        'Dispatched Date': Dispatch_date,
-                                    'Transaction Type': Transaction_by
+                                    'Dispatched Date': Dispatch_date,
+                                    'Transaction Type': Transaction_by,
+                                    'Dispatched By':Dispatch_by,
+                                    'Location': Location
+                                    
                                 }
 
                                 logging.info(f"Updating item ID {item_id}: {item_creation_info}")
