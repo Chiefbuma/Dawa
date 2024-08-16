@@ -492,25 +492,7 @@ def app():
                                 Revenue_df=MVC_df[['Cycle','Footfalls','Revenue']]
                                 
                                 #st.write(Revenue_df)
-                                
-                        with card_container(key="table9"):
-                                
-                            def generate_sales_data():
-                                np.random.seed(0)  # For reproducible results
-                                Cycle = Revenue_df["Cycle"].tolist()
-                                Revenue = Revenue_df["Revenue"].tolist()
-                                Footfalls=Revenue_df["Footfalls"].tolist()
-                                
-                                return pd.DataFrame({'Cycle': Cycle, 'Revenue': Revenue,'Footfalls': Footfalls})
-                        
-                            st.vega_lite_chart(generate_sales_data(), {
-                                'title': 'Revenue based on MVCs generated)',
-                                'mark': {'type': 'bar', 'tooltip': True, 'fill': 'black', 'cornerRadiusEnd': 8 },
-                                'encoding': {
-                                    'x': {'field': 'Cycle', 'type': 'ordinal'},
-                                    'y': {'field': 'Revenue', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}}},
-                                    
-                                })
+                      
             with card_container(key="mew"):  
                 
                 container = st.container(border=True, height=400)
