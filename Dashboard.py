@@ -16,7 +16,6 @@ from sharepoint import SharePoint
 from postgrest import APIError
 from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
 from IPython.display import HTML
-import conection
 from streamlit_dynamic_filters import DynamicFilters
 
 
