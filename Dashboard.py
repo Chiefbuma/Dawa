@@ -16,6 +16,7 @@ from sharepoint import SharePoint
 from postgrest import APIError
 from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
 from IPython.display import HTML
+import conection
 from streamlit_dynamic_filters import DynamicFilters
 
 
@@ -491,7 +492,25 @@ def app():
                                 Revenue_df=MVC_df[['Cycle','Footfalls','Revenue']]
                                 
                                 #st.write(Revenue_df)
-                      
+                                
+                        with card_container(key="table9"):
+                                
+                            def generate_sales_data():
+                                np.random.seed(0)  # For reproducible results
+                                Cycle = Revenue_df["Cycle"].tolist()
+                                Revenue = Revenue_df["Revenue"].tolist()
+                                Footfalls=Revenue_df["Footfalls"].tolist()
+                                
+                                return pd.DataFrame({'Cycle': Cycle, 'Revenue': Revenue,'Footfalls': Footfalls})
+                        
+                            st.vega_lite_chart(generate_sales_data(), {
+                                'title': 'Revenue based on MVCs generated)',
+                                'mark': {'type': 'bar', 'tooltip': True, 'fill': 'black', 'cornerRadiusEnd': 8 },
+                                'encoding': {
+                                    'x': {'field': 'Cycle', 'type': 'ordinal'},
+                                    'y': {'field': 'Revenue', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}}},
+                                    
+                                })
             with card_container(key="mew"):  
                 
                 container = st.container(border=True, height=400)
@@ -595,42 +614,7 @@ def app():
                             filtered_df = status_df
                             
                             
-                        # Configure the grid options
-                    gb = GridOptionsBuilder.from_dataframe(filtered_df)
-
-                    # Configure columns with custom renderers
-                    gb.configure_column('Medical Centre', editable=False, cellRenderer=display_only_renderer,minWidth=200,sort='asc', sortedAt=1,filter=True)
-                    gb.configure_column('Patientname', editable=False, cellRenderer=display_only_renderer,pinned='left',minWidth=250,filter=True)
-                    gb.configure_column('UHID', editable=False, cellRenderer=display_only_rendererView,minWidth=50,filter=True)
-                    gb.configure_column('mobile', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('Booked', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('Consulted', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('Dispatched', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('Received', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('Collected', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('TransferOut', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-                    gb.configure_column('MVC', editable=False, cellRenderer=display_only_rendererView,minWidth=50)
-
-                    # Build the grid options
-                    gridoptions = gb.build()
-                    
-                    gridoptions['defaultColDef'] = {
-                        'sortable': True  # Enable sorting on all columns by default
-                    }
-                    gridoptions['sortModel'] = [{'colId': 'Medical Centre', 'sort': 'asc'}]  # Sort 'Patientname' column in ascending order
-
-
-                    # Display the grid
-                    response = AgGrid(
-                        filtered_df,
-                        gridOptions=gridoptions,
-                        editable=False,  # Make sure the grid itself is not editable
-                        allow_unsafe_jscode=True,
-                        theme='balham',
-                        height=300,
-                        width='100%',
-                        fit_columns_on_grid_load=True
-                    )
+                        st.write(status_df)
     
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
