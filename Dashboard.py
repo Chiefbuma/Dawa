@@ -568,53 +568,53 @@ def app():
                         'TransferIn'
                     ]]
                     
-                    with card_container(key="sel"):
-                        colsearch = st.columns(4)
-                        
-                        with colsearch [0]:
-                        
-                                Collect_label = "TRACK PATIENT PACKAGES HERE"
-                                Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
-                                Rev_fom = "{:,.0f}".format(Rev_tt)
-                                fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
-                                fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
+                    
+                    colsearch = st.columns(4)
+                    
+                    with colsearch [0]:
+                    
+                            Collect_label = "TRACK PATIENT PACKAGES HERE"
+                            Rev_tt = (Full + Partial) * 3000  # Calculate total revenue
+                            Rev_fom = "{:,.0f}".format(Rev_tt)
+                            fin_rate = (Rev_tt / (Target * 3000)) * 100  # Calculate the final rate as a percentage
+                            fin_rate = "{:.0f}%".format(fin_rate)  # Format the final rate as a percentage string
 
-                                st.markdown(
-                                    f"""
-                                    <div style="background-color:white; padding:5px; border-radius:10px; width:530px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                                        <div style="font-size:18px; font-weight:bold; color:black;">
-                                            {Collect_label}
-                                        </div>
-                                    """, 
-                                    unsafe_allow_html=True
-                                )
-                                
-                        with colsearch [2]:
+                            st.markdown(
+                                f"""
+                                <div style="background-color:white; padding:5px; border-radius:10px; width:530px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                    <div style="font-size:18px; font-weight:bold; color:black;">
+                                        {Collect_label}
+                                    </div>
+                                """, 
+                                unsafe_allow_html=True
+                            )
                             
-                        # Create text input widgets for filtering
-                            patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
-                            
-                        with colsearch [3]:
-                            uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
+                    with colsearch [2]:
                         
+                    # Create text input widgets for filtering
+                        patientname_filter = ui.input( key="Name", placeholder="Search Patient") 
+                        
+                    with colsearch [3]:
+                        uhid_filter =  ui.input( key="uhid", placeholder="Search UHID")
+                    
 
+
+                    
+                    if patientname_filter or uhid_filter:
+                        # Apply filters to the DataFrame
+                        
+                        filtered_df = status_df[
+                        (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
+                        (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
+                        
+                    ]
 
                         
-                        if patientname_filter or uhid_filter:
-                            # Apply filters to the DataFrame
-                            
-                            filtered_df = status_df[
-                            (status_df['Patientname'].str.contains(patientname_filter, case=False, na=False)) &
-                            (status_df['mobile'].str.contains(uhid_filter, case=False, na=False))
-                            
-                        ]
-
-                            
-                        else:
-                            filtered_df = status_df
-                            
-                            
-                        st.write(status_df)
+                    else:
+                        filtered_df = status_df
+                        
+                        
+                    st.write(status_df)
     
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
