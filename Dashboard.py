@@ -439,7 +439,7 @@ def app():
                                     Collect_label = "Sumamry of Transactions"
                                     st.markdown(
                                         f"""
-                                        <div style="background-color:white; padding:1px; border-radius:5px; width:800px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                        <div style="background-color:white; padding:1px; border-radius:5px; width:800px; border: 0px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
                                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                         </div>
@@ -457,7 +457,7 @@ def app():
                     st.markdown(
                         f"""
                         <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                            <div style="font-size:18px; font-weight:bold; color:black;">
+                            <div style="font-size:16px; font-weight:bold; color:black;">
                                 {mvc_label}
                             </div>
                             <div style="font-size:18px; font-weight:bold; color:black;">
@@ -475,7 +475,7 @@ def app():
                     st.markdown(
                         f"""
                         <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                            <div style="font-size:18px; font-weight:bold; color:black;">
+                            <div style="font-size:16px; font-weight:bold; color:black;">
                                 {Collect_label}
                             </div>
                             <div style="font-size:18px; font-weight:bold; color:black;">
@@ -494,7 +494,7 @@ def app():
                     st.markdown(
                         f"""
                         <div style="background-color:white; padding:10px; border-radius:10px; width:220px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-                            <div style="font-size:18px; font-weight:bold; color:black;">
+                            <div style="font-size:16px; font-weight:bold; color:black;">
                                 {Collect_label}
                             </div>
                             <div style="font-size:18px; font-weight:bold; color:black;">
@@ -598,7 +598,7 @@ def app():
                             
                             # Create the DataFrame with the required columns
                             status_df = Telesumamry_df[[
-                            "Patientname",
+                                "Patientname",
                                 "UHID",
                                 "mobile",
                                 "Medical Centre",
