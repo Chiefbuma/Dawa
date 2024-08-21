@@ -439,7 +439,7 @@ def app():
                                     Collect_label = "Sumamry of Transactions"
                                     st.markdown(
                                         f"""
-                                        <div style="background-color:white; padding:1px; border-radius:5px; width:800px; border: 0px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                        <div style="background-color:white; padding:1px; border-radius:5px; width:800px; border: 0px solid white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
                                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                             </div>
                                         </div>
