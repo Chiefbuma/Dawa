@@ -598,9 +598,34 @@ def app():
                                 }
                                 """)
                             
-                            
+                                    
+                            sumamry_df = Main_df.rename(columns={
+                                'UHID':'UHID',
+                                'Patientname':'Patientname',
+                                'DoctorName': 'Doctor',
+                                'Booked By':'Cordinator',
+                                'mobile':'mobile',
+                                'Dispatched By':'WareHouse',
+                                'Location':'Medical Centre',
+                                'Dispensed By':'Pharmatech.',
+                                'Booking status': 'Booked',
+                                'Transfer Status':'Total',
+                                'Transfer To':'TransTo',
+                                'Transfer From':'TransFrom',
+                                'Consultation Status': 'Consulted',
+                                'Dispatched status': 'Dispatched',
+                                'Received Status': 'Received',
+                                'Collection Date':'Date',
+                                'Partial_Collection':'Partial',
+                                'Full_Collection':'Full',
+                                'Collection status': 'Collected',
+                                'Month': 'Month',
+                                'MVC':'MVC',
+                                "Cycle":'Cycle'
+                            })
+                    
                             # Create the DataFrame with the required columns
-                            status_df = Telesumamry_df[[
+                            status_df = sumamry_df[[
                                 "Patientname",
                                 "UHID",
                                 "mobile",
