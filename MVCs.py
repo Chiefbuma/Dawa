@@ -324,7 +324,8 @@ def app():
                     "UHID",
                     "Patientname",
                     "Location",
-                    "Collection status"
+                    "Collection status",
+                    "Collection Date"
                     
                   
                     
