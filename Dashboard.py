@@ -630,8 +630,8 @@ def app():
                                 "Medical Centre",
                                 'Booked', 'Consulted', 'Dispatched', 
                                 'Received',
-                                'TransTo',
                                 'TransFrom',
+                                'TransTo',
                                 'Collected',
                                 'Date',
                                 'MVC'
