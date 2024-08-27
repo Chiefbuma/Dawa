@@ -151,6 +151,7 @@ def app():
                         'Consultation Status': 'Consulted',
                         'Dispatched status': 'Dispatched',
                         'Received Status': 'Received',
+                        'Collection Date':'Date',
                         'Partial_Collection':'Partial',
                         'Full_Collection':'Full',
                         'Collection status': 'Collected',
@@ -607,7 +608,8 @@ def app():
                                 'TransOut',
                                 'TransIn',
                                 'Collected',
-                                'MVC',
+                                'Date',
+                                'MVC'
 
                             ]]
                             
