@@ -408,8 +408,8 @@ def app():
                                     "Collection status",
                                     "Collection Date",
                                     "Dispensed By",
-                                    "Corrected",
-                                    "MVC"]]
+                                    "MVC",
+                                    "Corrected"]]
 
                     # Display the filtered DataFrame
                     #st.dataframe(Appointment_df)
