@@ -635,7 +635,6 @@ def app():
                                 'Collected',
                                 'Date',
                                 'MVC'
-
                             ]]
                             
 
