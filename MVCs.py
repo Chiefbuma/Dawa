@@ -94,7 +94,7 @@ def app():
             
             
             Trans_df['MVC check'] = Trans_df.apply(
-                lambda row: 'Duplicate' if Trans_df['MVC'].duplicated(keep=False)[row.name]
+                lambda row: 'Not Valid/Duplicate' if Trans_df['MVC'].duplicated(keep=False)[row.name]
                 else ('Valid' if len(str(row['MVC'])) == 13 else 'Not Valid'),
                 axis=1)
             
