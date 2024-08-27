@@ -626,6 +626,7 @@ def app():
                             status_df = sumamry_df[[
                                 "Patientname",
                                 "UHID",
+                                "mobile",
                                 "Medical Centre",
                                 'Booked', 'Consulted', 'Dispatched', 
                                 'Received',
