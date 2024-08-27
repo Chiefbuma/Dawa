@@ -148,8 +148,6 @@ def app():
                         'Dispensed By':'Pharmatech.',
                         'Booking status': 'Booked',
                         'Transfer Status':'Total',
-                         'Transfer To':'TransTo',
-                         'Transfer From':'TransFrom',
                         'Consultation Status': 'Consulted',
                         'Dispatched status': 'Dispatched',
                         'Received Status': 'Received',
