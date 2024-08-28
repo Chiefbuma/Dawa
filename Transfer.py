@@ -119,7 +119,7 @@ def app():
             
                 Trans_df['Received By']=staffname
                 
-                Trans_df['Received Status']= ""
+                Trans_df['Received Status']= "Pending"
                         
                  
                  
