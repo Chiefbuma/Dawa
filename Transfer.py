@@ -104,6 +104,8 @@ def app():
                 Trans_df['Transfer Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
                 Trans_df['Transferred By']=staffname
+                
+               
             
                 
             else :
@@ -116,6 +118,8 @@ def app():
                 Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
                 Trans_df['Received By']=staffname
+                
+                Trans_df['Received Status']= ""
                         
                  
                  
@@ -331,7 +335,7 @@ def app():
                 Trans_df['Transfer To']= location
                 Trans_df['Location']= location
                 Trans_df['Transaction Type']= "Transfer In"
-                Trans_df['Received Date']= "Transfer In"
+                Trans_df['Received Date']= Trans_df['Received Date'].fillna(formatted_date)
                 
                 
                 gb = GridOptionsBuilder.from_dataframe(Trans_df)
@@ -434,7 +438,8 @@ def app():
                             "ScopeId",
                             "URL Path",
                             "Approval Status",
-                            "mobile" ]
+                            "mobile",
+                            "Accept"]
                     
                     
                     gb = GridOptionsBuilder.from_dataframe(Trans_df)
