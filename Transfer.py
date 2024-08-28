@@ -553,7 +553,7 @@ def app():
                 
                 if selected_option == "Transfer In":
                     
-                    pres_df = df[(df['Received Status'] == 'Received') & (df['Transfer To'] == location)]
+                    pres_df = df['Transfer To'] == location
  
                     pres_df=pres_df[[
                                 "ID",
