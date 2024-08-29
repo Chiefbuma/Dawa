@@ -291,7 +291,6 @@ def app():
             # List of columns to hide
             book_columns = [
                         "ID",
-                        "UHID",
                         "Title",
                         "mobile",
                         "Booking status",
