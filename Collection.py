@@ -348,7 +348,7 @@ def app():
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
-            # Build the grid options
+            # Build the gri
             gridoptions = gb.build()
             
             
