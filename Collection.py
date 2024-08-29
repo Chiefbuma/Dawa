@@ -86,13 +86,19 @@ def app():
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['staffname'].iloc[0]
-              
-            Trans_df = AllTrans_df[
-                    (AllTrans_df['Received Status'] == 'Received') & 
-                    (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Collection status'].isnull())]
             
+            
+            if department=="Admin":
+                Trans_df = AllTrans_df[
+                        (AllTrans_df['Received Status'] == 'Received') &
+                        (AllTrans_df['Collection status'].isnull())]
+            else:   
+                Trans_df = AllTrans_df[
+                        (AllTrans_df['Received Status'] == 'Received') & 
+                        (AllTrans_df['Location'] == location) & 
+                        (AllTrans_df['Collection status'].isnull())]
                 
+            
                        
             Trans_df['Dispensed By']=staffname
             
