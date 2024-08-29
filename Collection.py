@@ -325,8 +325,6 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                    "UHID",
-                    "Patientname",
                     "Location",
                     "Received Status",
                     "Month",
