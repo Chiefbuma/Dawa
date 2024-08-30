@@ -6,7 +6,7 @@ import os
 
 
 USERNAME = "biosafety@blisshealthcare.co.ke"
-PASSWORD = "Buma@8349"
+PASSWORD = "Streamlit@2024"
 SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
 SHAREPOINT_SITE = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
 
