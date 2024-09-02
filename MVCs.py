@@ -99,10 +99,7 @@ def app():
                     (AllTrans_df['Location'] == location) & 
                     (~AllTrans_df['Collection status'].isnull())]
             
-                        
-            Trans_df = AllTrans_df[
-                    (AllTrans_df['Location'] == location) & 
-                    (~AllTrans_df['Collection status'].isnull())]
+            
             
             
             Trans_df['MVC check'] = Trans_df.apply(
