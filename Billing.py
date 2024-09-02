@@ -97,11 +97,11 @@ def app():
             Tele_df = pd.DataFrame(response.data)
             
             # Merge Tele_df into AllTrans_df
-            merged_df = pd.merge(AllTrans_df, Tele_df, left_on='DoctorName', right_on='StaffName', how='left')
+            #merged_df = pd.merge(AllTrans_df, Tele_df, left_on='DoctorName', right_on='StaffName', how='left')
             
             
             # Ensure that 'StaffNumber' column is also of integer type
-            merged_df['StaffNumber'] = merged_df['StaffNumber'].astype(int)
+            #merged_df['StaffNumber'] = merged_df['StaffNumber'].astype(int)
 
             
             
@@ -115,9 +115,9 @@ def app():
             staffnumber=int(staffnumber)
             
             
-            Trans_df = merged_df[
-                (merged_df['Booking status'] == 'Booked') &  
-                (merged_df['Consultation Status'].isnull())]
+            Trans_df = AllTrans_df[
+                (AllTrans_df['Booking status'] == 'Booked') &  
+                (AllTrans_df['Consultation Status'].isnull())]
                 
             
             #st.write(Trans_df)
