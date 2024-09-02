@@ -210,9 +210,9 @@ def app():
                             Staffnumber: <strong>{st.session_state.staffnumber}</strong><br>
                             Staffname: <strong>{st.session_state.staffname}</strong><br>
                             Department: <strong>{st.session_state.Department}</strong><br>
-                           \
+                           
                             <br>
-                            Naviagte to your  dashboard from the menu on the sidebar.
+                            Navigate to your  dashboard from the menu on the sidebar.
                         </span>""", unsafe_allow_html=True)
 
     except APIError as e:
