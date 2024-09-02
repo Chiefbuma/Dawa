@@ -87,7 +87,19 @@ def app():
             
             staffname = usersD_df['staffname'].iloc[0]
             
+                   
+            if department=="Admin":
+               
+               Trans_df = AllTrans_df[ 
+                    (~AllTrans_df['Collection status'].isnull())]
             
+            else:   
+                
+                Trans_df = AllTrans_df[
+                    (AllTrans_df['Location'] == location) & 
+                    (~AllTrans_df['Collection status'].isnull())]
+            
+                        
             Trans_df = AllTrans_df[
                     (AllTrans_df['Location'] == location) & 
                     (~AllTrans_df['Collection status'].isnull())]
