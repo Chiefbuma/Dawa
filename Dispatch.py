@@ -157,7 +157,7 @@ def app():
                     pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
                     
                     pres_df=pres_df[[
-                                    "ID",
+        
                                     "Title",
                                     "UHID",
                                     "Patientname",
