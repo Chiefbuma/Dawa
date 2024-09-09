@@ -58,7 +58,7 @@ def app():
         df = pd.read_excel(uploaded_file)
         
         # Convert date columns to the required format
-        date_columns = ['BookingDate', 'ConsultationDate', 'DispatchedDate', 'ReceivedDate', 'CollectionDate', 'Bookedon']
+        date_columns = ['BookingDate', 'ConsultationDate', 'DispatchedDate', 'ReceivedDate', 'CollectionDate', 'Booked on']
         available_date_columns = [col for col in date_columns if col in df.columns]
         
         for column in available_date_columns:
