@@ -159,6 +159,31 @@ def app():
                     st.stop() 
             
             # Display DataFrame in an editable grid (optional code omitted for brevity)
+            
+             #SUMMARY
+            #Group by 'Cycle' and count the occurrences for each status
+            summary_df = df.groupby(['Medical Centre','Cycle']).agg({
+                'BookingStatus':'count',
+                'ConsultationStatus': 'count',
+                'ConsultationStatus': 'count',
+                'Dispatchedstatus': 'count'
+               
+    
+            }).reset_index()
+            
+            
+            with card_container(key="dis"):
+                
+                try:
+                    
+                   # Display the DataFrame to the user
+                    st.write("Uploaded Data Preview:")
+                    st.dataframe(summary_df)
+                
+                except Exception as e:
+                    st.error(f"Failed to update to SharePoint: {str(e)}")
+                    st.stop() 
+            
 
             # Submit button to trigger the upload to SharePoint
             if st.button("Submit to SharePoint"):
