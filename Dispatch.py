@@ -1,7 +1,27 @@
 import streamlit as st
+from st_supabase_connection import SupabaseConnection
+from supabase import create_client
 import pandas as pd
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import plotly.graph_objects as go
 from office365.sharepoint.client_context import ClientContext
 from office365.runtime.auth.authentication_context import AuthenticationContext
+import streamlit_option_menu as option_menu
+from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
+from sharepoint import SharePoint
+from local_components import card_container
+import streamlit.components.v1 as components
+import streamlit_shadcn_ui as ui
+import logging
+from postgrest import APIError
+from shareplum import Site, Office365
+from shareplum.site import Version
+import pandas as pd
+from office365.runtime.auth.client_credential import ClientCredential
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.lists.list  import ListItemCreationInformation
+from office365.sharepoint.lists.list import List
 import time
 import os
 
@@ -43,8 +63,16 @@ def app():
                 ctx.execute_query()
 
                 for index, row in df.iterrows():
-                    item_creation_info = row.to_dict()
+                    item_creation_info = ListItemCreationInformation()
                     new_item = target_list.add_item(item_creation_info)
+
+                    # Set the field values in SharePoint
+                    for col in df.columns:
+                        value = row[col]
+                        if pd.isna(value):
+                            value = ""  # Replace NaN with an empty string
+                        new_item.set_property(col, value)
+
                     new_item.update()
                     ctx.execute_query()
                     st.write(f"Inserted row {index + 1} into SharePoint.")
@@ -79,4 +107,3 @@ def app():
 
     else:
         st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
-
