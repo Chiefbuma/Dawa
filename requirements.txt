@@ -6,6 +6,7 @@ numpy==1.26.4
 office365==0.3.15
 Office365_REST_Python_Client==2.5.5
 pandas
+openpyxl
 plotly==5.18.0
 SQLAlchemy==2.0.25
 st_supabase_connection==1.2.2
