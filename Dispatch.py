@@ -1,32 +1,9 @@
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
-from supabase import create_client
 import pandas as pd
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import plotly.graph_objects as go
 from office365.sharepoint.client_context import ClientContext
 from office365.runtime.auth.authentication_context import AuthenticationContext
-import streamlit_option_menu as option_menu
-from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
-from sharepoint import SharePoint
-from local_components import card_container
-import streamlit.components.v1 as components
-import streamlit_shadcn_ui as ui
-import logging
-from postgrest import APIError
-from shareplum import Site, Office365
-from shareplum.site import Version
-import pandas as pd
-from office365.runtime.auth.client_credential import ClientCredential
-from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.lists.list  import ListItemCreationInformation
-from office365.sharepoint.lists.list import List
+from office365.sharepoint.lists.list import ListItemCreationInformation
 import time
-import os
-
-
-import json
 import os
 
 def app():
@@ -37,10 +14,9 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location=st.session_state.Region
-        staffnumber=st.session_state.staffnumber
+        location = st.session_state.Region
+        staffnumber = st.session_state.staffnumber
         department = st.session_state.Department
-        
         
         def get_client_context():
             # Ensure the SharePoint URL is correct
@@ -88,8 +64,6 @@ def app():
             new_item.update()
             ctx.execute_query()
 
-
-
         # Function to read last processed row from a file (to avoid duplication)
         def read_last_processed_row():
             last_processed_file = 'last_processed_row.txt'
@@ -113,13 +87,14 @@ def app():
 
                 for index in range(start_index, len(df)):
                     row = df.iloc[index].to_dict()  # Convert row to dictionary for easier processing
+                    st.write(f"Processing row {index + 1}: {row}")
                     for attempt in range(retries):
                         try:
                             # Convert None values to empty strings
                             item_creation_info = {k: (v if v is not None else '') for k, v in row.items()}
                             
                             # Add item to SharePoint list
-                            target_list.add_item(item_creation_info).execute_query()
+                            add_item_to_sharepoint(ctx, target_list, item_creation_info)
                             
                             st.write(f"Inserted row {index + 1} into the SharePoint list.")
                             write_last_processed_row(index)
@@ -132,8 +107,8 @@ def app():
                                 st.error(f"Failed to insert row {index + 1} after {retries} attempts.")
                                 return
 
-        # Streamlit UI for Excel upload and processing
-        st.title("Excel Upload to SharePoint")
+        # Streamlit UI for CSV upload and processing
+        st.title("CSV Upload to SharePoint")
 
         # Upload CSV file widget
         uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
@@ -143,12 +118,6 @@ def app():
             # Read the CSV file into a DataFrame
             df = pd.read_csv(uploaded_file)
 
-            # Convert date columns to the required format
-            date_columns = ['Booking Date', 'Consultation Date', 'Dispatched Date', 'Received Date', 'Collection Date', 'Booked on']
-            available_date_columns = [col for col in date_columns if col in df.columns]
-            
-            for column in available_date_columns:
-                df[column] = pd.to_datetime(df[column]).dt.strftime('%d/%m/%Y')
 
             # Replace NaN values with blank strings
             df = df.fillna('').astype(str)
@@ -162,7 +131,7 @@ def app():
                 process_and_upload_to_sharepoint(df)
                 st.success("Data submitted successfully.")
         else:
-            st.write("Please upload an Excel file to proceed.")
+            st.write("Please upload a CSV file to proceed.")
               
     else:
         st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
