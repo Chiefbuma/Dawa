@@ -147,6 +147,43 @@ def app():
                 </style>
                 """, unsafe_allow_html=True)
             
+            
+                     
+            with card_container(key="disp"):
+                
+                try:
+                    
+                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
+                    pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
+                    
+                    pres_df=pres_df[[
+                                    "ID",
+                                    "Title",
+                                    "UHID",
+                                    "Patientname",
+                                    "Location",
+                                    "Dispatchedstatus",
+                                    "DispatchedDate",
+                                    "DispatchedBy",
+                                    "Month",
+                                    "Year",
+                                    "TransactionType","Cycle"]]
+    
+                    
+                    # Display the filtered DataFrame
+                    #st.dataframe(Appointment_df)
+                    
+                    with card_container(key="billdsis2"):
+                        cols = st.columns(1)
+                        with cols[0]:
+                            with card_container(key="bil1dis3"):
+                                ui.table(data=pres_df, maxHeight=300)
+                
+                
+                except Exception as e:
+                    st.error(f"Failed to update to SharePoint: {str(e)}")
+                    st.stop() 
+            
             # Display DataFrame in an editable grid (optional code omitted for brevity)
 
             # Submit button to trigger the upload to SharePoint
