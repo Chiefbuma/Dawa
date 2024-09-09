@@ -89,11 +89,11 @@ def app():
         st.title("Excel Upload to SharePoint")
 
         # Upload Excel file widget
-        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 
         # If a file is uploaded
         if uploaded_file is not None:
-            df = pd.read_csv(uploaded_file)
+            df = pd.read_excel(uploaded_file)
 
             # Replace NaN values with blank strings and convert columns to strings
             df = df.fillna('').astype(str)
@@ -106,7 +106,7 @@ def app():
             if st.button("Submit to SharePoint"):
                 process_and_upload_to_sharepoint(df)
         else:
-            st.write("Please upload a CSV file to proceed.")
+            st.write("Please upload an Excel file to proceed.")
 
     else:
         st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
