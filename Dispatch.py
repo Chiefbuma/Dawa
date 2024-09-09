@@ -83,7 +83,7 @@ def app():
             ctx, target_list = get_client_context()
             if ctx and target_list:
                 retries = 3
-                start_index = read_last_processed_row() + 1
+                start_index = read_last_processed_row()
 
                 for index in range(start_index, len(df)):
                     row = df.iloc[index].to_dict()  # Convert row to dictionary for easier processing
