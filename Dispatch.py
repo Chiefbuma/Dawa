@@ -56,7 +56,12 @@ def upload_to_sharepoint(df, ctx):
         ctx.load(target_list)
         ctx.execute_query()
 
-        # Insert rows into the SharePoint list
+        # Fetch existing items from the SharePoint list
+        existing_items = target_list.get_items().execute_query()
+        existing_data = {item.properties['Title'] for item in existing_items}  # Adjust based on your unique identifier
+
+        # Prepare new items to be inserted
+        new_items = []
         for index, row in df.iterrows():
             item_creation_info = row.to_dict()
             
@@ -67,14 +72,19 @@ def upload_to_sharepoint(df, ctx):
                 else:
                     item_creation_info[key] = str(value)
 
-            # Attempt to add item to SharePoint list with retry logic
+            # Check for duplicates based on a unique field (e.g., 'Title')
+            if item_creation_info.get('Title') not in existing_data:
+                new_items.append(item_creation_info)
+
+        # Insert new rows into the SharePoint list
+        for item_creation_info in new_items:
             for attempt in range(retries):
                 try:
                     target_list.add_item(item_creation_info).execute_query()
-                    st.write(f"Inserted row {index + 1} into SharePoint.")
+                    st.write(f"Inserted item with Title {item_creation_info.get('Title')} into SharePoint.")
                     break
                 except Exception as e:
-                    st.error(f"Attempt {attempt + 1} to insert row {index + 1} failed: {e}")
+                    st.error(f"Attempt {attempt + 1} to insert item with Title {item_creation_info.get('Title')} failed: {e}")
                     if attempt < retries - 1:
                         time.sleep(5)
                         # Reconnect on failure
@@ -86,8 +96,13 @@ def upload_to_sharepoint(df, ctx):
                         ctx.load(target_list)
                         ctx.execute_query()
                     else:
-                        st.error(f"Failed to insert row {index + 1} after {retries} attempts.")
+                        st.error(f"Failed to insert item with Title {item_creation_info.get('Title')} after {retries} attempts.")
                         return
+
+        st.success("All new rows have been inserted successfully.")
+    except Exception as e:
+        st.error(f"Failed to upload to SharePoint: {str(e)}")
+
 
         st.success("All rows have been inserted successfully.")
     except Exception as e:
