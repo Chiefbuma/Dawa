@@ -162,7 +162,7 @@ def app():
             
              #SUMMARY
             #Group by 'Cycle' and count the occurrences for each status
-            summary_df = df.groupby(['Medical Centre','Cycle']).agg({
+            summary_df = df.groupby(['Location','Cycle']).agg({
                 'BookingStatus':'count',
                 'ConsultationStatus': 'count',
                 'ConsultationStatus': 'count',
