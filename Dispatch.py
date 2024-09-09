@@ -156,11 +156,14 @@ def app():
                     # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                     pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
                     
+                    df.reset_index(drop=True, inplace=True)
+                    
                     pres_df=pres_df[[
         
                                     "Title",
                                     "UHID",
                                     "Patientname",
+                                    "mobile",
                                     "Location",
                                     "Dispatchedstatus",
                                     "DispatchedDate",
