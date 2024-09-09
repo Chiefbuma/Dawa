@@ -56,6 +56,13 @@ def app():
     # If a file is uploaded
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
+        
+        # Convert date columns to the required format
+        date_columns = ['BookingDate', 'ConsultationDate', 'DispatchedDate', 'ReceivedDate', 'CollectionDate', 'Bookedon']
+        available_date_columns = [col for col in date_columns if col in df.columns]
+        
+        for column in available_date_columns:
+            df[column] = pd.to_datetime(df[column]).dt.strftime('%d/%m/%Y')
 
         # Replace NaN values with blank strings and convert columns to strings
         df = df.fillna('').astype(str)
