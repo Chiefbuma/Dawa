@@ -131,10 +131,10 @@ def app():
             st.dataframe(df)
             
             # Modify the DataFrame
-            df['Dispatched Date'] = df['Dispatched Date'].fillna(formatted_date)
-            df['Dispatched By'] = department
-            df['Dispatched By'] = staffnumber
-            df['Transaction Type'] = "Dispatch"
+            df['DispatchedDate'] = df['DispatchedDate'].fillna(formatted_date)
+            df['DispatchedBy'] = department
+            df['DispatchedBy'] = staffnumber
+            df['TransactionType'] = "Dispatch"
             
             st.markdown("""
                 <style>
