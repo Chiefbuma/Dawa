@@ -41,86 +41,59 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-    
+            
+        # Excel file path
+        excel_file_path =r'C:\Users\Buma\Desktop\Dispacth2.xlsx'
+
+        # Read the Excel file
+        df = pd.read_excel(excel_file_path)
+
+
+
+        df = df.fillna('') 
+
+        # Convert all columns to strings
+        df = df.astype(str)
+
+
+        print(df)
+        # Replace NaN values with blank strings in the entire DataFrame
         
-        def get_client_context():
-            # Ensure the SharePoint URL is correct
-            sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
-            username = "biosafety@blisshealthcare.co.ke"
-            password = "Streamlit@2024"
-            list_name = 'Home DeliveryCheck'
+        
             
-            # Create authentication context
-            ctx_auth = AuthenticationContext(sharepoint_url)
-            
-            if ctx_auth.acquire_token_for_user(username, password):
-                # Create SharePoint context using the valid URL
-                ctx = ClientContext(sharepoint_url, ctx_auth)
-                web = ctx.web
-                ctx.load(web)
-                ctx.execute_query()
-                st.write(f"Connected to SharePoint site: {web.properties['Title']}")
-                
-                # Access the SharePoint list by name
-                target_list = ctx.web.lists.get_by_title(list_name)
-                ctx.load(target_list)
-                ctx.execute_query()
-                
-                st.write(f"Connected to SharePoint list: {list_name}")
-                return ctx, target_list
-            else:
-                st.error(f"Authentication failed: {ctx_auth.get_last_error()}")
-                return None, None
+        # Constants for SharePoint
+        sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+        username = "biosafety@blisshealthcare.co.ke"
+        password = "Streamlit@2024"
+        list_name = 'Home DeliveryCheck'
 
-        # Function to add an item to SharePoint list
-        def add_item_to_sharepoint(ctx, target_list, row):
-            item_creation_info = ListItemCreationInformation()
-            new_item = target_list.add_item(item_creation_info)
-            for key, value in row.items():
-                new_item.set_property(key, value)
-            new_item.update()
+
+        # Connect to SharePoint
+        ctx_auth = AuthenticationContext(sharepoint_url)
+        if ctx_auth.acquire_token_for_user(username, password):
+            ctx = ClientContext(sharepoint_url, ctx_auth)
+            web = ctx.web
+            ctx.load(web)
             ctx.execute_query()
-
-
-        # Function to read last processed row from a file (to avoid duplication)
-        def read_last_processed_row():
-            last_processed_file = 'last_processed_row.txt'
-            if os.path.exists(last_processed_file):
-                with open(last_processed_file, 'r') as file:
-                    return int(file.read().strip())
-            return -1
-
-        # Function to write the last processed row to a file
-        def write_last_processed_row(index):
-            last_processed_file = 'last_processed_row.txt'
-            with open(last_processed_file, 'w') as file:
-                file.write(str(index))
+            print(f"Connected to SharePoint site: {web.properties['Title']}")
+        else:
+            print(ctx_auth.get_last_error())
 
         def process_and_upload_to_sharepoint(df):
-            # Get the SharePoint context and list
-            ctx, target_list = get_client_context()
-            if ctx and target_list:
-                retries = 3
-                start_index = read_last_processed_row() + 1
+            # Get the SharePoint list
+            target_list = ctx.web.lists.get_by_title(list_name)
+            ctx.load(target_list)
+            ctx.execute_query()
 
-                for index in range(start_index, len(df)):
-                    row = df.iloc[index].to_dict()  # Convert row to dictionary for easier processing
-                    for attempt in range(retries):
-                        try:
-                            # Add item to SharePoint list
-                            add_item_to_sharepoint(ctx, target_list, row)  # Pass row as argument
-                            
-                            st.write(f"Inserted row {index + 1} into the SharePoint list.")
-                            write_last_processed_row(index)
-                            break
-                        except Exception as e:
-                            st.error(f"Attempt {attempt + 1} to insert row {index + 1} failed: {e}")
-                            if attempt < retries - 1:
-                                time.sleep(5)
-                            else:
-                                st.error(f"Failed to insert row {index + 1} after {retries} attempts.")
-                                return
+            # Insert rows into the SharePoint list
+            for index, row in df.iterrows():
+                item_creation_info = row.to_dict()
+                target_list.add_item(item_creation_info).execute_query()
+                print(f"Inserted row {index + 1} into the list.")
+            
+            return  
 
+        print("All rows have been inserted.")
         # Streamlit UI for Excel upload and processing
         st.title("Excel Upload to SharePoint")
 
