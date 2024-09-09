@@ -135,12 +135,13 @@ def app():
         # Streamlit UI for Excel upload and processing
         st.title("Excel Upload to SharePoint")
 
-        # Upload Excel file widget
-        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+        # Upload CSV file widget
+        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
         # If a file is uploaded
         if uploaded_file is not None:
-            df = pd.read_excel(uploaded_file)
+            # Read the CSV file into a DataFrame
+            df = pd.read_csv(uploaded_file)
 
             # Convert date columns to the required format
             date_columns = ['Booking Date', 'Consultation Date', 'Dispatched Date', 'Received Date', 'Collection Date', 'Booked on']
