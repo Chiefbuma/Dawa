@@ -99,9 +99,6 @@ def app():
                     (AllTrans_df['Location'] == location) & 
                     (~AllTrans_df['Collection status'].isnull())]
             
-            
-            
-            
             Trans_df['MVC check'] = Trans_df.apply(
                 lambda row: 'Not Valid/Duplicate' if Trans_df['MVC'].duplicated(keep=False)[row.name]
                 else ('Valid' if len(str(row['MVC'])) == 13 else 'Not Valid'),
