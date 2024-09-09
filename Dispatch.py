@@ -69,9 +69,12 @@ def app():
                     # Set the field values in SharePoint
                     for col in df.columns:
                         value = row[col]
-                        if pd.isna(value):
-                            value = ""  # Replace NaN with an empty string
-                        new_item.set_property(col, value)
+
+                        # Handle NoneType values by converting them to empty strings
+                        if value is None or pd.isna(value):
+                            value = ""
+
+                        new_item.set_property(col, str(value))  # Ensure the value is treated as a string
 
                     new_item.update()
                     ctx.execute_query()
@@ -86,11 +89,11 @@ def app():
         st.title("Excel Upload to SharePoint")
 
         # Upload Excel file widget
-        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
         # If a file is uploaded
         if uploaded_file is not None:
-            df = pd.read_excel(uploaded_file)
+            df = pd.read_csv(uploaded_file)
 
             # Replace NaN values with blank strings and convert columns to strings
             df = df.fillna('').astype(str)
@@ -103,7 +106,7 @@ def app():
             if st.button("Submit to SharePoint"):
                 process_and_upload_to_sharepoint(df)
         else:
-            st.write("Please upload an Excel file to proceed.")
+            st.write("Please upload a CSV file to proceed.")
 
     else:
         st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
