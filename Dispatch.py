@@ -81,7 +81,7 @@ def upload_to_sharepoint(df, ctx):
             for attempt in range(retries):
                 try:
                     target_list.add_item(item_creation_info).execute_query()
-                    st.write(f"Inserted  {item_creation_info.get('Title')} into SharePoint.")
+                    st.write(f"Inserted  {index} {item_creation_info.get('Title')} into SharePoint.")
                     break
                 except Exception as e:
                     st.error(f"Attempt {attempt + 1} to insert item with Title {item_creation_info.get('Title')} failed: {e}")
