@@ -126,9 +126,6 @@ def app():
             # Replace NaN values with blank strings and convert columns to strings
             df = df.fillna('').astype(str)
 
-            # Display the DataFrame to the user
-            st.write("Uploaded Data Preview:")
-            st.dataframe(df)
             
             # Modify the DataFrame
             df['DispatchedDate'] = df['DispatchedDate'].fillna(formatted_date)
@@ -153,35 +150,9 @@ def app():
                 
                 try:
                     
-                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                    pres_df = df[df['Dispatchedstatus'] == 'Dispatched']
-                    
-                    df.reset_index(drop=True, inplace=True)
-                    
-                    pres_df=pres_df[[
-        
-                                    "Title",
-                                    "UHID",
-                                    "Patientname",
-                                    "mobile",
-                                    "Location",
-                                    "Dispatchedstatus",
-                                    "DispatchedDate",
-                                    "DispatchedBy",
-                                    "Month",
-                                    "Year",
-                                    "TransactionType","Cycle"]]
-    
-                    
-                    # Display the filtered DataFrame
-                    #st.dataframe(Appointment_df)
-                    
-                    with card_container(key="billdsis2"):
-                        cols = st.columns(1)
-                        with cols[0]:
-                            with card_container(key="bil1dis3"):
-                                ui.table(data=pres_df, maxHeight=300)
-                
+                   # Display the DataFrame to the user
+                    st.write("Uploaded Data Preview:")
+                    st.dataframe(df)
                 
                 except Exception as e:
                     st.error(f"Failed to update to SharePoint: {str(e)}")
