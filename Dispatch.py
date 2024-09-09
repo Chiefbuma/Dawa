@@ -1,9 +1,32 @@
 import streamlit as st
+from st_supabase_connection import SupabaseConnection
+from supabase import create_client
 import pandas as pd
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import plotly.graph_objects as go
 from office365.sharepoint.client_context import ClientContext
 from office365.runtime.auth.authentication_context import AuthenticationContext
-from office365.sharepoint.lists.list import ListItemCreationInformation
+import streamlit_option_menu as option_menu
+from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
+from sharepoint import SharePoint
+from local_components import card_container
+import streamlit.components.v1 as components
+import streamlit_shadcn_ui as ui
+import logging
+from postgrest import APIError
+from shareplum import Site, Office365
+from shareplum.site import Version
+import pandas as pd
+from office365.runtime.auth.client_credential import ClientCredential
+from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.lists.list  import ListItemCreationInformation
+from office365.sharepoint.lists.list import List
 import time
+import os
+
+
+import json
 import os
 
 def app():
@@ -14,9 +37,11 @@ def app():
                 </span>""", unsafe_allow_html=True)
         
     if st.session_state.is_authenticated:
-        location = st.session_state.Region
-        staffnumber = st.session_state.staffnumber
+        location=st.session_state.Region
+        staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
+        
+    
         
         def get_client_context():
             # Ensure the SharePoint URL is correct
@@ -47,22 +72,15 @@ def app():
                 st.error(f"Authentication failed: {ctx_auth.get_last_error()}")
                 return None, None
 
+        # Function to add an item to SharePoint list
         def add_item_to_sharepoint(ctx, target_list, row):
             item_creation_info = ListItemCreationInformation()
             new_item = target_list.add_item(item_creation_info)
-            
-            # Iterate through the row's key-value pairs
             for key, value in row.items():
-                # If the value is None, replace it with an empty string
-                if value is None:
-                    value = ""  # Replace None with empty string
-                
-                # Set the property in SharePoint
                 new_item.set_property(key, value)
-            
-            # Update the new item
             new_item.update()
             ctx.execute_query()
+
 
         # Function to read last processed row from a file (to avoid duplication)
         def read_last_processed_row():
@@ -77,24 +95,20 @@ def app():
             last_processed_file = 'last_processed_row.txt'
             with open(last_processed_file, 'w') as file:
                 file.write(str(index))
-                
+
         def process_and_upload_to_sharepoint(df):
             # Get the SharePoint context and list
             ctx, target_list = get_client_context()
             if ctx and target_list:
                 retries = 3
-                start_index = read_last_processed_row()
+                start_index = read_last_processed_row() + 1
 
                 for index in range(start_index, len(df)):
                     row = df.iloc[index].to_dict()  # Convert row to dictionary for easier processing
-                    st.write(f"Processing row {index + 1}: {row}")
                     for attempt in range(retries):
                         try:
-                            # Convert None values to empty strings
-                            item_creation_info = {k: (v if v is not None else '') for k, v in row.items()}
-                            
                             # Add item to SharePoint list
-                            add_item_to_sharepoint(ctx, target_list, item_creation_info)
+                            add_item_to_sharepoint(ctx, target_list, row)  # Pass row as argument
                             
                             st.write(f"Inserted row {index + 1} into the SharePoint list.")
                             write_last_processed_row(index)
@@ -107,17 +121,17 @@ def app():
                                 st.error(f"Failed to insert row {index + 1} after {retries} attempts.")
                                 return
 
-        # Streamlit UI for CSV upload and processing
-        st.title("CSV Upload to SharePoint")
+        # Streamlit UI for Excel upload and processing
+        st.title("Excel Upload to SharePoint")
 
-        # Upload CSV file widget
-        uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+        # Upload Excel file widget
+        uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
 
         # If a file is uploaded
         if uploaded_file is not None:
-            # Read the CSV file into a DataFrame
-            df = pd.read_csv(uploaded_file)
+            df = pd.read_excel(uploaded_file)
 
+           
 
             # Replace NaN values with blank strings
             df = df.fillna('').astype(str)
@@ -131,7 +145,7 @@ def app():
                 process_and_upload_to_sharepoint(df)
                 st.success("Data submitted successfully.")
         else:
-            st.write("Please upload a CSV file to proceed.")
+            st.write("Please upload an Excel file to proceed.")
               
     else:
         st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
