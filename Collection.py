@@ -67,7 +67,16 @@ def app():
         with cols[1]:
             with st.container():
                             Cycle_label = "Select Cycle"
-                           
+                            st.markdown(
+                                    f"""
+                                    <div style="background-color:white; padding:10px; border-radius:10px; width:270px; margin-bottom:5px;">
+                                        <div style="font-size:18px; font-weight:bold; color:black;">
+                                            {Cycle_label}
+                                        </div>
+                                    </div>
+                                    """, 
+                                    unsafe_allow_html=True
+                                )
                     
                             choice = st.selectbox('', Cycle)
 
