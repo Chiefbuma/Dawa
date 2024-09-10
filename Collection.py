@@ -57,9 +57,11 @@ def app():
         AllTrans_df = load_new()        
         #st.write(AllTrans_df)
         
-        current_date ='00/00/0000'
-        # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d/%m/%Y")
+       # Set the default date as a string
+        default_date = '00/00/0000'
+
+        # Use it directly without applying strftime
+        formatted_date = default_date
         
         @st.cache_resource
         def init_connection():
