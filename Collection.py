@@ -57,7 +57,7 @@ def app():
         AllTrans_df = load_new()        
         #st.write(AllTrans_df)
         
-        current_date = datetime.now().date()
+        current_date ='00/00/0000'
         # Format the date as a string (e.g., YYYY-MM-DD)
         formatted_date = current_date.strftime("%d/%m/%Y")
         
@@ -403,7 +403,8 @@ def app():
                      # Convert 'Consultation Date' to datetime
                     pres_df['Collection Date'] = pd.to_datetime(pres_df['Collection Date'], errors='coerce')
 
-                    
+                    # Fill NaN values with the formatted date
+                    pres_df['Collection Date'] = pres_df['Collection Date'].fillna(formatted_date)
 
                      # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
                     pres_df['Collection Date'] = pres_df['Collection Date'].dt.strftime('%d/%m/%Y')
@@ -448,7 +449,7 @@ def app():
                     
                     invalid_rows2 = df[df['Collection status']==""].index.tolist()
                     
-                    invalid_rows3 = df[df['Collection Date']==""].index.tolist()
+                    invalid_rows3 = df[df['Collection Date']=="00/00/0000"].index.tolist()
 
                     
                     if invalid_rows or invalid_rows2 or invalid_rows3 :
@@ -460,7 +461,7 @@ def app():
                     is_valid, invalid_rows = validate_appointment_data(Appointment_df)
                     
                     if not is_valid:
-                        st.error(f"MVC or Status is blank in rows: {invalid_rows}")
+                        st.error(f"MVC or Status or Date of collection is blank in rows: {invalid_rows}")
                         return
                     try:
                         with st.spinner('Submitting...'):
