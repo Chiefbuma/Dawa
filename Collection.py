@@ -328,6 +328,7 @@ def app():
                             "Dispatched Date",
                             "Dispatched By",
                             "Received Comments",
+                            "Collection Comments",
                             "Received Date",
                             "Dispensed  By",
                             "Received By",
@@ -441,7 +442,6 @@ def app():
                                     "Collection status",
                                     "Collection Date",
                                     "Dispensed By",
-                                    "Collection Comments",
                                     "MVC",
                                     "Transaction Type"]]
 
@@ -497,8 +497,7 @@ def app():
                                 collection_status = pres_df.at[ind, 'Collection status']
                                 collection_date = pres_df.at[ind, 'Collection Date']
                                 collection_by = pres_df.at[ind, 'Dispensed By']
-                                Transaction_by = pres_df.at[ind, 'Transaction Type'] 
-                                Comments_by = pres_df.at[ind, 'Collection Comments']   
+                                Transaction_by = pres_df.at[ind, 'Transaction Type']  
                                 MVC_by = pres_df.at[ind, 'MVC']   
 
 
@@ -508,7 +507,6 @@ def app():
                                     'Collection Date': collection_date,
                                     'Dispensed By': collection_by,
                                     'Transaction Type': Transaction_by,
-                                    'Collection Comments': Comments_by,
                                     'MVC':MVC_by
                                 }
 
