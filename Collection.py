@@ -400,6 +400,10 @@ def app():
                     # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                     pres_df = df[df['Collection status'].isin(['Full','Partial','Returned',''])]
                     
+                    
+                    # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+                    pres_df['Consultation Date'] = pres_df['Consultation Date'].dt.strftime('%d/%m/%Y')
+                            
                     pres_df=pres_df[[
                                     "ID",
                                     "Title",
@@ -441,7 +445,6 @@ def app():
                     
                     invalid_rows3 = df[df['Collection Date']==""].index.tolist()
 
-                    
                     
                     if invalid_rows or invalid_rows2 or invalid_rows3 :
                         return False, invalid_rows,invalid_rows2,invalid_rows3
