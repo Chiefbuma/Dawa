@@ -114,7 +114,8 @@ def app():
                                     unsafe_allow_html=True
                                 )
                     
-                            choice = ui.select(options=Cycle)
+                            choice = st.selectbox('Select Cycle', Cycle)
+
                             
                             if choice :
                                     
