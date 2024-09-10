@@ -124,9 +124,10 @@ def app():
         # Format the date as a string (e.g., YYYY-MM-DD)
         current_date = datetime.now().date()
         formatted_date = current_date.strftime("%d/%m/%Y")
-
-        with card_container(key="collect3"):
-            
+        
+        
+        with st.expander("EDIT DISPATCH"):
+           
             #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
             @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
             def load_new():
@@ -176,15 +177,13 @@ def app():
     
 
 
-            #AllTrans_df = load_new()
-            #st.write(AllTrans_df)
-            
-            current_date = datetime.now().date()
-            # Format the date as a string (e.g., YYYY-MM-DD)
-            formatted_date = current_date.strftime("%d/%m/%Y")
-            
-            
+            #Set the default date as a string
+            default_date = '00/00/0000'
 
+            # Use it directly without applying strftime
+            formatted_date = default_date
+            
+            
             @st.cache_resource
             def init_connection():
                 url = "https://effdqrpabawzgqvugxup.supabase.co"
@@ -218,7 +217,7 @@ def app():
                         (AllTrans_df['Received Status'].isnull())]
                 
                 
-                Trans_df['Dispatched Date'] = Trans_df['Dispatched Date'].fillna(formatted_date)
+               
                 Trans_df['Dispatched By'] = department
                 
                 Trans_df['Dispatched By']=staffname
@@ -405,8 +404,7 @@ def app():
                             "Month",
                             "Transaction Type",
                             "Year",
-                            "Cycle",
-                        "Modified",
+                           "Modified",
                             "Modified By",
                             "Level",
                             "Unique Id",
@@ -437,6 +435,7 @@ def app():
                         "UHID",
                         "Patientname",
                         "mobile",
+                        "Cycle",
                         "DoctorName",
                         "Dispatched Date",
                         "Received Comments"
@@ -451,7 +450,7 @@ def app():
                 gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('Location', cellEditor='agSelectCellEditor', cellEditorParams={'values': unique_item_descriptions}, cellRenderer=dropdown_renderer, cellStyle={'width': '300px'} )
-
+                gb.configure_column("Dispatched Date", editable=False, cellRenderer=date_renderer)
     
                 # Configure the default column to be editable
                 gb.configure_default_column(editable=True, minWidth=150, flex=0)
@@ -687,6 +686,15 @@ def app():
                 
                         # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                         pres_df = df[df['Dispatched status'] == 'Dispatched']
+                        
+                        # Convert 'Consultation Date' to datetime
+                        pres_df['Dispatched Date'] = pd.to_datetime(pres_df['Dispatched Date'], errors='coerce')
+
+                        # Fill NaN values with the formatted date
+                        pres_df['Dispatched Date'] = pres_df['Dispatched Date'].fillna(formatted_date)
+
+                        # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+                        pres_df['Dispatched Date'] = pres_df['Dispatched Date'].dt.strftime('%d/%m/%Y')
                         
                         pres_df=pres_df[[
                                         "ID",
