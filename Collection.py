@@ -403,8 +403,7 @@ def app():
                      # Convert 'Consultation Date' to datetime
                     pres_df['Collection Date'] = pd.to_datetime(pres_df['Collection Date'], errors='coerce')
 
-                    # Fill NaN values with the formatted date
-                    pres_df['Collection Date'] = pres_df['Collection Date'].fillna("")
+                    
 
                      # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
                     pres_df['Collection Date'] = pres_df['Collection Date'].dt.strftime('%d/%m/%Y')
