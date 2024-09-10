@@ -343,7 +343,8 @@ def app():
             gb.configure_column("Collection Date", editable=False, cellRenderer=date_renderer)
             gb.configure_column('MVC', editable=False, cellRenderer=textarea_renderer2, pinned='right', minWidth=50)
             gb.configure_column('Collection Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=100)
-             
+            
+            
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
@@ -437,11 +438,13 @@ def app():
                     invalid_rows = df[df['MVC']==""].index.tolist()
                     
                     invalid_rows2 = df[df['Collection status']==""].index.tolist()
+                    
+                    invalid_rows3 = df[df['Collection Date']==""].index.tolist()
 
                     
                     
-                    if invalid_rows or invalid_rows2:
-                        return False, invalid_rows
+                    if invalid_rows or invalid_rows2 or invalid_rows3 :
+                        return False, invalid_rows,invalid_rows2,invalid_rows3
                     return True, []
 
                 def submit_to_sharepoint(Appointment_df):
