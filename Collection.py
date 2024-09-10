@@ -400,7 +400,14 @@ def app():
                     # Filter the DataFrame to include only rows where "Booking status" is "Booked"
                     pres_df = df[df['Collection status'].isin(['Full','Partial','Returned',''])]
                     
-                    
+                     # Convert 'Consultation Date' to datetime
+                    pres_df['Collection Date'] = pd.to_datetime(pres_df['Collection Date'], errors='coerce')
+
+                    # Fill NaN values with the formatted date
+                    pres_df['Collection Date'] = pres_df['Collection Date'].fillna(formatted_date)
+
+                     # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
+                    pres_df['Collection Date'] = pres_df['Collection Date'].dt.strftime('%d/%m/%Y')
                    
                             
                     pres_df=pres_df[[
