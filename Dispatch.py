@@ -122,8 +122,8 @@ def app():
         department = st.session_state.Department
         
         # Format the date as a string (e.g., YYYY-MM-DD)
-        #current_date = datetime.now().date()
-        #formatted_date = current_date.strftime("%d/%m/%Y")
+        current_date = datetime.now().date()
+        formatted_date = current_date.strftime("%d/%m/%Y")
         
         with st.expander("Upload dispatch"):
     
