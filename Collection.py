@@ -69,7 +69,7 @@ def app():
                             Cycle_label = "Select Cycle"
                            
                     
-                            choice = st.selectbox('Select Cycle', Cycle)
+                            choice = st.selectbox('', Cycle)
 
                                 
                             if choice :
