@@ -129,9 +129,7 @@ def app():
                         
         with card_container(key="Billorder"):
             st.header('Dispatch  Package🔖')
-            
             with card_container(key="collect3"):
-                
                 
                 #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
                 @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -481,8 +479,6 @@ def app():
                     # Streamlit app
 
                     with st.form('Dispatch') as f:
-                        st.header('Dispatch  Package🔖')
-                        
                         with card_container(key="Billorder"):
                             # Display the AgGrid table
                             response = AgGrid(
