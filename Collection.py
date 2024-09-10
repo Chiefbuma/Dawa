@@ -65,6 +65,8 @@ def app():
         
         with card_container(key="collect3"):
             cols = st.columns([4,1])
+            with cols[0]:
+                st.header('Collect  Package🔖')
             with cols[1]:
                 with st.container():
                                 choice = st.selectbox('Select Cycle', Cycle) 
@@ -387,7 +389,6 @@ def app():
 
                 # Streamlit container to act as card
                 with st.form('colle2') as f:
-                    st.header('Collect  Package🔖')
                 
                     with card_container(key="collect2"):
                         
