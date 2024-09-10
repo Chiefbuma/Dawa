@@ -65,7 +65,7 @@ def app():
         
         cols = st.columns([4,1])
         
-        with card_container(key="collect2"):
+        with card_container(key="collect3"):
             with cols[1]:
                 with st.container():
                                 choice = st.selectbox('Select Cycle', Cycle) 
