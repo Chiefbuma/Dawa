@@ -402,7 +402,7 @@ def app():
                     
                     
                     # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
-                    pres_df['Collection status'] = pres_df['Collection status'].dt.strftime('%d/%m/%Y')
+                    pres_df['Collection Date'] = pres_df['Collection Date'].dt.strftime('%d/%m/%Y')
                             
                     pres_df=pres_df[[
                                     "ID",
