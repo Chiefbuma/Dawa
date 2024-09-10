@@ -501,8 +501,8 @@ def app():
 
                             st.success("Sucessfully submitted", icon="✅")
                     except Exception as e:
-                        logging.error(f"Pick the correct Collection Date: {str(e)}", exc_info=True)
-                        st.error(f"Pick the correct Collection Date: {str(e)}")
+                        logging.error(f"Pick the correct Collection Date:", exc_info=True)
+                        st.error(f"Pick the correct Collection Date:")
                         st.stop()
 
                 cols = st.columns(4)
