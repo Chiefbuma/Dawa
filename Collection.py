@@ -386,8 +386,10 @@ def app():
                     
                     cols = st.columns(6)
                     with cols[5]:
-                        st.form_submit_button(" Confirm ", type="primary")  
-                
+                        try:
+                            st.form_submit_button(" Confirm ", type="primary")  
+                        except Exception as e:
+                               logging.error(f"Pick correct collection date: {str(e)}", exc_info=True)
                     
             with card_container(key="colecnew"):
                 
