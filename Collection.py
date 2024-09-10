@@ -104,7 +104,7 @@ def app():
             
             Trans_df['Transaction Type']= "Collection"
             
-            Trans_df['Collection Date'] = Trans_df['Collection Date'].fillna(formatted_date)
+         
             
             
             #st.write(staffname)
@@ -302,7 +302,6 @@ def app():
                         "Staffnumber",
                         "Staffname",
                         "Consultation Status",
-                        "Collection Date",
                         "Consultation Date",
                         "Dispatched status",
                         "Dispatched Date",
@@ -341,9 +340,10 @@ def app():
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('Location', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
             gb.configure_column('Collection status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
+            gb.configure_column("Collection Date", editable=False, cellRenderer=date_renderer)
             gb.configure_column('MVC', editable=False, cellRenderer=textarea_renderer2, pinned='right', minWidth=50)
             gb.configure_column('Collection Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=100)
-           
+             
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
