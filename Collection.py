@@ -63,9 +63,8 @@ def app():
         # Get a list of unique values in the 'Cycle' column
         Cycle = cycle_df['Cycle'].unique().tolist()
         
-        cols = st.columns([4,1])
-        
         with card_container(key="collect3"):
+            cols = st.columns([4,1])
             with cols[1]:
                 with st.container():
                                 choice = st.selectbox('Select Cycle', Cycle) 
