@@ -54,8 +54,23 @@ def app():
                 st.error("Connection not available, check connection")
                 st.stop()
 
-        AllTrans_df = load_new()        
-        #st.write(AllTrans_df)
+       #st.write(AllTrans_df)
+        cycle_df = load_new()
+            
+        #st.write(cycle_df)
+            
+        # Get a list of unique values in the 'Cycle' column
+        Cycle = cycle_df['Cycle'].unique().tolist()
+        
+        cols = st.columns([4,1])
+        with cols[1]:
+            with st.container():
+                            choice = st.selectbox('Select Cycle', Cycle) 
+                            if choice :
+                                    
+                                mainall = load_new()  
+                                    
+                                AllTrans_df=mainall[mainall['Cycle'] == choice]
         
         current_date = datetime.now().date()
         # Format the date as a string (e.g., YYYY-MM-DD)
