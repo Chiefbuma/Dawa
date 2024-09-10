@@ -122,8 +122,8 @@ def app():
         department = st.session_state.Department
         
         # Format the date as a string (e.g., YYYY-MM-DD)
-        current_date = datetime.now().date()
-        formatted_date = current_date.strftime("%d/%m/%Y")
+        #current_date = datetime.now().date()
+        #formatted_date = current_date.strftime("%d/%m/%Y")
         
         
         with st.expander("EDIT DISPATCH"):
@@ -692,7 +692,7 @@ def app():
 
                         # Fill NaN values with the formatted date
                         pres_df['Dispatched Date'] = pres_df['Dispatched Date'].fillna(formatted_date)
-
+                        
                         # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
                         pres_df['Dispatched Date'] = pres_df['Dispatched Date'].dt.strftime('%d/%m/%Y')
                         
