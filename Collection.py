@@ -362,7 +362,6 @@ def app():
                 gb.configure_column('Collection status', cellEditor='agSelectCellEditor', cellEditorParams={'values': names_list}, cellRenderer=dropdown_renderer)
                 gb.configure_column("Collection Date", editable=False, cellRenderer=date_renderer)
                 gb.configure_column('MVC', editable=False, cellRenderer=textarea_renderer2, pinned='right', minWidth=50)
-                gb.configure_column('Cycle', editable=False, cellRenderer=textarea_renderer, minWidth=20)
                 gb.configure_column('Collection Comments', editable=False, cellRenderer=textarea_renderer, pinned='right', minWidth=100)
                 
                 
