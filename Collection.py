@@ -389,6 +389,16 @@ def app():
                 st.header('Collect  Package🔖')
                
                 with card_container(key="collect2"):
+                    cols = st.columns([4,1])
+                    with cols[1]:
+                        with st.container():
+                                        choice = st.selectbox('Select Cycle', Cycle) 
+                                        if choice :
+                                                
+                                            mainall = load_new()  
+                                                
+                                            AllTrans_df=mainall[mainall['Cycle'] == choice]
+    
                     # Display the AgGrid table
                     response = AgGrid(
                         Trans_df,
