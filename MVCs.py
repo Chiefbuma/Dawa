@@ -327,6 +327,7 @@ def app():
                             "Dispatched By",
                             "Received Comments",
                             "Collection Comments",
+                            "Collection status",
                             "Received Date",
                             "Dispensed  By",
                             "Received By",
@@ -364,7 +365,7 @@ def app():
                 gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('MVC', editable=False, cellRenderer=textarea_renderer2, minWidth=50)
-                
+                gb.configure_column("Collection Date", editable=False, cellRenderer=date_renderer)
                 # Configure the default column to be editable
                 gb.configure_default_column(editable=True, minWidth=150, flex=0)
                 
@@ -432,7 +433,6 @@ def app():
                                     "UHID",
                                     "Patientname",
                                     "Location",
-                                    "Collection status",
                                     "Collection Date",
                                     "Dispensed By",
                                     "MVC",
