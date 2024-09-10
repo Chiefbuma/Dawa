@@ -401,8 +401,7 @@ def app():
                     pres_df = df[df['Collection status'].isin(['Full','Partial','Returned',''])]
                     
                     
-                    # Convert 'Consultation Date' to string in 'YYYY-MM-DD' format
-                    pres_df['Collection Date'] = pres_df['Collection Date'].dt.strftime('%d/%m/%Y')
+                   
                             
                     pres_df=pres_df[[
                                     "ID",
