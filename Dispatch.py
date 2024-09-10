@@ -125,6 +125,86 @@ def app():
         #current_date = datetime.now().date()
         #formatted_date = current_date.strftime("%d/%m/%Y")
         
+        with st.expander("Upload dispatch"):
+    
+            uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+
+            if uploaded_file is not None:
+                df = pd.read_excel(uploaded_file)
+
+                # Convert date columns to the required format
+                date_columns = ['BookingDate', 'ConsultationDate', 'DispatchedDate', 'ReceivedDate', 'CollectionDate', 'Booked on']
+                available_date_columns = [col for col in date_columns if col in df.columns]
+                
+                for column in available_date_columns:
+                    df[column] = pd.to_datetime(df[column]).dt.strftime('%d/%m/%Y')
+
+                # Replace NaN values with blank strings and convert columns to strings
+                df = df.fillna('').astype(str)
+
+                
+                # Modify the DataFrame
+                df['DispatchedDate'] = df['DispatchedDate'].fillna(formatted_date)
+                df['DispatchedBy'] = department
+                df['DispatchedBy'] = staffnumber
+                df['TransactionType'] = "Dispatch"
+                
+                st.markdown("""
+                    <style>
+                        .stExpander, .stContainer {
+                        margin-bottom: 0px; /* Adjust bottom margin to create space between widgets */
+                        }
+                        .stExpander, .stContainer {
+                        padding: 0px; /* Optional: Add padding inside the widget */
+                        }
+                    </style>
+                    """, unsafe_allow_html=True)
+                        
+                with card_container(key="disp"):
+                    
+                    try:
+                        
+                    # Display the DataFrame to the user
+                        st.write("Uploaded Data Preview:")
+                        st.dataframe(df)
+                    
+                    except Exception as e:
+                        st.error(f"Failed to update to SharePoint: {str(e)}")
+                        st.stop() 
+                
+                # Display DataFrame in an editable grid (optional code omitted for brevity)
+                
+                #SUMMARY
+                #Group by 'Cycle' and count the occurrences for each status
+                summary_df = df.groupby(['Location','Cycle']).agg({
+                    'BookingStatus':'count',
+                    'ConsultationStatus': 'count',
+                    'ConsultationStatus': 'count',
+                    'Dispatchedstatus': 'count'
+                
+        
+                }).reset_index()
+                
+                
+                with card_container(key="dis"):
+                    
+                    try:
+                        
+                    # Display the DataFrame to the user
+                        st.write("Uploaded Data Preview:")
+                        st.dataframe(summary_df)
+                    
+                    except Exception as e:
+                        st.error(f"Failed to update to SharePoint: {str(e)}")
+                        st.stop() 
+                
+
+                # Submit button to trigger the upload to SharePoint
+                if st.button("Submit to SharePoint"):
+                    ctx = connect_to_sharepoint()
+                    upload_to_sharepoint(df, ctx)
+            else:
+                st.write("Please upload an Excel file to proceed.")   
         
         with st.expander("EDIT DISPATCH"):
            
@@ -332,7 +412,7 @@ def app():
                 unique_item_descriptions = get_unique_item_descriptions()
 
                 dropdown_renderer = JsCode(f"""
-            class DropdownRenderer {{
+                 class DropdownRenderer {{
                         init(params) {{
                             this.params = params;
                             this.eGui = document.createElement('select');
@@ -626,54 +706,7 @@ def app():
                                 # Build the grid options
                                 gridoptions = gd.build()
 
-                                
-                            with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=False):
-                                # Inject custom CSS for solid border
-                                response3 = AgGrid(
-                                    filtered_child_data,
-                                    gridOptions=gridoptions,
-                                    editable=True,
-                                    allow_unsafe_jscode=True,
-                                    theme='balham',
-                                    height=120,
-                                    fit_columns_on_grid_load=True
-                                )
-                                    
-                                try:
-                                    res3 = response3['data']
-                                    filtered_prescription = pd.DataFrame(res3)
-
-                                    def update_supabase_table(dataframe: pd.DataFrame, table_name: str, id_column: str):
-                                        """
-                                        Update Supabase table records using data from a DataFrame.
-
-                                        Args:
-                                        - dataframe: pd.DataFrame containing the data to update.
-                                        - table_name: str, name of the Supabase table to update.
-                                        - id_column: str, the column name in the DataFrame that contains unique IDs.
-                                        """
-                                        try:
-                                            for index, row in dataframe.iterrows():
-                                                # Convert the row to a dictionary
-                                                record = row.to_dict()
-                                                record_id = record.pop(id_column)
-                                                
-                                                # Update the Supabase table record
-                                                response = supabase.table(table_name).update(record).eq(id_column, record_id).execute()
-                                                if response.get('status') != 200:
-                                                    print(f"Failed to update record ID {record_id}: {response.get('error', 'Unknown error')}")
-                                                else:
-                                                    print(f"Successfully updated record ID {record_id}")
-
-                                        except Exception as e:
-                                                st.error(f"Failed to update to SharePoint: {str(e)}")
-                                                st.stop()
-
-                                except Exception as e:
-                                    st.error(f"Failed to update to SharePoint: {str(e)}")
-                                    st.stop()
-
-                        
+                
                 with card_container(key="disp"):
                     
                     try:
@@ -779,86 +812,7 @@ def app():
                                     AllTrans_df = load_new() 
                             
             
-        with st.expander("Upload dispatch"):
-    
-            uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
-
-            if uploaded_file is not None:
-                df = pd.read_excel(uploaded_file)
-
-                # Convert date columns to the required format
-                date_columns = ['BookingDate', 'ConsultationDate', 'DispatchedDate', 'ReceivedDate', 'CollectionDate', 'Booked on']
-                available_date_columns = [col for col in date_columns if col in df.columns]
-                
-                for column in available_date_columns:
-                    df[column] = pd.to_datetime(df[column]).dt.strftime('%d/%m/%Y')
-
-                # Replace NaN values with blank strings and convert columns to strings
-                df = df.fillna('').astype(str)
-
-                
-                # Modify the DataFrame
-                df['DispatchedDate'] = df['DispatchedDate'].fillna(formatted_date)
-                df['DispatchedBy'] = department
-                df['DispatchedBy'] = staffnumber
-                df['TransactionType'] = "Dispatch"
-                
-                st.markdown("""
-                    <style>
-                        .stExpander, .stContainer {
-                        margin-bottom: 0px; /* Adjust bottom margin to create space between widgets */
-                        }
-                        .stExpander, .stContainer {
-                        padding: 0px; /* Optional: Add padding inside the widget */
-                        }
-                    </style>
-                    """, unsafe_allow_html=True)
-                        
-                with card_container(key="disp"):
-                    
-                    try:
-                        
-                    # Display the DataFrame to the user
-                        st.write("Uploaded Data Preview:")
-                        st.dataframe(df)
-                    
-                    except Exception as e:
-                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop() 
-                
-                # Display DataFrame in an editable grid (optional code omitted for brevity)
-                
-                #SUMMARY
-                #Group by 'Cycle' and count the occurrences for each status
-                summary_df = df.groupby(['Location','Cycle']).agg({
-                    'BookingStatus':'count',
-                    'ConsultationStatus': 'count',
-                    'ConsultationStatus': 'count',
-                    'Dispatchedstatus': 'count'
-                
-        
-                }).reset_index()
-                
-                
-                with card_container(key="dis"):
-                    
-                    try:
-                        
-                    # Display the DataFrame to the user
-                        st.write("Uploaded Data Preview:")
-                        st.dataframe(summary_df)
-                    
-                    except Exception as e:
-                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop() 
-                
-
-                # Submit button to trigger the upload to SharePoint
-                if st.button("Submit to SharePoint"):
-                    ctx = connect_to_sharepoint()
-                    upload_to_sharepoint(df, ctx)
-            else:
-                st.write("Please upload an Excel file to proceed.")
+       
 
 if __name__ == "__main__":
     app()
