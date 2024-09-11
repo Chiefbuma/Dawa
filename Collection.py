@@ -186,43 +186,25 @@ def app():
                     }
                     """)
 
+                # JavaScript for date renderer
                 date_renderer = JsCode("""
-                 class DateRenderer {
+                class DateRenderer {
                     init(params) {
                         this.params = params;
                         this.eGui = document.createElement('input');
                         this.eGui.type = 'date';
-                        
-                        // Format the date from the value to dd/mm/yyyy
                         if (params.value) {
-                            const formattedDate = this.formatDateToInput(params.value);
-                            this.eGui.value = formattedDate;
+                            this.eGui.value = params.value;
                         }
-                        
                         this.eGui.addEventListener('change', e => {
-                            const formattedDate = this.formatInputToDate(e.target.value);
-                            this.params.node.setDataValue(this.params.colDef.field, formattedDate);
+                            this.params.node.setDataValue(this.params.colDef.field, e.target.value);
                         });
                     }
-
                     getGui() {
                         return this.eGui;
                     }
-
-                    // Function to format a date from yyyy-mm-dd to dd/mm/yyyy
-                    formatDateToInput(dateString) {
-                        const dateParts = dateString.split('-');
-                        return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`; // dd/mm/yyyy
-                    }
-
-                    // Function to format input date from yyyy-mm-dd to original format
-                    formatInputToDate(dateString) {
-                        const dateParts = dateString.split('-');
-                        return `${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`; // yyyy-mm-dd
-                    }
                 }
                 """)
-
                 
                 textarea_renderer = JsCode("""
                     class TextareaRenderer {
