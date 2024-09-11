@@ -352,7 +352,8 @@ def app():
                         "Location",
                         "Collection status",
                         "Collection Date",
-                        "Cycle"
+                        "Cycle",
+                        "MVC check"
                         
                     
                         
