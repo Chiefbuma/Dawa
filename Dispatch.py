@@ -30,7 +30,7 @@ import os
 sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
 username = "biosafety@blisshealthcare.co.ke"
 password = "Streamlit@2024"
-list_name = 'Home DeliveryCheck'
+list_name = 'Home Delivery'
 
 def connect_to_sharepoint():
     ctx_auth = AuthenticationContext(sharepoint_url)
