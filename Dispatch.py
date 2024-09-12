@@ -180,7 +180,7 @@ def app():
                     #SUMMARY
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = df.groupby(['Location','Cycle']).agg({
-                        'BookingStatus':'count',
+                        'Bookingstatus':'count',
                         'ConsultationStatus': 'count',
                         'ConsultationStatus': 'count',
                         'Dispatchedstatus': 'count'
