@@ -1,31 +1,25 @@
 from shareplum import Site, Office365
 from shareplum.site import Version
-
 import json
-import os
-
 
 USERNAME = "biosafety@blisshealthcare.co.ke"
 PASSWORD = "Streamlit@2024"
 SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
 SHAREPOINT_SITE = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
 
-
 class SharePoint:
     def auth(self):
         try:
-            # Authenticate with SharePoint Online (Office 365)
             self.authcookie = Office365(
                 SHAREPOINT_URL,
                 username=USERNAME,
-                password=PASSWORD,
+                password=PASSWORD
             ).GetCookies()
 
-            # Access the SharePoint site with the obtained cookie
             self.site = Site(
                 SHAREPOINT_SITE,
-                version=Version.v365,  # Use SharePoint version 365
-                authcookie=self.authcookie,
+                version=Version.v365,
+                authcookie=self.authcookie
             )
             return self.site
 
@@ -35,13 +29,10 @@ class SharePoint:
 
     def connect_to_list(self, ls_name, columns=None):
         try:
-            # Authenticate and access the site
             self.auth_site = self.auth()
-
-            # Access the specified list and retrieve list items
-            list_data = self.auth_site.List(list_name=ls_name).GetListItems()
-
-            # Filter list data based on provided columns, if any
+            sp_list = self.auth_site.List(list_name=ls_name)
+            list_data = sp_list.GetListItems()
+            
             if columns:
                 filtered_list_data = [
                     {col: item[col] for col in columns if col in item}
@@ -54,3 +45,12 @@ class SharePoint:
         except Exception as e:
             print(f"Failed to retrieve list data: {e}")
             raise
+
+# Example usage
+sharepoint = SharePoint()
+
+try:
+    data = sharepoint.connect_to_list(ls_name="Home Delivery", columns=["Title", "ID", "Created"])
+    print(data)
+except Exception as e:
+    print(f"Error fetching data: {e}")
