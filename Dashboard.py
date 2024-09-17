@@ -36,52 +36,67 @@ def app():
                     
         if st.session_state.is_authenticated:
            
-            #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
-            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-            def load_new():
-                columns = [
-                     "Title",
-                        "UHID",
-                        "Patientname",
-                        "mobile",
-                        "Location",
-                        "Booking status",
-                        "Booking Date",
-                        "Booked on",
-                        "Booked By",
-                        "DoctorName",
-                        "Consultation Status",
-                        "Consultation Date",
-                        "Dispatched status",
-                        "Dispatched Date",
-                        "Dispatched By",
-                        "Received Date",
-                        "Received By",
-                        "Received Status",
-                        "Dispensed By",
-                        "Collection status",
-                        "Collection Date",
-                         "Transfer To",
-                         "Transfer Status",
-                         "Transfer From",
-                        "Month",
-                        "Cycle",
-                        "MVC"
-                ]
-                
+            @st.cache_resource()
+            def load_new(username, password, sharepoint_url, list_name):
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
-                    df = pd.DataFrame(clients)
-                    
-                    # Ensure all specified columns are in the DataFrame, even if empty
-                    for col in columns:
-                        if col not in df.columns:
-                            df[col] = None
+                    user_credentials = UserCredential(username, password)
+                    ctx = ClientContext(sharepoint_url).with_credentials(user_credentials)
+                    web = ctx.web
+                    ctx.load(web)
+                    ctx.execute_query()
+                    target_list = ctx.web.lists.get_by_title(list_name)
+                    items = target_list.get_items()
+                    ctx.load(items)
+                    ctx.execute_query()
 
-                    return df
-                except APIError as e:
-                    st.error("Connection not available, check connection")
-                    st.stop()
+                    selected_columns= [
+                           "Title",
+                           "UHID",
+                            "Patientname",
+                            "mobile",
+                            "Location",
+                            "Bookingstatus",
+                            "BookingDate",
+                            "Bookedon",
+                            "BookedBy",
+                            "DoctorName",
+                            "ConsultationStatus",
+                            "ConsultationDate",
+                            "Dispatchedstatus",
+                            "DispatchedDate",
+                            "DispatchedBy",
+                            "ReceivedDate",
+                            "ReceivedBy",
+                            "ReceivedStatus",
+                            "DispensedBy",
+                            "Collectionstatus",
+                            "CollectionDate",
+                            "TransferTo",
+                            "TransferStatus",
+                            "TransferFrom",
+                            "Month",
+                            "Cycle",
+                            "MVC"
+
+                        ]
+
+
+
+                    data = []
+                    for item in items:
+                        item_data = {key: item.properties[key] for key in selected_columns}
+                        data.append(item_data)
+                    return pd.DataFrame(data)
+
+                except Exception as e:
+                    st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
+                    st.error(f"Error details: {e}")
+                    return None
+
+            sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports"
+            list_name = "Home Delivery"
+            username = "biosafety@blisshealthcare.co.ke"
+            password = "Streamlit@2024"
 
             cycle_df = load_new()
             
