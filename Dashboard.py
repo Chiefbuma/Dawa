@@ -36,69 +36,55 @@ def app():
                     
         if st.session_state.is_authenticated:
            
-            @st.cache_resource()
+            @st.cache_resource
             def load_new(username, password, sharepoint_url, list_name):
                 try:
+                    # Authenticate and get the SharePoint client context
                     user_credentials = UserCredential(username, password)
                     ctx = ClientContext(sharepoint_url).with_credentials(user_credentials)
-                    web = ctx.web
-                    ctx.load(web)
-                    ctx.execute_query()
+                    
+                    # Access the SharePoint list
                     target_list = ctx.web.lists.get_by_title(list_name)
+                    
+                    # Load and query the list items
                     items = target_list.get_items()
                     ctx.load(items)
                     ctx.execute_query()
 
-                    selected_columns= [
-                           "Title",
-                           "UHID",
-                            "Patientname",
-                            "mobile",
-                            "Location",
-                            "Bookingstatus",
-                            "BookingDate",
-                            "Bookedon",
-                            "BookedBy",
-                            "DoctorName",
-                            "ConsultationStatus",
-                            "ConsultationDate",
-                            "Dispatchedstatus",
-                            "DispatchedDate",
-                            "DispatchedBy",
-                            "ReceivedDate",
-                            "ReceivedBy",
-                            "ReceivedStatus",
-                            "DispensedBy",
-                            "Collectionstatus",
-                            "CollectionDate",
-                            "TransferTo",
-                            "TransferStatus",
-                            "TransferFrom",
-                            "Month",
-                            "Cycle",
-                            "MVC"
+                    # Define columns to select
+                    selected_columns = [
+                        "Title", "UHID", "Patientname", "mobile", "Location", "Bookingstatus",
+                        "BookingDate", "Bookedon", "BookedBy", "DoctorName", "ConsultationStatus",
+                        "ConsultationDate", "Dispatchedstatus", "DispatchedDate", "DispatchedBy",
+                        "ReceivedDate", "ReceivedBy", "ReceivedStatus", "DispensedBy",
+                        "Collectionstatus", "CollectionDate", "TransferTo", "TransferStatus",
+                        "TransferFrom", "Month", "Cycle", "MVC"
+                    ]
 
-                        ]
-
-
-
+                    # Extract data
                     data = []
                     for item in items:
-                        item_data = {key: item.properties[key] for key in selected_columns}
+                        item_data = {key: item.properties.get(key, None) for key in selected_columns}
                         data.append(item_data)
-                    return pd.DataFrame(data)
+
+                    # Convert to DataFrame
+                    df = pd.DataFrame(data)
+                    return df
 
                 except Exception as e:
                     st.error("Failed to load data from SharePoint. Please check your credentials and try again.")
                     st.error(f"Error details: {e}")
                     return None
 
+            # Example usage
             sharepoint_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports"
             list_name = "Home Delivery"
             username = "biosafety@blisshealthcare.co.ke"
             password = "Streamlit@2024"
 
-            cycle_df = load_new()
+            cycle_df = load_new(username, password, sharepoint_url, list_name)
+            if cycle_df is not None:
+                st.write(cycle_df)
             
             #st.write(cycle_df)
             
