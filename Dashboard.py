@@ -20,8 +20,6 @@ import conection
 from streamlit_dynamic_filters import DynamicFilters
 
 
-
-
 def app():
     
     try:
@@ -55,7 +53,7 @@ def app():
                     lists = ctx.web.lists.get_by_title("Home Delivery")
 
                     # Select columns and fetch items
-                    items = lists.items.select(
+                    query = lists.items.select(
                         "Title",
                         "UHID",
                         "Patientname",
@@ -83,10 +81,13 @@ def app():
                         "Month",
                         "Cycle",
                         "MVC"
-                    ).get().execute_query()
+                        
+                    ).get()
+
+                    ctx.execute_query()
 
                     # Convert items to DataFrame
-                    data = [item.properties for item in items]
+                    data = [item.properties for item in query]
                     df = pd.DataFrame(data)
                     return df
                 except Exception as e:
@@ -96,9 +97,6 @@ def app():
             cycle_df = fetch_sharepoint_data()
             
             st.write(cycle_df)
-            
-            
-            
     
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
