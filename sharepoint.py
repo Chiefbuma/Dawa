@@ -45,12 +45,3 @@ class SharePoint:
         except Exception as e:
             print(f"Failed to retrieve list data: {e}")
             raise
-
-# Example usage
-sharepoint = SharePoint()
-
-try:
-    data = sharepoint.connect_to_list(ls_name="Home Delivery", columns=["Title", "ID", "Created"])
-    print(data)
-except Exception as e:
-    print(f"Error fetching data: {e}")
