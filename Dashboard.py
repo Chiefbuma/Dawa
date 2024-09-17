@@ -40,6 +40,7 @@ def app():
             password = "Streamlit@2024"
 
             
+
             def fetch_sharepoint_data():
                 try:
                     # Authenticate
@@ -52,8 +53,8 @@ def app():
                     ctx = ClientContext(site_url, ctx_auth)
                     lists = ctx.web.lists.get_by_title("Home Delivery")
 
-                    # Select columns and fetch items
-                    query = lists.items.select(
+                    # Define columns to select
+                    columns = [
                         "Title",
                         "UHID",
                         "Patientname",
@@ -81,13 +82,14 @@ def app():
                         "Month",
                         "Cycle",
                         "MVC"
-                        
-                    ).get()
+                    ]
 
+                    # Fetch items
+                    items = lists.items.select(*columns).get()
                     ctx.execute_query()
 
                     # Convert items to DataFrame
-                    data = [item.properties for item in query]
+                    data = [item.properties for item in items]
                     df = pd.DataFrame(data)
                     return df
                 except Exception as e:
