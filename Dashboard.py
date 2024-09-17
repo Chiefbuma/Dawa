@@ -69,8 +69,10 @@ def app():
                         "MVC"
                 ]
                 
+                sharepoint = SharePoint()
+                
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
+                    clients = sharepoint.get_list_items_paginated(list_name="Home Delivery", row_limit=100)
                     df = pd.DataFrame(clients)
                     
                     # Ensure all specified columns are in the DataFrame, even if empty
@@ -86,6 +88,8 @@ def app():
             cycle_df = load_new()
             
             #st.write(cycle_df)
+            
+ 
             
             # Get a list of unique values in the 'Cycle' column
             Cycle = cycle_df['Cycle'].unique().tolist()
