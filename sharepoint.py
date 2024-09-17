@@ -22,7 +22,6 @@ class SharePoint:
                 authcookie=self.authcookie
             )
             return self.site
-
         except Exception as e:
             print(f"Authentication failed: {e}")
             raise
@@ -33,7 +32,7 @@ class SharePoint:
             list_url = f"{SHAREPOINT_SITE}/_api/Web/lists/GetByTitle('{list_name}')/items"
             headers = {
                 "Accept": "application/json;odata=verbose",
-                "Authorization": f"Bearer {self.authcookie['rtFa']}"
+                "Cookie": f"rtFa={self.authcookie['rtFa']}; FedAuth={self.authcookie['FedAuth']}"
             }
 
             all_items = []
@@ -41,7 +40,7 @@ class SharePoint:
             while True:
                 params = {
                     "$top": row_limit,
-                    "$select": "UHID, Patientname, mobile, Location, Booking status, Booking Date, Booked on, Booked By, DoctorName, Consultation Status, Consultation Date, Dispatched status, Dispatched Date, Dispatched By, Received Date, Received By, Received Status, Dispensed By, Collection status, Collection Date, Transfer To, Transfer Status, Transfer From, Month, Cycle, MVC",  # Adjust columns as needed
+                    "$select": "UHID,Patientname,mobile,Location,Booking status,Booking Date,Booked on,Booked By,DoctorName,Consultation Status,Consultation Date,Dispatched status,Dispatched Date,Dispatched By,Received Date,Received By,Received Status,Dispensed By,Collection status,Collection Date,Transfer To,Transfer Status,Transfer From,Month,Cycle,MVC"
                 }
                 if skip_token:
                     params["$skiptoken"] = skip_token
@@ -54,8 +53,8 @@ class SharePoint:
                 all_items.extend(items)
 
                 # Check for pagination
-                if 'd' in data and '__next' in data['d']:
-                    skip_token = data['d']['__next']
+                if '__next' in data.get('d', {}):
+                    list_url = data['d']['__next']  # Update the URL to the next page
                 else:
                     break
 
@@ -63,5 +62,3 @@ class SharePoint:
         except Exception as e:
             print(f"Failed to retrieve list data: {e}")
             raise
-
-
