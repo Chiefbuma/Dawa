@@ -1,6 +1,6 @@
 from shareplum import Site, Office365
 from shareplum.site import Version
-import requests
+import json
 
 USERNAME = "biosafety@blisshealthcare.co.ke"
 PASSWORD = "Streamlit@2024"
@@ -22,43 +22,26 @@ class SharePoint:
                 authcookie=self.authcookie
             )
             return self.site
+
         except Exception as e:
             print(f"Authentication failed: {e}")
             raise
 
-    def get_list_items_paginated(self, list_name, row_limit=100):
+    def connect_to_list(self, ls_name, columns=None):
         try:
             self.auth_site = self.auth()
-            list_url = f"{SHAREPOINT_SITE}/_api/Web/lists/GetByTitle('{list_name}')/items"
-            headers = {
-                "Accept": "application/json;odata=verbose",
-                "Cookie": f"rtFa={self.authcookie['rtFa']}; FedAuth={self.authcookie['FedAuth']}"
-            }
+            sp_list = self.auth_site.List(list_name=ls_name)
+            list_data = sp_list.GetListItems()
+            
+            if columns:
+                filtered_list_data = [
+                    {col: item[col] for col in columns if col in item}
+                    for item in list_data
+                ]
+                return filtered_list_data
+            else:
+                return list_data
 
-            all_items = []
-            skip_token = None
-            while True:
-                params = {
-                    "$top": row_limit,
-                    "$select": "UHID,Patientname,mobile,Location,Booking status,Booking Date,Booked on,Booked By,DoctorName,Consultation Status,Consultation Date,Dispatched status,Dispatched Date,Dispatched By,Received Date,Received By,Received Status,Dispensed By,Collection status,Collection Date,Transfer To,Transfer Status,Transfer From,Month,Cycle,MVC"
-                }
-                if skip_token:
-                    params["$skiptoken"] = skip_token
-
-                response = requests.get(list_url, headers=headers, params=params)
-                response.raise_for_status()
-                data = response.json()
-                items = data.get('d', {}).get('results', [])
-
-                all_items.extend(items)
-
-                # Check for pagination
-                if '__next' in data.get('d', {}):
-                    list_url = data['d']['__next']  # Update the URL to the next page
-                else:
-                    break
-
-            return all_items
         except Exception as e:
             print(f"Failed to retrieve list data: {e}")
             raise
