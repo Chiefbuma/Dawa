@@ -70,7 +70,7 @@ def app():
                 ]
                 
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
+                    clients = SharePoint().connect_to_list(ls_name='Maintenance Report', columns=columns)
                     df = pd.DataFrame(clients)
                     
                     # Ensure all specified columns are in the DataFrame, even if empty

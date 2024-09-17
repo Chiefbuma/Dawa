@@ -10,6 +10,7 @@ PASSWORD = "Streamlit@2024"
 SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
 SHAREPOINT_SITE = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
 
+
 class SharePoint:
     def auth(self):
         try:
