@@ -36,11 +36,27 @@ def app():
                     
         if st.session_state.is_authenticated:
            
-            #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
-            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-            def load_new():
-                columns = [
-                     "Title",
+           
+            site_url = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
+            username = "biosafety@blisshealthcare.co.ke"
+            password = "Streamlit@2024"
+
+            
+            def fetch_sharepoint_data():
+                try:
+                    # Authenticate
+                    ctx_auth = AuthenticationContext(site_url)
+                    if not ctx_auth.acquire_token_for_user(username, password):
+                        st.error("Authentication failed.")
+                        return None
+
+                    # Access SharePoint
+                    ctx = ClientContext(site_url, ctx_auth)
+                    lists = ctx.web.lists.get_by_title("Home Delivery")
+
+                    # Select columns and fetch items
+                    items = lists.items.select(
+                        "Title",
                         "UHID",
                         "Patientname",
                         "mobile",
@@ -61,29 +77,23 @@ def app():
                         "Dispensed By",
                         "Collection status",
                         "Collection Date",
-                         "Transfer To",
-                         "Transfer Status",
-                         "Transfer From",
+                        "Transfer To",
+                        "Transfer Status",
+                        "Transfer From",
                         "Month",
                         "Cycle",
                         "MVC"
-                ]
-                
-                try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
-                    df = pd.DataFrame(clients)
-                    
-                    # Ensure all specified columns are in the DataFrame, even if empty
-                    for col in columns:
-                        if col not in df.columns:
-                            df[col] = None
+                    ).get().execute_query()
 
+                    # Convert items to DataFrame
+                    data = [item.properties for item in items]
+                    df = pd.DataFrame(data)
                     return df
-                except APIError as e:
-                    st.error("Connection not available, check connection")
-                    st.stop()
+                except Exception as e:
+                    st.error(f"Failed to retrieve data: {e}")
+                    return None
 
-            cycle_df = load_new()
+            cycle_df = fetch_sharepoint_data()
             
             #st.write(cycle_df)
             
@@ -121,7 +131,7 @@ def app():
                             
                             if choice :
                                     
-                                AllMain_df=load_new()   
+                                AllMain_df=fetch_sharepoint_data()   
                                     
                                 Main_df=AllMain_df[AllMain_df['Cycle'] == choice]
                
