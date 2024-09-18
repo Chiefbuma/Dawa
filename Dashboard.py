@@ -76,16 +76,14 @@ def app():
                                 else:   
                                     Main_df = AllTrans_df[
                                             (AllTrans_df['Location'] == location)]
-                    
-            with card_container(key="Main1"):   
-                cols = st.columns([4,1])
-                with cols[0]:
-                    ui.card(
-                            content="Dawa Nyumbani Dashboard",
-                            key="MCcard3"
-                        ).render()
-             
-               
+                    with cols[3]:
+                        cols = st.columns([4,1])
+                        with cols[0]:
+                            ui.card(
+                                    content="Dawa Nyumbani Dashboard",
+                                    key="MCcard3"
+                                ).render()
+                      
                 container = st.container(border=True, height=500)
                 with container:
                 
