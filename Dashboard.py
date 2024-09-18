@@ -76,7 +76,7 @@ def app():
                                 else:   
                                     Main_df = AllTrans_df[
                                             (AllTrans_df['Location'] == location)]
-                    with cols[3]:
+                    with cols[0]:
                         cols = st.columns([4,1])
                         with cols[0]:
                             ui.card(
