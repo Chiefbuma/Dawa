@@ -91,7 +91,7 @@ def app():
                         
                         except Exception as e:
                             
-                            # Insert the entire DataFrame at once into the 'Home_Delivery' table
+                            
                             response = supabase.table("Home_Delivery").insert(df.to_dict(orient='records')).execute()
                             # Access error code and message for precise handling
                             error_code = response.error.get('code')
