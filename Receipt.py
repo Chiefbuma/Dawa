@@ -28,41 +28,6 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_new():
-            columns = [
-                "Title", "ID", "UHID", "Patientname", "mobile", "Location", "Booking status", 
-                "Booking Date", "Booked on", "Booked By", "DoctorName", "Consultation Status", 
-                "Consultation Date", "Dispatched status", "Dispatched Date", "Dispatched By", 
-                "Received Date", "Received By","Received Comments", "Received Status", "Dispensed By", "Collection status", 
-                "Collection Date", "MVC", "Cycle", "Collection Comments", "Month", 
-                "Transaction Type", "Year"
-            ]
-            
-            try:
-                clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
-                df = pd.DataFrame(clients)
-                
-                # Ensure all specified columns are in the DataFrame, even if empty
-                for col in columns:
-                    if col not in df.columns:
-                        df[col] = None
-
-                return df
-            except APIError as e:
-                st.error("Connection not available, check connection")
-                st.stop()
-
-        AllTrans_df = load_new()
-        
-        
-        #st.write(AllTrans_df)
-        
-        current_date = datetime.now().date()
-        # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d/%m/%Y")
-        
-       
         @st.cache_resource
         def init_connection():
             url = "https://effdqrpabawzgqvugxup.supabase.co"
@@ -78,23 +43,41 @@ def app():
             current_month_name = datetime.now().strftime("%B")
             current_date = datetime.now().date()
 
-            Allresponse = supabase.from_('Dawa_Details').select('*').execute()
-            Details_df = pd.DataFrame(Allresponse.data)
-            
-            Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
-            chronic_df = pd.DataFrame(Allresponse2.data)
+            Allresponse = supabase.from_('Home_Delivery').select('*').execute()
+            mainall = pd.DataFrame(Allresponse.data)
             
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['staffname'].iloc[0]
             
-            Trans_df = AllTrans_df[
-                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
-                    (AllTrans_df['Location'] == location) & 
-                    (AllTrans_df['Received Status'].isnull())]
             
+            # Get a list of unique values in the 'Cycle' column
+            Cycle = mainall['Cycle'].unique().tolist()
+            
+            with card_container(key="receive3"):
+                cols = st.columns([4,1])
+                with cols[0]:
+                    st.header('Receive Package🔖')
+                with cols[1]:
+                    with st.container():
+                        choice = st.selectbox('Select Cycle', Cycle) 
+                        if choice : 
+                            AllTrans_df=mainall[mainall['Cycle'] == choice]
+                                
+                            if department=="Admin":
+                                Trans_df = AllTrans_df[
+                                        (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                        (AllTrans_df['Received Status'].isnull())]
+                            else:   
+                                Trans_df = AllTrans_df[
+                                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                    (AllTrans_df['Location'] == location) & 
+                                    (AllTrans_df['Received Status'].isnull())]
+               
             #st.write(Trans_df)
+            current_date = datetime.now().date()
+            formatted_date = current_date.strftime("%d/%m/%Y")
             
             Trans_df['Received Date'] = Trans_df['Received Date'].fillna(formatted_date)
             
@@ -268,24 +251,17 @@ def app():
                         "Received By",
                         "Month",
                         "Transaction Type",
+                        "Transfer To",
+                        "Transferred By",
+                        "Transfer Date",
+                        "Transfer Status",
+                        "Transfer From",
+                        "Transfer Comments",
                         "Year",
-                        "Modified",
-                        "Modified By",
-                        "Level",
-                        "Unique Id",
-                        "Item Type",
-                        "Property Bag",
-                        "ID",
+                        "Title",
+                        "id",
                          "MVC",
                         "Collection Comments",
-                        "owshiddenversion",
-                        "Created",
-                        "Title",
-                        "Name",
-                        "Effective Permissions Mask",
-                        "ScopeId",
-                        "URL Path",
-                        "Approval Status",
                         "mobile" ]
            
             # Hide specified columns
@@ -294,26 +270,24 @@ def app():
 
             # Configure non-editable columns
             non_editable_columns = [
-                    "Title",
                     "UHID",
                     "Patientname",
                     "mobile",
                     "Location",
                     "DoctorName",
                     "Cycle",
-                    "Dispatched status"
+                    "Dispatched status",
+                    "id"
                     
             ]
             for column in non_editable_columns:
                 gb.configure_column(column, editable=False)
 
             # Configure specific columns with additional settings
-        
-            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=50)
-            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer,width=10)
-            
             gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-            gb.configure_column('UHID', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+            gb.configure_column('Received Status', editable=False, cellRenderer=checkbox_renderer, pinned='right', minWidth=30)
+            gb.configure_column('Received Comments', editable=False, cellRenderer=textarea_renderer,width=10)
+            gb.configure_column('UHID',width=10, editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
 
 
             # Configure the default column to be editable
@@ -338,8 +312,7 @@ def app():
             # Streamlit app
 
             with st.form('Receipt') as f:
-                st.header('Receive  Package🔖')
-               
+              
                 with card_container(key="reveivednew"):
                     # Display the AgGrid table
                     response = AgGrid(
@@ -356,301 +329,90 @@ def app():
                 with cols[5]:
                     st.form_submit_button(" Confirm  🔒", type="primary")  
                 
-               
-            selected_row = response['selected_rows']
-            
-            Selecetd_dataframe=pd.DataFrame(selected_row)
-            
-            rowcount=len(Selecetd_dataframe)
-            
-            #st.write(Selecetd_dataframe)
-            
-            # Initialize session state if not already done
-            if 'Patient_name' not in st.session_state:
-                st.session_state.Patient_name = ''
-                            
-            if rowcount > 0:
-                try:
-                    patient_name = Selecetd_dataframe.iloc[0]['Patientname']
-                    st.session_state.Patient_name = patient_name
-                    #st.write(st.session_state.Patient_name)
-                except IndexError:
-                    pass  # Suppress IndexError silently
-                except KeyError:
-                    pass  # Suppress KeyError silently
-                            
-                #st.write(Patient_name)
-                #st.write("Selected Row:", selected_row)
-            #else:
-                #st.write("No row selected")
-            
-                            
-            # JavaScript function to add a new row to the AgGrid table
-            js_add_row = JsCode("""
-            function(e) {
-                let api = e.api;
-                let rowPos = e.rowIndex + 1; 
-                api.applyTransaction({addIndex: rowPos, add: [{}]})    
-            };
-            """     
-            )
-            
-            
 
-            # Cell renderer for the '🔧' column to render a button
-
-            # Resources to refer:
-            # https://blog.ag-grid.com/cell-renderers-in-ag-grid-every-different-flavour/
-            # https://www.w3schools.com/css/css3_buttons.asp
-
-            cellRenderer_addButton = JsCode('''
-                class BtnCellRenderer {
-                    init(params) {
-                        this.params = params;
-                        this.eGui = document.createElement('div');
-                        this.eGui.innerHTML = `
-                        <span>
-                            <style>
-                            .btn_add {
-                                background-color: #71DC87;
-                                border: 2px solid black;
-                                color: #D05732;
-                                text-align: center;
-                                display: inline-block;
-                                font-size: 12px;
-                                font-weight: bold;
-                                height: 2em;
-                                width: 10em;
-                                border-radius: 12px;
-                                padding: 0px;
-                            }
-                            </style>
-                            <button id='click-button' 
-                                class="btn_add" 
-                                >&#x2193; Add</button>
-                        </span>
-                    `;
-                    }
-                    getGui() {
-                        return this.eGui;
-                    }
-                };
-                ''')
-
-            # Handle child grid display using Streamlit components
-            selected_category = st.session_state.Patient_name
-                
-            if selected_category:
-                        #st.write(f"Prescription for: {selected_category}")
-                        with card_container(key="Billpre" f"Prescription for: {selected_category}"):
-                            filtered_child_data = Details_df[Details_df['Patientname'] == selected_category]
-                            
-                            gd = GridOptionsBuilder.from_dataframe(filtered_child_data)
-                            
-                            # List of columns to hide
-                            details_columns = [
-                                "mobile", "Company Type", "RateContract", "Speciality",    
-                                "DoctorName", "Location", "Medical Centre", "TeleDoctor",
-                                "Facility", "UHID", "Patientname","S.No"
-                            ]
-                            
-                            # Hide specified columns
-                            for col in details_columns:
-                                gd.configure_column(field=col, hide=True, pinned='right')
-                                
-                                
-                            @st.cache_data
-                            def get_unique_item_descriptions():
-                                return chronic_df['Drugs'].unique().tolist()
-
-                            # Fetch unique item descriptions
-                            unique_item_descriptions = get_unique_item_descriptions()
-                            
-                            
-                            
-                            # Define dropdown options for specified columns
-                            dropdown_options = {
-                                'Itemname': unique_item_descriptions
-                        }    
-                            
-                            for col, options in dropdown_options.items():
-                                gd.configure_column(field=col, cellEditor='agSelectCellEditor', cellEditorParams={'values': options})
-
-                            
-                            # Configure editable columns
-                            editable_columns = ["Itemname", "Quantity"]
-                            for column in editable_columns:
-                                gd.configure_column(column, editable=True)
-                                
-                            
-                            # Configure the default column to be editable
-                            gd.configure_default_column(editable=True,minWidth=100, flex=0)    
-                                
-                            
-                            # Configure the default column to be editable
-                            gd.configure_default_column(editable=True, minWidth=150, flex=0)
-
-                            # Build the grid options
-                            gridoptions = gd.build()
-
-                            
-                        with st.expander(f"VIEW PRESCRIPTION  FOR : {selected_category}",expanded=False):
-                            # Inject custom CSS for solid border
-                            response3 = AgGrid(
-                                filtered_child_data,
-                                gridOptions=gridoptions,
-                                editable=True,
-                                allow_unsafe_jscode=True,
-                                theme='balham',
-                                height=120,
-                                fit_columns_on_grid_load=True
-                            )
-                                
-                            try:
-                                res3 = response3['data']
-                                filtered_prescription = pd.DataFrame(res3)
-
-                                def update_supabase_table(dataframe: pd.DataFrame, table_name: str, id_column: str):
-                                    """
-                                    Update Supabase table records using data from a DataFrame.
-
-                                    Args:
-                                    - dataframe: pd.DataFrame containing the data to update.
-                                    - table_name: str, name of the Supabase table to update.
-                                    - id_column: str, the column name in the DataFrame that contains unique IDs.
-                                    """
-                                    try:
-                                        for index, row in dataframe.iterrows():
-                                            # Convert the row to a dictionary
-                                            record = row.to_dict()
-                                            record_id = record.pop(id_column)
-                                            
-                                            # Update the Supabase table record
-                                            response = supabase.table(table_name).update(record).eq(id_column, record_id).execute()
-                                            if response.get('status') != 200:
-                                                print(f"Failed to update record ID {record_id}: {response.get('error', 'Unknown error')}")
-                                            else:
-                                                print(f"Successfully updated record ID {record_id}")
-
-                                    except Exception as e:
-                                            st.error(f"Failed to update to SharePoint: {str(e)}")
-                                            st.stop()
-
-                            except Exception as e:
-                                st.error(f"Failed to update to SharePoint: {str(e)}")
-                                st.stop()
-                                
-                    
-            with card_container(key="reveived" f"CONFIRM RECEIVING"):
-                try:
-                    
-                    # Fetch the data from the AgGrid Table
-                    res = response['data']
-                    #st.table(res)
-                    
-                    df = pd.DataFrame(res)
-            
-                    # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                    pres_df = df[df['Received Status'] == 'Received']
-                    
-                    pres_df=pres_df[[
-                                    "ID",
-                                    "Title",
-                                    "UHID",
-                                    "Patientname",
-                                    "Location",
-                                    "Received Date",
-                                    "Received By",
-                                    "Received Status",
-                                    "Received Comments",
-                                    "Month",
-                                    "Year",
-                                    "Transaction Type",
-                                    "Cycle",]]
-                    
-                    # Display the filtered DataFrame
-                    #st.dataframe(Appointment_df)
-                    
-                    with card_container(key="billds2"):
-                        cols = st.columns(1)
-                        with cols[0]:
-                            with card_container(key="bil1d3"):
-                                ui.table(data=pres_df, maxHeight=300)
-                
-                except Exception as e:
-                    st.error(f"Failed to update to SharePoint: {str(e)}")
-                    st.stop() 
-                
-                def validate_appointment_data(df):
-                    """
-                    Validate the Appointment_df DataFrame to check for blank 'DoctorName' fields.
-                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                    """
-                                    # Find rows where 'MVC' is empty
-                    invalid_rows = df[df['Received Status']=="None"].index.tolist()
-
-                    
-                    if invalid_rows:
-                        return False, invalid_rows
-                    return True, []
-                
-                def submit_to_sharepoint(pres_df):
-                    
-                    # Validate data before submission
-                    is_valid, invalid_rows = validate_appointment_data(pres_df)
-                    
-                    if not is_valid:
-                        st.error(f"Required field(s) is blank in rows: {invalid_rows}")
-                        return
+            with card_container(key="reveived"):
                     try:
-                        with st.spinner('Submitting...'):
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
+                        # Fetch the data from the AgGrid Table
+                        res = response['data']  # Assuming response contains the data from Supabase
+                        df = pd.DataFrame(res)
 
-                            # Iterate over the DataFrame and update items in the SharePoint list
-                            for ind in pres_df.index:
-                                item_id = pres_df.at[ind, 'ID']  
-                                Received_status = pres_df.at[ind, 'Received Status']
-                                Received_date = pres_df.at[ind, 'Received Date']
-                                Received_by = pres_df.at[ind, 'Received By']
-                                Transaction_by = pres_df.at[ind, 'Transaction Type'] 
-                                Recevived_by = pres_df.at[ind, 'Received Comments']
-                            
+                        # Filter the DataFrame to include only rows where "Received Status" is "Received"
+                        pres_df = df[df['Received Status'] == 'Received']
 
-                                item_creation_info = {
-                                    'ID': item_id, 
-                                    'Received Status':Received_status,
-                                    'Received Date': Received_date,
-                                    'Received By': Received_by,
-                                    'Transaction Type':Transaction_by,
-                                    'Received Comments': Recevived_by 
-                                }
+                        pres_df = pres_df[[
+                            "id",  # Ensure 'id' exists in your Supabase data
+                            "UHID",
+                            "Patientname",
+                            "Location",
+                            "Received Date",
+                            "Received By",
+                            "Received Status",
+                            "Received Comments",
+                            "Month",
+                            "Year",
+                            "Transaction Type",
+                            "Cycle",
+                        ]]
 
-                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+                        # Display the filtered DataFrame
+                        with card_container(key="billds2"):
+                            cols = st.columns(1)
+                            with cols[0]:
+                                with card_container(key="bil1d3"):
+                                    ui.table(data=pres_df, maxHeight=300)
 
-                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                                logging.info(f"Response for index {ind}: {response}")
-
-                            st.success("Succesfully submitted", icon="✅")
                     except Exception as e:
-                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
                         st.error(f"Failed to update to SharePoint: {str(e)}")
                         st.stop()
 
-                cols = st.columns(4)
-                with cols[2]:
-                # Button to submit DataFrame to SharePoint
-                    ui_but = ui.button("Submit ", key="subbtn")
-                    if ui_but:
-                        submit_to_sharepoint(pres_df)    
-           
-                with cols[2]:
-                   ui_result = ui.button("Refresh", key="btn")  
-                   if ui_result: 
-                       with st.spinner('Wait! Reloading view...'):  
-                            st.cache_data.clear()
-                            AllTrans_df = load_new()
-                       
+                    # Function to update Supabase table
+                    def update_supabase_table(dataframe: pd.DataFrame, table_name: str, id_column: str):
+                        """
+                        Update Supabase table records using data from a DataFrame.
+
+                        Args:
+                        - dataframe: pd.DataFrame containing the data to update.
+                        - table_name: str, name of the Supabase table to update.
+                        - id_column: str, the column name in the DataFrame that contains unique IDs.
+                        """
+                        try:
+                            for index, row in dataframe.iterrows():
+                                # Convert the row to a dictionary
+                                record = row.to_dict()
+                                record_id = record.pop(id_column)
+
+                                # Update the Supabase table record
+                                response = supabase.table(table_name).update(record).eq(id_column, record_id).execute()
+
+                                st.success(f"Successfully updated record ID {record_id}")
+
+                        except Exception as e:
+                            st.error(f"Failed to update Supabase: {str(e)}")
+                            st.stop()
+
+                    try:
+                        # Fetch the data from Supabase table "Home_Delivery"
+                        response = supabase.table("Home_Delivery").select("*").execute()
+
+                    except Exception as e:
+                        st.error(f"Failed to fetch or process data: {str(e)}")
+                        st.stop()
+
+                    # Action buttons to submit or refresh data
+                    cols = st.columns(4)
+                    with cols[2]:
+                        ui_but = ui.button("Submit", key="subbtn")
+                        if ui_but:
+                            with st.spinner('Wait! Reloading view...'):
+                               # Call the function to update Supabase with the filtered data
+                              update_supabase_table(pres_df, table_name="Home_Delivery", id_column="id")
+
+                    with cols[2]:
+                        ui_result = ui.button("Refresh", key="btn")
+                        if ui_result:
+                            with st.spinner('Wait! Reloading view...'):
+                                st.cache_data.clear()
+
+                                
         else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")

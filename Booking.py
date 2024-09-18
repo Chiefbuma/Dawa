@@ -139,7 +139,6 @@ def app():
             
             #st.write(booking_df)
 
-            
            # Add default value for 'Patientname' column where it is empty
             booking_df['Booking Date'] = booking_df['Booking Date'].fillna(formatted_date)
             

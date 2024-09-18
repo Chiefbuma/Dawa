@@ -35,62 +35,91 @@ def app():
             # Initialize session state if it doesn't exist
                     
         if st.session_state.is_authenticated:
-           
-            #AllTrans_df = load_data(email_user, password_user, sharepoint_url, list_name)
             @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-            def load_new():
+            def load_new(cycle=None):
                 columns = [
-                     "Title",
-                        "UHID",
-                        "Patientname",
-                        "mobile",
-                        "Location",
-                        "Booking status",
-                        "Booking Date",
-                        "Booked on",
-                        "Booked By",
-                        "DoctorName",
-                        "Consultation Status",
-                        "Consultation Date",
-                        "Dispatched status",
-                        "Dispatched Date",
-                        "Dispatched By",
-                        "Received Date",
-                        "Received By",
-                        "Received Status",
-                        "Dispensed By",
-                        "Collection status",
-                        "Collection Date",
-                         "Transfer To",
-                         "Transfer Status",
-                         "Transfer From",
-                        "Month",
-                        "Cycle",
-                        "MVC"
+                    "Title",
+                    "UHID",
+                    "Patientname",
+                    "mobile",
+                    "Location",
+                    "Booking status",
+                    "Booking Date",
+                    "Booked on",
+                    "Booked By",
+                    "DoctorName",
+                    "Consultation Status",
+                    "Consultation Date",
+                    "Dispatched status",
+                    "Dispatched Date",
+                    "Dispatched By",
+                    "Received Date",
+                    "Received By",
+                    "Received Status",
+                    "Dispensed By",
+                    "Collection status",
+                    "Collection Date",
+                    "Transfer To",
+                    "Transfer Status",
+                    "Transfer From",
+                    "Month",
+                    "Cycle",  # We are querying based on this column
+                    "MVC"
                 ]
+
+                # CAML query setup to filter data based on the selected Cycle
+                caml_query = None
+                if cycle:
+                    caml_query = {
+                        'Where': [
+                            ('Eq', 'Cycle', cycle)
+                        ]
+                    }
+
+                all_data = []
+                next_page_url = None  # For tracking pagination
                 
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
-                    df = pd.DataFrame(clients)
-                    
+                    # Retrieve data from SharePoint with CAML query, handling pagination
+                    while True:
+                        if caml_query:
+                            response = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns, query=caml_query, next_page=next_page_url)
+                        else:
+                            response = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns, next_page=next_page_url)
+                        
+                        # Convert the response to a DataFrame
+                        clients = pd.DataFrame(response['results'])
+                        all_data.append(clients)
+
+                        # Check if there is a next page
+                        next_page_url = response.get('__next', None)
+                        
+                        if not next_page_url:
+                            break
+
+                    # Combine all batches of data
+                    df = pd.concat(all_data, ignore_index=True)
+
                     # Ensure all specified columns are in the DataFrame, even if empty
                     for col in columns:
                         if col not in df.columns:
                             df[col] = None
 
                     return df
+
                 except APIError as e:
                     st.error("Connection not available, check connection")
                     st.stop()
 
-            cycle_df = load_new()
+          
             
             #st.write(cycle_df)
             
-            
-            
-            # Get a list of unique values in the 'Cycle' column
-            Cycle = cycle_df['Cycle'].unique().tolist()
+          
+            # Retrieve unique cycle values from SharePoint to populate the dropdown
+            cycle_df = load_new()  # Load all data to get unique cycle values
+            Cycle = cycle_df['Cycle'].unique()
+
             
             # Map the month name back to its numeric value
             #month_number = datetime.strptime(choice, "%B").month
@@ -121,7 +150,7 @@ def app():
                             
                             if choice :
                                     
-                                AllMain_df=load_new()   
+                                AllMain_df=cycle_df = load_new(cycle=choice)
                                     
                                 Main_df=AllMain_df[AllMain_df['Cycle'] == choice]
                
