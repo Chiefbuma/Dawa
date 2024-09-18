@@ -35,95 +35,48 @@ def app():
             # Initialize session state if it doesn't exist
                     
         if st.session_state.is_authenticated:
-            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-            def load_new(cycle=None):
-                columns = [
-                    "Title",
-                    "UHID",
-                    "Patientname",
-                    "mobile",
-                    "Location",
-                    "Booking status",
-                    "Booking Date",
-                    "Booked on",
-                    "Booked By",
-                    "DoctorName",
-                    "Consultation Status",
-                    "Consultation Date",
-                    "Dispatched status",
-                    "Dispatched Date",
-                    "Dispatched By",
-                    "Received Date",
-                    "Received By",
-                    "Received Status",
-                    "Dispensed By",
-                    "Collection status",
-                    "Collection Date",
-                    "Transfer To",
-                    "Transfer Status",
-                    "Transfer From",
-                    "Month",
-                    "Cycle",  # We are querying based on this column
-                    "MVC"
-                ]
-
-                # CAML query setup to filter data based on the selected Cycle
-                caml_query = None
-                if cycle:
-                    caml_query = {
-                        'Where': [
-                            ('Eq', 'Cycle', cycle)
-                        ]
-                    }
-
-                all_data = []
-                next_page_url = None  # For tracking pagination
+            location=st.session_state.Region
+            staffnumber=st.session_state.staffnumber
+            department = st.session_state.Department
                 
-                try:
-                    # Retrieve data from SharePoint with CAML query, handling pagination
-                    while True:
-                        if caml_query:
-                            response = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns, query=caml_query, next_page=next_page_url)
-                        else:
-                            response = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns, next_page=next_page_url)
-                        
-                        # Convert the response to a DataFrame
-                        clients = pd.DataFrame(response['results'])
-                        all_data.append(clients)
+            def init_connection():
+                url = "https://effdqrpabawzgqvugxup.supabase.co"
+                key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmZmRxcnBhYmF3emdxdnVneHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTA1MTQ1NDYsImV4cCI6MjAyNjA5MDU0Nn0.Dkxicm9oaLR5rm-SWlvGfV5OSZxFrim6x8-QNnc2Ua8"
+                return create_client(url, key)
 
-                        # Check if there is a next page
-                        next_page_url = response.get('__next', None)
-                        
-                        if not next_page_url:
-                            break
+            supabase = init_connection()
 
-                    # Combine all batches of data
-                    df = pd.concat(all_data, ignore_index=True)
+            if supabase:
+                st.session_state.logged_in = True
+               
 
-                    # Ensure all specified columns are in the DataFrame, even if empty
-                    for col in columns:
-                        if col not in df.columns:
-                            df[col] = None
-
-                    return df
-
-                except APIError as e:
-                    st.error("Connection not available, check connection")
-                    st.stop()
-
-          
-            
-            #st.write(cycle_df)
-            
-          
-            # Retrieve unique cycle values from SharePoint to populate the dropdown
-            cycle_df = load_new()  # Load all data to get unique cycle values
-            Cycle = cycle_df['Cycle'].unique()
-
-            
-            # Map the month name back to its numeric value
-            #month_number = datetime.strptime(choice, "%B").month
-            
+                Allresponse = supabase.from_('Home_Delivery').select('*').execute()
+                
+                mainall = pd.DataFrame(Allresponse.data)
+                
+                response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
+                usersD_df = pd.DataFrame(response.data)
+                
+                staffname = usersD_df['staffname'].iloc[0]
+                
+                # Get a list of unique values in the 'Cycle' column
+                Cycle = mainall['Cycle'].unique().tolist()
+                
+                with card_container(key="collect3"):
+                    cols = st.columns([4,1])
+                    with cols[1]:
+                        with st.container():
+                            choice = st.selectbox('Select Cycle', Cycle) 
+                            if choice : 
+                                AllTrans_df=mainall[mainall['Cycle'] == choice]
+                                    
+                                if department=="Admin":
+                                    Main_df = AllTrans_df
+                                           
+                                else:   
+                                    Main_df = AllTrans_df[
+                                            (AllTrans_df['Location'] == location)]
+                    
             with card_container(key="Main1"):   
                 cols = st.columns([4,1])
                 with cols[0]:
@@ -131,28 +84,7 @@ def app():
                             content="Dawa Nyumbani Dashboard",
                             key="MCcard3"
                         ).render()
-                with cols[1]:
-                    with st.container():
-                            Cycle_label = "Select Cycle"
-                            st.markdown(
-                                    f"""
-                                    <div style="background-color:white; padding:10px; border-radius:10px; width:270px; margin-bottom:5px;">
-                                        <div style="font-size:18px; font-weight:bold; color:black;">
-                                            {Cycle_label}
-                                        </div>
-                                    </div>
-                                    """, 
-                                    unsafe_allow_html=True
-                                )
-                    
-                            choice = st.selectbox('Select Cycle', Cycle)
-
-                            
-                            if choice :
-                                    
-                                AllMain_df=cycle_df = load_new(cycle=choice)
-                                    
-                                Main_df=AllMain_df[AllMain_df['Cycle'] == choice]
+             
                
                 container = st.container(border=True, height=500)
                 with container:
@@ -569,7 +501,7 @@ def app():
                         )
                     
                     #Group by 'Doctor' and count the occurrences for each status   
-                    MVC_df = AllMain_df.groupby('Cycle').agg({
+                    MVC_df = Main_df.groupby('Cycle').agg({
                         'Received Status': 'count',
                         'Collection status': 'count'
                     
