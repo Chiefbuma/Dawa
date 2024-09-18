@@ -80,9 +80,10 @@ def app():
                         cols = st.columns([4,1])
                         with cols[0]:
                             ui.card(
-                                    content="Dawa Nyumbani Dashboard",
+                                     content=location,
                                     key="MCcard3"
                                 ).render()
+                            
                       
                 container = st.container(border=True, height=500)
                 with container:
