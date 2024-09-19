@@ -46,12 +46,12 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
-            st.write(mainall)
+            #st.write(mainall)
             
-            num_rows = mainall.shape[0]
+            #num_rows = mainall.shape[0]
 
             # Display the number of rows
-            st.write(f"The number of rows in the DataFrame is: {num_rows}")
+            #st.write(f"The number of rows in the DataFrame is: {num_rows}")
                         
             # Ensure the 'Cycle' column is numeric (if it's not already)
             mainall['Cycle'] = pd.to_numeric(mainall['Cycle'], errors='coerce')
