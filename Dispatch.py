@@ -61,8 +61,6 @@ def app():
                 # Replace 'None' values (if any) and NaN values with blank strings and convert columns to strings
                 df = df.fillna('').replace('None', '').astype(str)
                 
-                # Display DataFrame or perform further actions
-                st.write(df)
 
                 current_date = datetime.now().date()
                 formatted_date = current_date.strftime("%d/%m/%Y")
