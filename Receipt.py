@@ -46,7 +46,7 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
-            st.write(mainall)
+            #st.write(mainall)
             
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
@@ -69,11 +69,11 @@ def app():
                                 
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
-                                        
+                                        (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                                         (AllTrans_df['Received Status'].isnull())]
                             else:   
                                 Trans_df = AllTrans_df[
-                                    
+                                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                                     (AllTrans_df['Location'] == location) & 
                                     (AllTrans_df['Received Status'].isnull())]
                
