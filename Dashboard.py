@@ -70,7 +70,7 @@ def app():
                             if choice : 
                                 AllTrans_df=mainall[mainall['Cycle'] == choice]
                                     
-                                if department=="Admin":
+                                if department !="Pharmacy":
                                     Main_df = AllTrans_df
                                            
                                 else:   
