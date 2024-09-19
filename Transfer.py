@@ -562,7 +562,7 @@ def app():
                                 "Transaction Type",
                                 "Cycle"]]
 
-                #st.write(pres_df)
+                
                 # Display the filtered DataFrame
                 #st.dataframe(Appointment_df)
                 
