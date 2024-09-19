@@ -28,42 +28,6 @@ def app():
         staffnumber=st.session_state.staffnumber
         department = st.session_state.Department
         
-        @st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
-        def load_new():
-            columns = [
-                "Title", "ID", "UHID", "Patientname", "mobile", "Location", "Booking status", 
-                "Booking Date", "Booked on", "Booked By", "DoctorName", "Consultation Status", 
-                "Consultation Date", "Dispatched status", "Dispatched Date", "Dispatched By", 
-                "Received Date", "Received By","Received Comments", "Received Status", "Dispensed By", "Collection status", 
-                "Collection Date", "MVC", "Cycle", "Collection Comments", "Month", 
-                "Transaction Type", "Year","Transfer To","Transferred By","Transfer From","Transfer Date","Transfer Status","Transfer Comments"
-
-            ]
-            
-            try:
-                clients = SharePoint().connect_to_list(ls_name='Home Delivery', columns=columns)
-                df = pd.DataFrame(clients)
-                
-                # Ensure all specified columns are in the DataFrame, even if empty
-                for col in columns:
-                    if col not in df.columns:
-                        df[col] = None
-
-                return df
-            except APIError as e:
-                st.error("Connection not available, check connection")
-                st.stop()
-
-        AllTrans_df = load_new()
-        
-        
-        #st.write(AllTrans_df)
-        
-        current_date = datetime.now().date()
-        # Format the date as a string (e.g., YYYY-MM-DD)
-        formatted_date = current_date.strftime("%d/%m/%Y")
-        
-       
         @st.cache_resource
         def init_connection():
             url = "https://effdqrpabawzgqvugxup.supabase.co"
@@ -79,17 +43,42 @@ def app():
             current_month_name = datetime.now().strftime("%B")
             current_date = datetime.now().date()
 
-            Allresponse = supabase.from_('Dawa_Details').select('*').execute()
-            Details_df = pd.DataFrame(Allresponse.data)
+            Allresponse = supabase.from_('Home_Delivery').select('*').execute()
+            mainall = pd.DataFrame(Allresponse.data)
             
-            Allresponse2 = supabase.from_('Chronic_List').select('*').execute()
-            chronic_df = pd.DataFrame(Allresponse2.data)
+            #st.write(mainall)
             
+            #num_rows = mainall.shape[0]
+
+            # Display the number of rows
+            #st.write(f"The number of rows in the DataFrame is: {num_rows}")
+                        
+            # Ensure the 'Cycle' column is numeric (if it's not already)
+            mainall['Cycle'] = pd.to_numeric(mainall['Cycle'], errors='coerce')
+
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
             staffname = usersD_df['staffname'].iloc[0]
+
+            current_date = datetime.now().date()
             
+            formatted_date = current_date.strftime("%d/%m/%Y")
+            
+            # Get a list of unique values in the 'Cycle' column
+            Cycle = mainall['Cycle'].unique().tolist()
+            
+            with card_container(key="receive3"):
+                cols = st.columns([4,1])
+                with cols[0]:
+                    st.header('Transfer in/Return Package🔖')
+                with cols[1]:
+                    with st.container():
+                        choice = st.selectbox('Select Cycle', Cycle) 
+                        if choice : 
+                            AllTrans_df=mainall[mainall['Cycle'] == choice]
+                                
+             
             
             selected_option = ui.tabs(options=['Transfer In','Transfer Out'], default_value='Transfer Out', key="kanaries")
            
@@ -98,7 +87,8 @@ def app():
                 Trans_df = AllTrans_df[ 
                     (AllTrans_df['Dispatched status']=="Dispatched") &
                     (AllTrans_df['Location'] == location) ]
-                
+                #st.write(Trans_df)
+            
                 Trans_df['Transfer From']= location
                 
                 Trans_df['Transfer Date'] = Trans_df['Received Date'].fillna(formatted_date)
@@ -106,8 +96,6 @@ def app():
                 Trans_df['Transferred By']=staffname
                 
                
-            
-                
             else :
         
                 Trans_df = AllTrans_df[ 
@@ -122,26 +110,6 @@ def app():
                 Trans_df['Received Status']= "Pending"
                         
                  
-                 
-                 
-            
-                
-            #st.write(Trans_df)
-            
-           
-            
-          
-    
-            
-        
-            
-        
-            
-            
-    
-            #st.write(staffname)
-            
-            #st.write(Trans_df)
             
             # JavaScript for link renderer
             cellRenderer_link = JsCode("""
@@ -606,152 +574,65 @@ def app():
                             ui.table(data=pres_df, maxHeight=300)
             
             except Exception as e:
-                st.error(f"Failed to update to SharePoint: {str(e)}")
+                st.error(f"Failed to update databse: {str(e)}")
                 st.stop() 
                 
-            if selected_option == "Transfer Out":
-
-                def validate_appointment_data(df):
-                    """
-                    Validate the Appointment_df DataFrame to check for specific conditions based on the selected option.
-                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                    """
-                    
-                    invalid_mvc_rows = df[df['Transfer To'].isna() | (df['Transfer To'] == "None")].index.tolist()
             
-                    if invalid_mvc_rows:
-                        return False, invalid_mvc_rows
 
-                    return True, []
+            # Function to update Supabase table
+            def update_supabase_table(dataframe: pd.DataFrame, table_name: str, id_column: str):
+                """
+                Update Supabase table records using data from a DataFrame.
 
-                def submit_to_sharepoint(pres_df):
-                    # Validate data before submission
-                    is_valid, invalid_mvc_rows = validate_appointment_data(pres_df)
+                Args:
+                - dataframe: pd.DataFrame containing the data to update.
+                - table_name: str, name of the Supabase table to update.
+                - id_column: str, the column name in the DataFrame that contains unique IDs.
+                """
+                try:
+                    for index, row in dataframe.iterrows():
+                        # Convert the row to a dictionary
+                        record = row.to_dict()
+                        record_id = record.pop(id_column)
 
-                    if not is_valid:
-                        st.error(f"Status is blank in rows: {invalid_mvc_rows}")
-                        return
+                        # Update the Supabase table record
+                        response = supabase.table(table_name).update(record).eq(id_column, record_id).execute()
 
-                    try:
-                        with st.spinner('Submitting...'):
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
+                        st.success(f"Successfully updated record ID {record_id}")
 
-                            # Iterate over the DataFrame and update items in the SharePoint list
-                            for ind in pres_df.index:
-                                item_id = pres_df.at[ind, 'ID']
-                                Transfer_status = pres_df.at[ind, 'Transfer Status']
-                                Transfer_date = pres_df.at[ind, 'Transfer Date']
-                                Transfer_from = pres_df.at[ind, 'Transfer From']
-                                Transfer_by = pres_df.at[ind, 'Transferred By']
-                                Transaction_type = pres_df.at[ind, 'Transaction Type']
-                                Transfer_comments = pres_df.at[ind, 'Transfer Comments']
-                                Transfer_to = pres_df.at[ind, 'Transfer To']
+                except Exception as e:
+                    st.error(f"Failed to update Supabase: {str(e)}")
+                    st.stop()
 
-                                item_creation_info = {
-                                    'ID': item_id,
-                                    'Transfer Status': Transfer_status,
-                                    'Transfer Date': Transfer_date,
-                                    'Transferred By': Transfer_by,
-                                    'Transaction Type': Transaction_type,
-                                    'Transfer Comments': Transfer_comments,
-                                    'Transfer To': Transfer_to,
-                                    'Transfer From': Transfer_from
-                                }
+            try:
+                # Fetch the data from Supabase table "Home_Delivery"
+                response = supabase.table("Home_Delivery").select("*").execute()
 
-                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
+            except Exception as e:
+                st.error(f"Failed to fetch or process data: {str(e)}")
+                st.stop()
 
-                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                                logging.info(f"Response for index {ind}: {response}")
-
-                            st.success("Successfully submitted", icon="✅")
-                    except Exception as e:
-                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
-                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop()
-                        
-            if selected_option=="Transfer In":
-                
-                def validate_appointment_data(df):
-                    """
-                    Validate the Appointment_df DataFrame to check for specific conditions based on the selected option.
-                    Returns a boolean indicating if the data is valid and a list of row indices with issues.
-                    """
-                    
-                    invalid_mvc_rows = df[df['Received Status'].isna() | (df['Received Status'] == "None")].index.tolist()
-            
-                    if invalid_mvc_rows:
-                        return False, invalid_mvc_rows
-
-                    return True, []
-
-                def submit_to_sharepoint(pres_df):
-                    # Validate data before submission
-                    is_valid, invalid_mvc_rows = validate_appointment_data(pres_df)
-
-                    if not is_valid:
-                        st.error(f"Transfer To is blank in rows: {invalid_mvc_rows}")
-                        return
-
-                    try:
-                        with st.spinner('Submitting...'):
-                            sp = SharePoint()
-                            site = sp.auth()
-                            target_list = site.List(list_name='Home Delivery')
-
-                            # Iterate over the DataFrame and update items in the SharePoint list
-                            for ind in pres_df.index:
-                                item_id = pres_df.at[ind, 'ID']
-                                Transfer_received = pres_df.at[ind, 'Received Status']
-                                Received_by = pres_df.at[ind, 'Received By']
-                                Trans_Location = pres_df.at[ind, 'Location']
-                                Received_date = pres_df.at[ind, 'Received Date']
-                                Transfer_date = pres_df.at[ind, 'Transfer Date']
-                                Transfer_by = pres_df.at[ind, 'Transferred By']
-                                Transaction_type = pres_df.at[ind, 'Transaction Type']
-                                Transfer_comments = pres_df.at[ind, 'Transfer Comments']
-                                Transfer_to = pres_df.at[ind, 'Transfer To']
-                                Transfer_From = pres_df.at[ind, 'Transfer From']
-
-                                item_creation_info = {
-                                    'ID': item_id,
-                                    'Received Status': Transfer_received,
-                                    'Received By': Received_by,
-                                    'Location':Trans_Location,
-                                    'Received Date': Received_date,
-                                    'Transfer Date': Transfer_date,
-                                    'Transferred By': Transfer_by,
-                                    'Transaction Type': Transaction_type,
-                                    'Transfer Comments': Transfer_comments,
-                                    'Transfer To': Transfer_to,
-                                    'Transfer From': Transfer_From
-                                }
-
-                                logging.info(f"Updating item ID {item_id}: {item_creation_info}")
-
-                                response = target_list.UpdateListItems(data=[item_creation_info], kind='Update')
-                                logging.info(f"Response for index {ind}: {response}")
-
-                            st.success("Successfully submitted", icon="✅")
-                    except Exception as e:
-                        logging.error(f"Failed to update to SharePoint: {str(e)}", exc_info=True)
-                        st.error(f"Failed to update to SharePoint: {str(e)}")
-                        st.stop()
-            
+            # Action buttons to submit or refresh data
             cols = st.columns(4)
             with cols[2]:
                 ui_but = ui.button("Submit", key="subbtn")
                 if ui_but:
-                    submit_to_sharepoint(pres_df)
+                    if (pres_df == 'None').any().any():
+                        st.error("Please fill in all required fields (MVC and Collected Date) before confirming.")
+                    else:
+                        with st.spinner('Wait! Reloading view...'):
+                            # Call the function to update Supabase with the filtered data
+                            update_supabase_table(pres_df, table_name="Home_Delivery", id_column="id")
 
-                    
             with cols[2]:
-                ui_result = ui.button("Refresh", key="btn")  
-                if ui_result: 
-                    with st.spinner('Wait! Reloading view...'):  
+                ui_result = ui.button("Refresh", key="btn")
+                if ui_result:
+                    with st.spinner('Wait! Reloading view...'):
                         st.cache_data.clear()
-                        AllTrans_df = load_new()  
+
+                        
+            
+    
                     
     else:
             st.write("You are not logged in. Click **[Account]** on the side menu to Login or Signup to proceed")
