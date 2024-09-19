@@ -328,7 +328,7 @@ def app():
             gb.configure_column("Collection Date", editable=False, cellRenderer=date_renderer)
             gb.configure_column('MVC', editable=True, cellRenderer=textarea_renderer2, pinned='right', minWidth=50)
             gb.configure_column('Cycle', editable=False,filter="agTextColumnFilter",minWidth=5, filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-            gb.configure_column('Collection Comments', editable=True, cellRenderer=textarea_renderer2, minWidth=70)
+            gb.configure_column('Collection Comments', editable=True, cellRenderer=textarea_renderer2, minWidth=100)
             
             # Configure the default column to be editable
             gb.configure_default_column(editable=True, minWidth=150, flex=0)
