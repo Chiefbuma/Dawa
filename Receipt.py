@@ -69,11 +69,11 @@ def app():
                                 
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
-                                        (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                        
                                         (AllTrans_df['Received Status'].isnull())]
                             else:   
                                 Trans_df = AllTrans_df[
-                                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                    
                                     (AllTrans_df['Location'] == location) & 
                                     (AllTrans_df['Received Status'].isnull())]
                
