@@ -67,12 +67,11 @@ def app():
                             AllTrans_df=mainall[mainall['Cycle'] == choice]
                                 
                             if department=="Admin":  
-                                Trans_df = AllTrans_df[ 
-                                        (~AllTrans_df['Collection status'].isnull())]     
+                                Trans_df = AllTrans_df
+                                        
                             else:   
                                 Trans_df = AllTrans_df[
-                                    (AllTrans_df['Location'] == location) & 
-                                    (~AllTrans_df['Collection status'].isnull())]
+                                    (AllTrans_df['Location'] == location)]
 
             
             Trans_df['MVC check'] = Trans_df.apply(

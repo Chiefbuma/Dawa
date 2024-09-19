@@ -69,12 +69,12 @@ def app():
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') &
-                                        (AllTrans_df['Collection status'].isnull())]
+                                        (AllTrans_df['Transaction Type']=='Receipt')]
                             else:   
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') & 
                                         (AllTrans_df['Location'] == location) & 
-                                        (AllTrans_df['Collection status'].isnull())]
+                                        (AllTrans_df['Transaction Type']=='Receipt')]
                 
              #st.write(Trans_df)
             current_date = datetime.now().date()
@@ -412,7 +412,7 @@ def app():
             
             
             except Exception as e:
-                st.error(f"Failed to update to SharePoint: {str(e)}")
+                st.error(f"Failed to update : {str(e)}")
                 st.stop() 
             
             
