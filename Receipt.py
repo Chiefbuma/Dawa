@@ -46,6 +46,8 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
+            st.write(mainall)
+            
             # Ensure the 'Cycle' column is numeric (if it's not already)
             mainall['Cycle'] = pd.to_numeric(mainall['Cycle'], errors='coerce')
 
@@ -53,6 +55,12 @@ def app():
             max_cycle = mainall['Cycle'].max()
             
             st.write(max_cycle)
+            
+            # Get the number of rows in the DataFrame
+            num_rows = df.shape[0]
+
+            # Display the number of rows
+            st.write(f"The number of rows in the DataFrame is: {num_rows}")
             
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
