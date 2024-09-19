@@ -46,8 +46,13 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
-            #st.write(mainall)
+            st.write(mainall)
             
+            num_rows = mainall.shape[0]
+
+            # Display the number of rows
+            st.write(f"The number of rows in the DataFrame is: {num_rows}")
+                        
             # Ensure the 'Cycle' column is numeric (if it's not already)
             mainall['Cycle'] = pd.to_numeric(mainall['Cycle'], errors='coerce')
 
@@ -72,11 +77,11 @@ def app():
                                 
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
-                                        (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                        
                                         (AllTrans_df['Received Status'].isnull())]
                             else:   
                                 Trans_df = AllTrans_df[
-                                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
+                                
                                     (AllTrans_df['Location'] == location) & 
                                     (AllTrans_df['Received Status'].isnull())]
                

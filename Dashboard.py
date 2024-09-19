@@ -574,7 +574,8 @@ def app():
                                 'Transfer To':'TransTo',
                                 'Transfer From':'TransFrom',
                                 'Consultation Status': 'Consulted',
-                                 'Dispatched Date':'Dispatched Date',
+                                'Dispatched status':'Dispatch',
+                                'Dispatched Date':'Dispatched Date',
                                 'Received Status': 'Received',
                                 'Collection Date':'Date',
                                 'Partial_Collection':'Partial',
@@ -582,8 +583,7 @@ def app():
                                 'Collection status': 'Collected',
                                 'Month': 'Month',
                                 'MVC':'MVC',
-                                "Cycle":'Cycle'
-                            })
+                                "Cycle":'Cycle'})
                     
                             # Create the DataFrame with the required columns
                             status_df = sumamry_df[[
@@ -591,7 +591,8 @@ def app():
                                 "UHID",
                                 "mobile",
                                 "Medical Centre",
-                                'Dispatched Date', 
+                                 "Consulted","Booked","Dispatch",
+                                 'Dispatched Date', 
                                 'Received',
                                 'TransFrom',
                                 'TransTo',
