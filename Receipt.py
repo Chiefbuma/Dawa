@@ -73,7 +73,7 @@ def app():
                                         (AllTrans_df['Received Status'].isnull())]
                             else:   
                                 Trans_df = AllTrans_df[
-                                   
+                                    (AllTrans_df['Dispatched status'] == 'Dispatched') & 
                                     (AllTrans_df['Location'] == location) & 
                                     (AllTrans_df['Received Status'].isnull())]
                
@@ -318,7 +318,7 @@ def app():
                 with card_container(key="reveivednew"):
                     # Display the AgGrid table
                     response = AgGrid(
-                        Trans_df,
+                        mainall,
                         gridOptions=gridoptions,
                         editable=True,
                         allow_unsafe_jscode=True,
