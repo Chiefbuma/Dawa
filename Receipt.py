@@ -46,6 +46,8 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
+            st.write(mainall)
+            
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
             
