@@ -197,7 +197,7 @@ def app():
                             this.eGui.type = 'text'; // Set the input type to text for single-line input
 
                             // Set the width of the input
-                            this.eGui.style.width = '150px'; // Adjust the width as needed
+                            this.eGui.style.width = '200px'; // Adjust the width as needed
                             this.eGui.style.height = '20px'; // Adjust the height as needed
 
                             this.eGui.value = this.params.value || '';
