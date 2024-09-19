@@ -50,15 +50,19 @@ def app():
 
         with card_container("Upload"):
             st.header('Dispatch Packages🔖')
-            # Upload Excel file
-            uploaded_file = st.file_uploader("Choose an Excel file", type="xlsx")
+             # Upload Excel file
+             # Upload CSV file
+            uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 
             if uploaded_file is not None:
-                # Load Excel file into DataFrame
-                df = pd.read_excel(uploaded_file)
+                # Load CSV file into DataFrame
+                df = pd.read_csv(uploaded_file)
 
-                # Replace NaN values with blank strings and convert columns to strings
-                df = df.fillna('').astype(str)
+                # Replace 'None' values (if any) and NaN values with blank strings and convert columns to strings
+                df = df.fillna('').replace('None', '').astype(str)
+                
+                # Display DataFrame or perform further actions
+                st.write(df)
 
                 current_date = datetime.now().date()
                 formatted_date = current_date.strftime("%d/%m/%Y")
