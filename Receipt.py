@@ -78,12 +78,12 @@ def app():
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
                                         
-                                        (AllTrans_df['Received Status'].isnull())]
+                                        (AllTrans_df['Transaction Type']=='Dispatch')]
                             else:   
                                 Trans_df = AllTrans_df[
                                 
                                     (AllTrans_df['Location'] == location) & 
-                                    (AllTrans_df['Received Status'].isnull())]
+                                    (AllTrans_df['Transaction Type']=='Dispatch')]
                
             #st.write(Trans_df)
             current_date = datetime.now().date()
