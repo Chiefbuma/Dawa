@@ -57,7 +57,7 @@ def app():
             st.write(max_cycle)
             
             # Get the number of rows in the DataFrame
-            num_rows = df.shape[0]
+            num_rows = mainall.shape[0]
 
             # Display the number of rows
             st.write(f"The number of rows in the DataFrame is: {num_rows}")
