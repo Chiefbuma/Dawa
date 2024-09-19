@@ -318,7 +318,7 @@ def app():
                 with card_container(key="reveivednew"):
                     # Display the AgGrid table
                     response = AgGrid(
-                        mainall,
+                        Trans_df,
                         gridOptions=gridoptions,
                         editable=True,
                         allow_unsafe_jscode=True,
