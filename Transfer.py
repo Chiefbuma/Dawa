@@ -344,7 +344,6 @@ def app():
                             "Unique Id",
                             "Item Type",
                             "Property Bag",
-                            "ID",
                             "MVC",
                             "Collection Comments",
                             "owshiddenversion",
@@ -528,7 +527,7 @@ def app():
                     
                     pres_df = df[(df['Received Status'] == 'Received')]
                     pres_df=pres_df[[
-                                "ID",
+                                "id",
                                 "UHID",
                                 "Patientname",
                                 "Transfer To",
@@ -549,7 +548,7 @@ def app():
                     pres_df = df[df['Transfer Status'] == 'Transferred']
                     
                     pres_df=pres_df[[
-                                "ID",
+                                "id",
                                 "UHID",
                                 "Patientname",
                                 "Transfer From",
