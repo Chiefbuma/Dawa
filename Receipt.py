@@ -46,7 +46,13 @@ def app():
             Allresponse = supabase.from_('Home_Delivery').select('*').execute()
             mainall = pd.DataFrame(Allresponse.data)
             
-            #st.write(mainall)
+            # Ensure the 'Cycle' column is numeric (if it's not already)
+            mainall['Cycle'] = pd.to_numeric(mainall['Cycle'], errors='coerce')
+
+            # Get the maximum value from the 'Cycle' column
+            max_cycle = mainall['Cycle'].max()
+            
+            st.write(max_cycle)
             
             response = supabase.from_('usersD').select('*').eq('staffnumber', staffnumber).execute()
             usersD_df = pd.DataFrame(response.data)
