@@ -70,7 +70,7 @@ def app():
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') &
                                         (AllTrans_df['Transaction Type']=='Receipt') &
-                                        (AllTrans_df['Collection status'] == "Full") | (AllTrans_df['Collection status']=='Partial')]
+                                        (~(AllTrans_df['Collection status'] == "Full") | (AllTrans_df['Collection status']=='Partial'))]
                             else:   
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') & 
