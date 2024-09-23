@@ -69,15 +69,14 @@ def app():
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') &
-                                        (AllTrans_df['Transaction Type']=='Receipt') &
-                                        (AllTrans_df['Collection status'] != "Full")]
+                                        (AllTrans_df['Transaction Type']=='Receipt') ]
+                                       
                             else:   
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Received Status'] == 'Received') & 
                                         (AllTrans_df['Location'] == location) & 
-                                        (AllTrans_df['Transaction Type']=='Receipt') &
-                                         ((AllTrans_df['Collection status']!='Partial') | (AllTrans_df['Collection status']!='Full'))]
-                
+                                        (AllTrans_df['Transaction Type']=='Receipt') ]
+                                        
              #st.write(Trans_df)
             current_date = datetime.now().date()
             formatted_date = current_date.strftime("%d/%m/%Y")
