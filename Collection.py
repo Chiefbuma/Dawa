@@ -386,7 +386,7 @@ def app():
                 df = pd.DataFrame(res)
         
                 # Filter the DataFrame to include only rows where "Booking status" is "Booked"
-                pres_df = df[df['Collection status'].isin(['Full','Partial','Returned',''])]
+                pres_df = df[df['Collection status'].isin(['Full','Partial'])]
                 
                 
                         
