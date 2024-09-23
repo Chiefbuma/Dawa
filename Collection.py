@@ -76,7 +76,7 @@ def app():
                                         (AllTrans_df['Received Status'] == 'Received') & 
                                         (AllTrans_df['Location'] == location) & 
                                         (AllTrans_df['Transaction Type']=='Receipt') &
-                                        (AllTrans_df['Collection status'] == "Full") | (AllTrans_df['Collection status']=="Partial")]
+                                        (~(AllTrans_df['Collection status'] == "Full") | (AllTrans_df['Collection status']=="Partial"))]
                 
              #st.write(Trans_df)
             current_date = datetime.now().date()
