@@ -112,6 +112,7 @@ def app():
                         'Booking status': 'Booked',
                         'Transfer Status':'Total',
                         'Consultation Status': 'Consulted',
+                        'Received Status': 'Received',
                         'Dispatched status': 'Dispatched',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
