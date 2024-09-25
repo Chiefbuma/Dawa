@@ -112,6 +112,7 @@ def app():
                         'Booking status': 'Booked',
                         'Transfer Status':'Total',
                         'Consultation Status': 'Consulted',
+                        'Dispatched status': 'Dispatched',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
                         'Full_Collection':'Full',
@@ -127,11 +128,8 @@ def app():
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
                     
                     Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Full").astype(int)
-                    
-                    Telesumamry_df['Dispatched'] = (Telesumamry_df['Dispatched status'] == "Full").astype(int)
+                    Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Full").astype(int)
 
-                    
-                    
                     #st.write(Telesumamry_df)
                                         # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
                     # Create a new column that indicates whether the value in 'MVC' has a length of 13 digits
@@ -178,7 +176,7 @@ def app():
                     summary_df = Telesumamry_df.groupby(['Medical Centre','Cycle']).agg({
                         'Booked': 'count',
                         'Consulted': 'count',
-                        'Dispatched': 'sum',
+                        'Dispatched': 'count',
                         'Received': 'sum',
                         'Collected':'sum',
                         'TransIn':'sum',
