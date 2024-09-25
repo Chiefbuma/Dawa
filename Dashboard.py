@@ -128,10 +128,9 @@ def app():
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
                     
                     Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Received").astype(int)
-                    
 
                   
-                                        # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
+                    # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
                     # Create a new column that indicates whether the value in 'MVC' has a length of 13 digits
                     Telesumamry_df['ValidMVC'] = Telesumamry_df['MVC'].apply(lambda x: len(str(x)) == 13).astype(int)
 
