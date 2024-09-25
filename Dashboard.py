@@ -128,8 +128,7 @@ def app():
                     
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
                     
-                    Telesumamry_df['Received2'] = (Telesumamry_df['Received Status'] == "Received").astype(int)
-
+                    
                   
                     # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
                     # Create a new column that indicates whether the value in 'MVC' has a length of 13 digits
@@ -176,7 +175,7 @@ def app():
                         'Booked': 'count',
                         'Consulted': 'count',
                         'Dispatched': 'count',
-                        'Received2': 'sum',
+                        'Received': 'count',
                         'Collected':'sum',
                         'TransIn':'sum',
                         'TransOut':'sum',
