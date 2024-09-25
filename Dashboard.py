@@ -151,7 +151,7 @@ def app():
                     
                     Dispatched_calc = Telesumamry_df [Telesumamry_df['Dispatched'] == 'Dispatched']
                     Dispatched= int(Dispatched_calc.shape[0])
-                    dip_rate= (round(Dispatched/Consulted,2)*100)
+                    dip_rate = (Dispatched / Consulted).where(Consulted != 0, 0).round(2) * 100
                     dip_rate= "{:.0f}%".format(dip_rate)
                     
                     
