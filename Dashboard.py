@@ -109,7 +109,9 @@ def app():
                         'Dispatched By':'WareHouse',
                         'Location':'Medical Centre',
                         'Dispensed By':'Pharmatech.',
+                        'Booking status': 'Booked',
                         'Transfer Status':'Total',
+                        'Consultation Status': 'Consulted',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
                         'Full_Collection':'Full',
@@ -124,13 +126,11 @@ def app():
                     
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
                     
-                    Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Received").astype(int)
+                    Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Full").astype(int)
                     
-                    Telesumamry_df['Dispatched'] = (Telesumamry_df['Dispatched status'] == "Dispatched").astype(int)
+                    Telesumamry_df['Dispatched'] = (Telesumamry_df['Dispatched status'] == "Full").astype(int)
 
-                    Telesumamry_df['Booked'] = (Telesumamry_df['Booking status'] == "Booked").astype(int)
                     
-                    Telesumamry_df['Consulted'] = (Telesumamry_df['Consultation Status'] == "Consulted").astype(int)
                     
                     #st.write(Telesumamry_df)
                                         # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
@@ -151,7 +151,7 @@ def app():
                     
                     Dispatched_calc = Telesumamry_df [Telesumamry_df['Dispatched'] == 'Dispatched']
                     Dispatched= int(Dispatched_calc.shape[0])
-                    dip_rate = (Dispatched / Consulted).where(Consulted != 0, 0).round(2) * 100
+                    dip_rate= (round(Dispatched/Consulted,2)*100)
                     dip_rate= "{:.0f}%".format(dip_rate)
                     
                     
