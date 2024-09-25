@@ -72,7 +72,6 @@ def app():
                             else:   
                                 Trans_df = AllTrans_df[
                                     (AllTrans_df['Location'] == location)]
-
             
             Trans_df['MVC check'] = Trans_df.apply(
                 lambda row: 'Not Valid/Duplicate' if Trans_df['MVC'].duplicated(keep=False)[row.name]

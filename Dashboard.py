@@ -117,7 +117,6 @@ def app():
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
                         'Full_Collection':'Full',
-                        'Collection status': 'Collected',
                         'Month': 'Month',
                         'MVC':'MVC',
                         "Cycle":'Cycle'
@@ -126,6 +125,11 @@ def app():
                     
                     Telesumamry_df['TransIn'] = (Telesumamry_df['Medical Centre'] == Telesumamry_df['Transfer To']).astype(int)
                     Telesumamry_df['TransOut'] = (Telesumamry_df['Medical Centre'] == Telesumamry_df['Transfer From']).astype(int)
+                    
+                    Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
+
+     
+                    
                     #st.write(Telesumamry_df)
                                         # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
                     # Create a new column that indicates whether the value in 'MVC' has a length of 13 digits
@@ -174,7 +178,7 @@ def app():
                         'Consulted': 'count',
                         'Dispatched': 'count',
                         'Received': 'count',
-                        'Collected':'count',
+                        'Collected':'sum',
                         'TransIn':'sum',
                         'TransOut':'sum',
                         'ValidMVC':'sum'
