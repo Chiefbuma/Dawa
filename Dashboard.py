@@ -109,11 +109,7 @@ def app():
                         'Dispatched By':'WareHouse',
                         'Location':'Medical Centre',
                         'Dispensed By':'Pharmatech.',
-                        'Booking status': 'Booked',
                         'Transfer Status':'Total',
-                        'Consultation Status': 'Consulted',
-                        'Dispatched status': 'Dispatched',
-                        'Received Status': 'Received',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
                         'Full_Collection':'Full',
@@ -127,8 +123,14 @@ def app():
                     Telesumamry_df['TransOut'] = (Telesumamry_df['Medical Centre'] == Telesumamry_df['Transfer From']).astype(int)
                     
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
+                    
+                    Telesumamry_df['Received'] = (Telesumamry_df['Received Status'] == "Received").astype(int)
+                    
+                    Telesumamry_df['Dispatched'] = (Telesumamry_df['Dispatched status'] == "Dispatched").astype(int)
 
-     
+                    Telesumamry_df['Booked'] = (Telesumamry_df['Booking status'] == "Booked").astype(int)
+                    
+                    Telesumamry_df['Consulted'] = (Telesumamry_df['Consultation Status'] == "Consulted").astype(int)
                     
                     #st.write(Telesumamry_df)
                                         # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
@@ -176,8 +178,8 @@ def app():
                     summary_df = Telesumamry_df.groupby(['Medical Centre','Cycle']).agg({
                         'Booked': 'count',
                         'Consulted': 'count',
-                        'Dispatched': 'count',
-                        'Received': 'count',
+                        'Dispatched': 'sum',
+                        'Received': 'sum',
                         'Collected':'sum',
                         'TransIn':'sum',
                         'TransOut':'sum',
@@ -595,7 +597,7 @@ def app():
                                 "UHID",
                                 "mobile",
                                 "Medical Centre","Cycle",
-                                 "Consulted","Dispatch",
+                                 "Consulted","Booked","Dispatch",
                                  'Dispatched Date', 
                                 'Received',
                                 'TransFrom',
