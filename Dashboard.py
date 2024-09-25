@@ -170,8 +170,7 @@ def app():
                     col_rate= "{:.0f}%".format(col_rate)
                     
                     
-                    
-                    #SUMMARY
+            
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = Telesumamry_df.groupby(['Medical Centre','Cycle']).agg({
                         'Booked': 'count',
