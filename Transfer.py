@@ -616,9 +616,6 @@ def app():
             with cols[2]:
                 ui_but = ui.button("Submit", key="subbtn")
                 if ui_but:
-                    if (pres_df == 'None').any().any():
-                        st.error("Please fill in all required fields (MVC and Collected Date) before confirming.")
-                    else:
                         with st.spinner('Wait! Reloading view...'):
                             # Call the function to update Supabase with the filtered data
                             update_supabase_table(pres_df, table_name="Home_Delivery", id_column="id")
