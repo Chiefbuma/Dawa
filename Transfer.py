@@ -430,10 +430,7 @@ def app():
                         "Title",
                         "UHID",
                         "Patientname",
-                        "mobile",
-                        "Cycle"
-                   
-                    
+                        "mobile"
                         
                 ]
                 for column in non_editable_columns:

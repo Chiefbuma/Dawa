@@ -13,8 +13,11 @@ st_supabase_connection==1.2.2
 streamlit==1.32.1
 streamlit_option_menu==0.3.12
 streamlit_shadcn_ui==0.1.18
-supabase==2.4.0
+supabase
 ntlm-auth==1.5.0
 SharePlum==0.5.1
 streamlit_dynamic_filters
 streamlit-aggrid
+
+
+
