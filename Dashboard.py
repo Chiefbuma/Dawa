@@ -96,6 +96,9 @@ def app():
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     Main_df['Partial_Collection'] = Main_df['Collection status'].isin(['Partial']).astype(int)
                     
+                    
+                    
+                    
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
                     
@@ -112,7 +115,7 @@ def app():
                         'Booking status': 'Booked',
                         'Transfer Status':'Total',
                         'Consultation Status': 'Consulted',
-                        'Received Status': 'Received',
+                        
                         'Dispatched status': 'Dispatched',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
@@ -128,7 +131,9 @@ def app():
                     
                     Telesumamry_df['Collected'] = ((Telesumamry_df['Collection status'] == "Full") | (Telesumamry_df['Collection status'] == "Partial")).astype(int)
                     
-                    
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    Telesumamry_df['Received'] = Telesumamry_df['Received Status'].isin(['Received']).astype(int)
+                
                   
                     # Create a new column that indicates whether the value in 'MVC' has the same type and length as the target value
                     # Create a new column that indicates whether the value in 'MVC' has a length of 13 digits
@@ -175,7 +180,7 @@ def app():
                         'Booked': 'count',
                         'Consulted': 'count',
                         'Dispatched': 'count',
-                        'Received': 'count',
+                        'Received': 'sum',
                         'Collected':'sum',
                         'TransIn':'sum',
                         'TransOut':'sum',
