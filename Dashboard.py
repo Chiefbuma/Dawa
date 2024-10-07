@@ -115,7 +115,6 @@ def app():
                         'Booking status': 'Booked',
                         'Transfer Status':'Total',
                         'Consultation Status': 'Consulted',
-                        
                         'Dispatched status': 'Dispatched',
                         'Collection Date':'Date',
                         'Partial_Collection':'Partial',
@@ -157,7 +156,7 @@ def app():
                     dip_rate= "{:.0f}%".format(dip_rate)
                     
                     
-                    Received_calc = Telesumamry_df [Telesumamry_df['Received'] == 'Received']
+                    Received_calc = Telesumamry_df [Telesumamry_df['Received Status'] == 'Received']
                     Received= int(Received_calc.shape[0])
                     rev_rate= (round(Received/Dispatched,2)*100)
                     rev_rate= "{:.0f}%".format(rev_rate)
