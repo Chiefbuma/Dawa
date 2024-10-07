@@ -157,7 +157,8 @@ def app():
                     dip_rate= "{:.0f}%".format(dip_rate)
                     
                     
-                    Received = Telesumamry_df['Received Status'].isin(['Received']).astype(int)
+                    Received_calc = Telesumamry_df['Received'].isin(['Received']).astype(int)
+                    Received= int(Received_calc.shape[0])
                     rev_rate= (round(Received/Dispatched,2)*100)
                     rev_rate= "{:.0f}%".format(rev_rate)
                 
