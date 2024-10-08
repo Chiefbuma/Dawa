@@ -309,7 +309,7 @@ def app():
                 gb = GridOptionsBuilder.from_dataframe(Trans_df)
                 
                 gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-                gb.configure_column('Patientname', editable=False,filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
+                gb.configure_column('UHID', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                 gb.configure_column('Transfer From', editable=False)
                 gb.configure_column('Transfer Comments', editable=False, cellRenderer=textarea_renderer,width=10)
                 gb.configure_column('Transfer To', editable=False)
