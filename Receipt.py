@@ -74,16 +74,17 @@ def app():
                         choice = st.selectbox('Select Cycle', Cycle) 
                         if choice : 
                             AllTrans_df=mainall[mainall['Cycle'] == choice]
-                                
+                            
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
-                                        
-                                        (AllTrans_df['Transaction Type']=='Dispatch')]
+                                        (AllTrans_df['Transaction Type']=='Dispatch') &
+                                        (~AllTrans_df['Received Status'].isin(["Received"]))]
                             else:   
                                 Trans_df = AllTrans_df[
-                                
-                                    (AllTrans_df['Location'] == location) & 
-                                    (AllTrans_df['Transaction Type']=='Dispatch')]
+                                        (AllTrans_df['Location'] == location) & 
+                                         (AllTrans_df['Transaction Type']=='Dispatch') &
+                                        (~AllTrans_df['Received Status'].isin(["Received"]))]
+                
                
             #st.write(Trans_df)
             current_date = datetime.now().date()
