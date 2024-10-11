@@ -78,7 +78,7 @@ def app():
                             if department=="Admin":
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Transaction Type']=='Dispatch') &
-                                        (~AllTrans_df['Received Status'].isin(["Received"]))]
+                                        (AllTrans_df['Received Status'].isin(['']))]
                             else:   
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Location'] == location) & 
