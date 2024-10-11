@@ -120,13 +120,17 @@ def app():
             """)
 
             # JavaScript for checkbox renderer
-            checkbox_renderer = JsCode("""
+            # JavaScript for checkbox renderer
+            checkbox_renderer= JsCode("""
             class CheckboxRenderer {
                 init(params) {
                     this.params = params;
                     this.eGui = document.createElement('input');
                     this.eGui.setAttribute('type', 'checkbox');
-                    this.eGui.checked = params.value === 'Received';
+                    
+                    // Default the checkbox to unchecked
+                    this.eGui.checked = params.value === '';
+                    
                     this.eGui.addEventListener('click', (event) => {
                         if (event.target.checked) {
                             params.setValue('Received');
@@ -135,10 +139,13 @@ def app():
                         }
                     });
                 }
+
                 getGui() {
                     return this.eGui;
                 }
+
                 refresh(params) {
+                    // Update the checkbox state when the cell is refreshed
                     this.eGui.checked = params.value === 'Received';
                 }
             }
