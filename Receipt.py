@@ -82,8 +82,8 @@ def app():
                             else:   
                                 Trans_df = AllTrans_df[
                                 (AllTrans_df['Location'] == location) &  # Filter by location
-                                (AllTrans_df['Transaction Type'] == 'Dispatch') &  # Filter by 'Dispatch' transaction type
-                                ~AllTrans_df['Received Status'].isin(['Received'])  # Exclude rows where 'Received Status' is 'Received'
+                                (AllTrans_df['Transaction Type'] == 'Dispatch') # Filter by 'Dispatch' transaction type
+                                 # Exclude rows where 'Received Status' is 'Received'
                             ]   
                 
                
