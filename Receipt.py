@@ -82,8 +82,8 @@ def app():
                             else:   
                                 Trans_df = AllTrans_df[
                                         (AllTrans_df['Location'] == location) & 
-                                         (AllTrans_df['Transaction Type']=='Dispatch') &
-                                        (~AllTrans_df['Received Status'].isin(["Received"]))]
+                                         (AllTrans_df['Transaction Type']=='Dispatch')]
+                                      
                 
                
             #st.write(Trans_df)
