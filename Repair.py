@@ -332,7 +332,7 @@ def app():
                             
                         with cols[0]:
                             
-                             ui.table(data=summary_df)
+                            st.write(summary_df)
 
                     with card_container(key="gallery1"):
 
