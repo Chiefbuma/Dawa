@@ -340,9 +340,8 @@ def app():
                             
                         with cols[0]:
                             
-                            ui.table(data=summary_df, maxHeight=300)
-                           
-                          
+                            st.write(summary_df)
+
                     with card_container(key="gallery1"):
 
                         
