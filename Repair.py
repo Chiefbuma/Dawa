@@ -347,6 +347,11 @@ def app():
                         
                         data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName']]
                         
+                     
+              
+                            
+                        ui.table(data=df_main, maxHeight=300)
+                        
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
                                             
@@ -365,7 +370,7 @@ def app():
                         
                         data_df.fillna('', inplace=True)
                         
-                        ui.table(data=data_df)
+                        
                            
                 
                     metrics = [
