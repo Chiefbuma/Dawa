@@ -130,68 +130,68 @@ def app():
             }
             """)
 
-            # JavaScript for checkbox renderer
             checkbox_renderer = JsCode("""
-            class CheckboxRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'checkbox');
-                    
-                    // Default the checkbox to unchecked
-                    this.eGui.checked = params.value === '';
-                    
-                    this.eGui.addEventListener('click', (event) => {
-                        if (event.target.checked) {
-                            params.setValue('Received');
-                        } else {
-                            params.setValue('');
-                        }
-                    });
-                }
+                class CheckboxRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('input');
+                        this.eGui.setAttribute('type', 'checkbox');
 
-                getGui() {
-                    return this.eGui;
-                }
+                        // Default the checkbox to unchecked unless the value is 'Received'
+                        this.eGui.checked = params.value === 'Received';
 
-                refresh(params) {
-                    // Update the checkbox state when the cell is refreshed
-                    this.eGui.checked = params.value === 'Received';
+                        this.eGui.addEventListener('click', (event) => {
+                            if (event.target.checked) {
+                                params.setValue('Received');
+                            } else {
+                                params.setValue('');
+                            }
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+
+                    refresh(params) {
+                        // Update the checkbox state when the cell is refreshed
+                        this.eGui.checked = params.value === 'Received';
+                    }
                 }
-            }
             """)
+
             
             
-            # JavaScript for checkbox renderer
             checkbox_renderer2 = JsCode("""
-            class CheckboxRenderer {
-                init(params) {
-                    this.params = params;
-                    this.eGui = document.createElement('input');
-                    this.eGui.setAttribute('type', 'checkbox');
-                    
-                    // Default the checkbox to unchecked
-                    this.eGui.checked = params.value === '';
-                    
-                    this.eGui.addEventListener('click', (event) => {
-                        if (event.target.checked) {
-                            params.setValue('Transferred');
-                        } else {
-                            params.setValue('');
-                        }
-                    });
-                }
+                class CheckboxRenderer {
+                    init(params) {
+                        this.params = params;
+                        this.eGui = document.createElement('input');
+                        this.eGui.setAttribute('type', 'checkbox');
 
-                getGui() {
-                    return this.eGui;
-                }
+                        // Default the checkbox to unchecked unless the value is 'Received'
+                        this.eGui.checked = params.value === 'Transferred';
 
-                refresh(params) {
-                    // Update the checkbox state when the cell is refreshed
-                    this.eGui.checked = params.value === 'Transferred';
+                        this.eGui.addEventListener('click', (event) => {
+                            if (event.target.checked) {
+                                params.setValue('Transferred');
+                            } else {
+                                params.setValue('');
+                            }
+                        });
+                    }
+
+                    getGui() {
+                        return this.eGui;
+                    }
+
+                    refresh(params) {
+                        // Update the checkbox state when the cell is refreshed
+                        this.eGui.checked = params.value === 'Transferred';
+                    }
                 }
-            }
             """)
+
             
             textarea_renderer = JsCode("""
                 class TextareaRenderer {
