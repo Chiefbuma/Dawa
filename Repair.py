@@ -332,7 +332,9 @@ def app():
                             
                         with cols[0]:
                             
-                            st.write(summary_df)
+                            with card_container(key="gallery96"):
+                            
+                                st.write(summary_df)
 
                     with card_container(key="gallery1"):
 
