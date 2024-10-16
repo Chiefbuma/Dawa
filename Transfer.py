@@ -540,7 +540,7 @@ def app():
                                 "Cycle"]]
                 else:
                     
-                    pres_df = df[(df['Transfer Status'] == 'Transferred') & (df['Transaction Type'] != 'Transfer Out')]
+                    pres_df = df(df['Transfer Status'] == 'Transferred')
 
                     
                     
