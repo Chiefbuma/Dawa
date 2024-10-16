@@ -17,6 +17,7 @@ from postgrest import APIError
 from IPython.display import HTML
 import logging
 from streamlit_dynamic_filters import DynamicFilters
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 
 
 
@@ -375,7 +376,7 @@ def app():
                        # Step 1: Add a column with HTML links to the DataFrame
                         data_df['Link'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
                         
-                        from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+                        
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
