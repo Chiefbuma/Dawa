@@ -380,7 +380,20 @@ def app():
                                 hide_index=True
                             , use_container_width=True)
                             
-                            ui.table(data=data_df, maxHeight=300)
+                            
+                            # Step 1: Add a column with HTML links to the DataFrame
+
+                            
+                             #Step 1: Add a column with HTML links to the DataFrame
+                            data_df['LinkHTML'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
+
+                            
+                                                # Step 3: Display the table with the LinkHTML column
+                            ui.table(
+                                data=data_df[['LinkHTML']],  # Only display the link column
+                                maxHeight=300,
+                                allowHtml=True  # Allow HTML rendering in the table
+                            )
                      
                     
                     metrics = [
