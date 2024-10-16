@@ -224,7 +224,7 @@ def app():
                 container = st.container(border=True, height=500)
                 with container:
                     
-                    Overall_df= Main_df[['Departmental report','Title','Approver']]
+                    Overall_df= Main_df[['Clinic','Departmental report','Title','Approver']]
                     
                     Overall_df['Requests'] = int(Overall_df['Title'].nunique())
                       
