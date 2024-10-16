@@ -108,7 +108,7 @@ def app():
                     
             
                     
-            Main_df = load_new()
+            #Main_df = load_new()
             
             st.write(Main_df)
             
@@ -248,11 +248,11 @@ def app():
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
                     
                     
-                    Telesumamry_df = Main_df
+                
                        
             
                     #Group by 'Cycle' and count the occurrences for each status
-                    summary_df = Telesumamry_df.groupby(['Clinic']).agg({
+                    summary_df = Main_df.groupby(['Clinic']).agg({
                         'Requests': 'sum',
                         'Closed':'sum',
                         'Pending':'sum'
