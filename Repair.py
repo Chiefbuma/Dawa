@@ -223,23 +223,26 @@ def app():
                     
                 container = st.container(border=True, height=500)
                 with container:
-                    Main_df['Requests'] = int(Main_df['Title'].nunique())
+                    
+                    Overall_df= Main_df[['Departmental report','Title','Approver']]
+                    
+                    Overall_df['Requests'] = int(Overall_df['Title'].nunique())
                       
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Main_df['Cordinator'] = Main_df['Facility Approval'].isin(['Approved']).astype(int)
+                    Overall_df['Cordinator'] = Overall_df['Facility Approval'].isin(['Approved']).astype(int)
                     
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Main_df['projects'] = Main_df['Projects Approval'].isin(['Approved']).astype(int)
+                    Overall_df['projects'] = Overall_df['Projects Approval'].isin(['Approved']).astype(int)
                     
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Main_df['Director'] = Main_df['Admin Approval'].isin(['Approved']).astype(int)
+                    Overall_df['Director'] = Overall_df['Admin Approval'].isin(['Approved']).astype(int)
                     
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Main_df['Closed'] = Main_df['Approver'].isin(['FINALCLOSED']).astype(int)
+                    Overall_df['Closed'] = Overall_df['Approver'].isin(['FINALCLOSED']).astype(int)
                     
-                    Main_df['Pending'] = (~Main_df['Approver'].isin(['FINALCLOSED'])).astype(int)
+                    Overall_df['Pending'] = (~Overall_df['Approver'].isin(['FINALCLOSED'])).astype(int)
 
-                    
+                    st.write(Overall_df)
                 
                     
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
@@ -250,7 +253,7 @@ def app():
                        
             
                     #Group by 'Cycle' and count the occurrences for each status
-                    summary_df = Main_df.groupby(['Clinic']).agg({
+                    summary_df = Overall_df.groupby(['Clinic']).agg({
                         'Requests': 'sum',
                         'Closed':'sum',
                         'Pending':'sum'
