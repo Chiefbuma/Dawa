@@ -349,7 +349,13 @@ def app():
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
-                    
+                        
+                        # Now convert to string format (YYYY-MM-DD)
+                        data_df['Date of report'] = data_df['Date of report'].dt.strftime('%Y-%m-%d')
+
+                        
+                        
+                        
                         data_df = data_df.rename(columns={
                             'ID': 'Ticket',
                             'Date of report':'Date',
