@@ -298,23 +298,7 @@ def app():
                             # Creating a DataFrame
                             Approval_df = pd.DataFrame(data)
 
-                            with card_container(key="table1"):
-                                
-                                def generate_sales_data():
-                                    np.random.seed(0)  # For reproducible results
-                                    Item = report_sum_df["Item"].apply(lambda x: x.split()[0]).tolist()
-                                    Cost = report_sum_df["Cost"].tolist()
-                                    return pd.DataFrame({'Item': Item, 'Cost': Cost})
-                                with card_container(key="chart2"):
-                                    st.vega_lite_chart(generate_sales_data(), {
-                                        'title': 'Cost of Repairs -(Based on Approved Amount)',
-                                        'mark': {'type': 'bar', 'tooltip': True, 'fill': 'black', 'cornerRadiusEnd': 4 },
-                                        'encoding': {
-                                            'x': {'field': 'Item', 'type': 'ordinal'},
-                                            'y': {'field': 'Cost', 'type': 'quantitative', 'sort': '-x', 'axis': {'grid': False}},
-                                        },
-                                    }, use_container_width=True)
-                            
+                           
                             with card_container(key="table1"):
                                 with card_container(key="summary"):
             # Define the layout using `ui.input` for inputs and `st.write` for labels
@@ -373,103 +357,7 @@ def app():
                                             if ui_result: 
                                               with st.spinner('Wait! Reloading view...'):
                                                 st.cache_data.clear()
-                                                            
-                        with  cols[0]:
-                            with card_container(key="table1"):
-                                def generate_sales_data():
-                                    np.random.seed(0)  # For reproducible results
-                                    Category = department_All["Category"].apply(lambda x: x.split()[0]).tolist()
-                                    Value = department_All["Value"].tolist()
-                                    return pd.DataFrame({'Category': Category, 'Value': Value})
-                                
-                                with card_container(key="chart1"):
-                                    st.vega_lite_chart(generate_sales_data(), {
-                                        'title': 'Cost of Repairs by Category (Based on Approved Amount)',
-                                        'mark': {'type': 'arc', 'tooltip': True},
-                                        'encoding': {
-                                            'theta': {'field': 'Value', 'type': 'quantitative', "sort": "descending", "stack": True},
-                                            'radius': {'field': 'Value', 'scale': {'type': 'sqrt', 'zero': True, 'rangeMin': 20}},
-                                            'color': {'field': 'Category', 'type': 'nominal', 'scale': {'range': ['blue', 'green', 'red', 'orange', 'purple']}},
-                                            'text': {'field': 'Category', 'type': 'nominal'}
-                                            
-                                        },   
-                                        "layer": [{
-                                            "mark": {"type": "arc", "innerRadius": 20, "stroke": "#fff"}
-                                        }, {
-                                            "mark": {"type": "text", "radiusOffset": 10},
-                                            "encoding": {
-                                            
-                                                'theta': {'field': 'Value', 'type': 'quantitative', "stack": True},
-                                                "legend":False
-                                            }
-                                        }]
-
-
-                                    }, use_container_width=True)
-                    
-                            
-                            # Group by 'Facility' and 'Issue', and sum 'Amount on the Quotation' and 'Approved amount'
-                            Mcgroup_df = Centre_df.groupby(['Clinic','Departmental report']).agg({
-                                'Amount on the Quotation': 'sum',
-                                'Approved amount': 'sum'
-                    
-
-                            }).reset_index()
-                            
-                            
-                             # Group by 'Facility' and 'Issue', and sum 'Amount on the Quotation' and 'Approved amount'
-                            McNew_df = Centre_df.groupby(['Clinic']).agg({
-                                'Amount on the Quotation': 'sum',
-                                'Approved amount': 'sum'
-                    
-
-                            }).reset_index()
-                        
-
-                            # Rename columns
-                            McNew_df = McNew_df.rename(columns={
-                                'Amount on the Quotation': 'Total Qouted',
-                                'Approved amount': 'Total Approved',
-                                'Clinic':'Facility',
-                                'Pending':'Pending Value'
-                                
-                                
-                            })
-                            
-                            # Rename columns
-                            Mcgroup_df = Mcgroup_df.rename(columns={
-                                'Amount on the Quotation': 'Total Qouted',
-                                'Approved amount': 'Total Approved',
-                                'Clinic':'Facility',
-                                'Pending':'Pending Value'
-                                
-                                
-                            })
-                            
-                            
-                            Mcgroup_df["Total Qouted"] =Mcgroup_df["Total Qouted"].apply(lambda x: '{:,.0f}'.format(x))
-                            Mcgroup_df["Total Approved"] =Mcgroup_df["Total Approved"].apply(lambda x: '{:,.0f}'.format(x))
-                            
-                            McNew_df["Total Qouted"] = McNew_df["Total Qouted"].apply(lambda x: '{:,.0f}'.format(x))
-                            McNew_df["Total Approved"] = McNew_df["Total Approved"].apply(lambda x: '{:,.0f}'.format(x))
-                            
-                            
-                            selected_option = ui.tabs(options=['All','Capentry', 'Masonry', 'Electrical', 'Plumbing','Utility'], default_value='All', key="kanaries")
-                            
-                            if selected_option and selected_option != "All":
-                            
-                                # Filter the Mcgroup_df DataFrame based on the selected option
-                                filtered_df = Mcgroup_df[Mcgroup_df['Departmental report'] == selected_option]
-                                
-                            else:
-                                
-                                filtered_df = McNew_df
-                                
-                                
-                            container = st.container(border=True, height=185)
-                 
-
-                
+                      
                     with card_container(key="gallery1"):
 
                         
