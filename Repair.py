@@ -249,7 +249,7 @@ def app():
                     }).reset_index()
                     
                     with card_container(key="table2"):
-                        cols = st.columns(2)
+                        cols = st.columns([2,2.5])
                         with cols[0]:
                     
                             # Get unique items in the "Report" column
