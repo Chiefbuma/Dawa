@@ -330,7 +330,7 @@ def app():
                             
                             ui.table(data=Approval_df, maxHeight=300)
                             
-                        with cols[0]:
+                        with cols[1]:
                             
                             st.write(summary_df)
 
