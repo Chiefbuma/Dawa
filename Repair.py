@@ -345,18 +345,10 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName']]
-                        
-                     
-                        Approval = pd.DataFrame(data_df)
-                            
-                        ui.table(data=Approval, maxHeight=300)
+                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver']]
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
-                                            
-                        # Extract just the month name
-                        data_df['MonthName'] = data_df['MonthName'].str.split(';#').str[1]
                     
                         data_df = data_df.rename(columns={
                             'ID': 'Ticket',
@@ -371,6 +363,40 @@ def app():
                         data_df.fillna('', inplace=True)
                         
                         
+                        
+                        # Step 2: Build ag-Grid options
+                        gb = GridOptionsBuilder.from_dataframe(data_df)
+
+                        gridOptions = gb.build()
+
+                        # Step 3: Display the ag-Grid with the Link column
+                        with card_container(key="gallery4"):
+                            response=AgGrid(
+                                data_df,
+                                gridOptions=gridOptions,
+                                enable_enterprise_modules=False,
+                                height=300,
+                                allow_unsafe_jscode=True,  # This is necessary for HTML rendering
+                            )
+                            
+                            with card_container(key="colecnew"):
+            
+                                try:
+                                    
+                                    # Fetch the data from the AgGrid Table
+                                    res = response['data']
+                                    #st.table(res)
+                                    
+                                    df = pd.DataFrame(res)
+                                    
+                                    ui.table(data=df, maxHeight=300)
+            
+                                
+                                except Exception as e:
+                                    st.error(f"Failed to update : {str(e)}")
+                                    st.stop() 
+                            # Step 1: Add a column with HTML links to the DataFrame
+
                            
                 
                     metrics = [
