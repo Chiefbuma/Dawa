@@ -106,7 +106,11 @@ def app():
                     st.error("Connection not available, check connection")
                     st.stop()
                     
+            
+                    
             Main_df = load_new()
+            
+            st.write(Main_df)
             
             Department_df= Main_df[['Departmental report','Approved amount','Admin Approval','Month']]
 
@@ -250,9 +254,6 @@ def app():
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = Telesumamry_df.groupby(['Clinic']).agg({
                         'Requests': 'sum',
-                        'Cordinator': 'count',
-                        'projects': 'count',
-                        'Director': 'sum',
                         'Closed':'sum',
                         'Pending':'sum'
                     }).reset_index()
