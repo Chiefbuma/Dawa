@@ -370,15 +370,28 @@ def app():
                             function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                             """)
                         
-                        # CSS for text wrapping in cells
-                        cell_style = {'whiteSpace': 'normal', 'wordWrap': 'break-word'}
+                       # JavaScript code for the custom cell renderer to wrap text
+                        cell_renderer_wraped = JsCode("""
+                            class TextWrapRenderer {
+                                init(params) {
+                                    this.eGui = document.createElement('div');
+                                    this.eGui.style.whiteSpace = 'normal';
+                                    this.eGui.style.wordWrap = 'break-word';
+                                    this.eGui.innerText = params.value;
+                                }
+
+                                getGui() {
+                                    return this.eGui;
+                                }
+                            }
+                        """)
 
                         
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
                         gb.configure_column('Link', headerName='Link', cellRenderer=cell_renderer_link) # Enable HTML for the Link column
-                        gb.configure_column('Details', headerName='Details', cellStyle=cell_style)  # Enable text wrap for 'Description' column
+                        gb.configure_column('Details', headerName='Details', cellStyle=cell_renderer_wraped)  # Enable text wrap for 'Description' column
                         gridOptions = gb.build()
 
                         # Step 3: Display the ag-Grid with the Link column
