@@ -87,6 +87,7 @@ def app():
                 Trans_df = AllTrans_df[ 
                     (AllTrans_df['Dispatched status']=="Dispatched") &
                     (AllTrans_df['Location'] == location) ]
+
                 #st.write(Trans_df)
             
                 Trans_df['Transfer From']= location
@@ -170,7 +171,7 @@ def app():
                         this.eGui.setAttribute('type', 'checkbox');
 
                         // Default the checkbox to unchecked unless the value is 'Received'
-                        this.eGui.checked = params.value === 'Transferred';
+                        this.eGui.checked = params.value === '';
 
                         this.eGui.addEventListener('click', (event) => {
                             if (event.target.checked) {
@@ -541,8 +542,9 @@ def app():
                                 "Cycle"]]
                 else:
                     
-                   pres_df = df[(df['Transfer Status'] == 'Transferred') & (df['Transaction Type'] != 'Transfer out')]
-                   pres_df=pres_df[[
+                    pres_df = df[df['Transfer Status'] == 'Transferred']
+                    
+                    pres_df=pres_df[[
                                 "id",
                                 "UHID",
                                 "Patientname",
