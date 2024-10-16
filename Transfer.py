@@ -520,8 +520,7 @@ def app():
                 
                 
                 if selected_option == "Transfer In":
-                    
-                    pres_df = df[(df['Received Status'] == 'Received')]
+                    pres_df = df[(df['Received Status'] == 'Received') & (df['Transaction Status'] != 'Transferred')]
                     pres_df=pres_df[[
                                 "id",
                                 "UHID",
