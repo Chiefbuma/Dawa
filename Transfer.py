@@ -520,7 +520,8 @@ def app():
                 
                 
                 if selected_option == "Transfer In":
-                    pres_df = df(df['Received Status'] == 'Received')
+                    
+                    pres_df = df[(df['Received Status'] == 'Received')]
                     pres_df=pres_df[[
                                 "id",
                                 "UHID",
@@ -540,9 +541,7 @@ def app():
                                 "Cycle"]]
                 else:
                     
-                    pres_df = df(df['Transfer Status'] == 'Transferred')
-
-                    
+                    pres_df = df[df['Transfer Status'] == 'Transferred']
                     
                     pres_df=pres_df[[
                                 "id",
