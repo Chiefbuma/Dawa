@@ -541,9 +541,8 @@ def app():
                                 "Cycle"]]
                 else:
                     
-                    pres_df = df[df['Transfer Status'] == 'Transferred']
-                    
-                    pres_df=pres_df[[
+                   pres_df = df[(df['Transfer Status'] == 'Transferred') & (df['Transaction Type'] != 'Transfer out')]
+                   pres_df=pres_df[[
                                 "id",
                                 "UHID",
                                 "Patientname",
