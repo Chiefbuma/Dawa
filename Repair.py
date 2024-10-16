@@ -364,16 +364,22 @@ def app():
                         
                         data_df.fillna('', inplace=True)
                         
+                        # JavaScript code for rendering a clickable link in ag-Grid
+                        cell_renderer = JsCode("""
+                            function(params) {
+                                return `<a href="${params.value}" target="_blank">View</a>`;
+                            }
+                        """)
                         
                         
                        # Step 1: Add a column with HTML links to the DataFrame
                         data_df['Link'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
                         
-                        from st_aggrid import AgGrid, GridOptionsBuilder
+                        from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
-                        gb.configure_column('Link', headerName='Link', cellRenderer='html')  # Enable HTML for the Link column
+                        gb.configure_column('Link', headerName='Link', cellRenderer=cell_renderer) # Enable HTML for the Link column
                         gridOptions = gb.build()
 
                         # Step 3: Display the ag-Grid with the Link column
