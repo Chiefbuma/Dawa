@@ -380,8 +380,8 @@ def app():
                                 hide_index=True
                             , use_container_width=True)
                             
-                            ui.table(data=data_df)
-                    
+                            ui.table(data=data_df, maxHeight=300)
+                     
                     
                     metrics = [
                         {"label": "Total", "value": Total_requests},
