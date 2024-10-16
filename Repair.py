@@ -104,10 +104,8 @@ def app():
                     return df
                 except APIError as e:
                     st.error("Connection not available, check connection")
-                    st.stop()
-                    
-            
-                    
+                    st.stop()       
+           
             Main_df = load_new()
             
             Department_df= Main_df[['Departmental report','Approved amount','Admin Approval','Month']]
@@ -175,12 +173,10 @@ def app():
                     
                 if choice and choice == "Select Month":
                     
-                    All_df = load_new()
                     
-                    Selected_df = All_df[All_df['Month'] < 13]
+                    Selected_df = Main_df[ Main_df['Month'] < 13]
                     approved_main_df = Main_df[Main_df['Title'] != '']
-                    Main_df=All_df
-                    Centre_df=Main_df[(All_df['Admin Approval'] == 'Approved') & (All_df['Month']< 13)]
+                    Centre_df=Main_df[(Main_df['Admin Approval'] == 'Approved') & (Main_df['Month']< 13)]
                     
                     department_All=department_sum_df
                     
@@ -233,7 +229,7 @@ def app():
                     
                     Overall_df['Pending'] = (~Overall_df['Approver'].isin(['FINALCLOSED'])).astype(int)
 
-                    st.write(Overall_df)
+                  
                 
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
