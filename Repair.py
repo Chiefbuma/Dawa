@@ -250,7 +250,7 @@ def app():
                     
                     with card_container(key="table2"):
                         cols = st.columns(2)
-                        with cols[1]:
+                        with cols[0]:
                     
                             # Get unique items in the "Report" column
                             unique_reports = approved_main_df["Report"].unique()
@@ -316,10 +316,10 @@ def app():
                             Pro_rejected_request = Pro_rejected["ID"].nunique()
                                                     
                             data = [
-                                {"Approver": "Director", "Approved.":Dir_Approved_request, "Value":Dir_Approved_value, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
-                                {"Approver": "Projects", "Approved.":Pro_Approved_request, "Value":Pro_Approved_value , "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
-                                {"Approver": "Cordinator", "Approved.":Fac_Approved_request, "Value":Fac_Approved_value, "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
-                                {"Approver": "Operations", "Approved.":Ops_Approved_request, "Value":Ops_Approved_value, "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
+                                {"Approver": "Director", "Approved.":Dir_Approved_request, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
+                                {"Approver": "Projects", "Approved.":Pro_Approved_request,  "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
+                                {"Approver": "Cordinator", "Approved.":Fac_Approved_request,  "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
+                                {"Approver": "Operations", "Approved.":Ops_Approved_request,  "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
                                 # Add more records as needed
                             ]
                             
@@ -330,7 +330,7 @@ def app():
                             
                             ui.table(data=Approval_df, maxHeight=300)
                             
-                        with cols[0]:
+                        with cols[1]:
                             
                             st.write(summary_df)
 
