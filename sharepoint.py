@@ -60,3 +60,30 @@ class SharePoint:
         
         except Exception as e:
             raise e
+        
+class SharePonitLsist:
+    def auth(self):
+        self.authcookie = Office365(
+            SHAREPOINT_URL,
+            username=USERNAME,
+            password=PASSWORD,
+        ).GetCookies()
+        self.site = Site(
+            SHAREPOINT_SITE,
+            version=Version.v365,
+            authcookie=self.authcookie,
+        )
+        return self.site
+
+    def connect_to_list(self, ls_name, columns=None):
+        self.auth_site = self.auth()
+        list_data = self.auth_site.List(list_name=ls_name).GetListItems()
+        
+        if columns:
+            filtered_list_data = [
+                {col: item[col] for col in columns if col in item}
+                for item in list_data
+            ]
+            return filtered_list_data
+        else:
+            return list_data
