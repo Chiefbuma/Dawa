@@ -243,7 +243,7 @@ def app():
                     
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = Overall_df.groupby(['Clinic']).agg({
-                        'Requests': 'sum',
+                        'Requests': 'count',
                         'Closed':'sum',
                         'Pending':'sum'
                     }).reset_index()
