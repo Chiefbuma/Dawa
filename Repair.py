@@ -383,7 +383,6 @@ def app():
                                 gridOptions=gridOptions,
                                 enable_enterprise_modules=False,
                                 height=300,
-                                theme="light",
                                 allow_unsafe_jscode=True,  # This is necessary for HTML rendering
                             )
                             
