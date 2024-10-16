@@ -366,36 +366,32 @@ def app():
                         
                         
                         
+                       # Step 1: Add a column with HTML links to the DataFrame
+                        data_df['Link'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
                         
-                         # Display the filtered DataFrame using st.data_editor
+                        from st_aggrid import AgGrid, GridOptionsBuilder
+                        
+                        # Step 2: Build ag-Grid options
+                        gb = GridOptionsBuilder.from_dataframe(data_df)
+                        gb.configure_column('Link', headerName='Link', cellRenderer='html')  # Enable HTML for the Link column
+                        gridOptions = gb.build()
+
+                        # Step 3: Display the ag-Grid with the Link column
                         with card_container(key="gallery4"):
-                            st.data_editor(
+                            AgGrid(
                                 data_df,
-                                column_config={
-                                    "Link": st.column_config.LinkColumn(
-                                        "Link",
-                                        display_text="View"
-                                    )
-                                },
-                                hide_index=True
-                            , use_container_width=True)
+                                gridOptions=gridOptions,
+                                enable_enterprise_modules=False,
+                                height=300,
+                                theme="light",
+                                allow_unsafe_jscode=True,  # This is necessary for HTML rendering
+                            )
                             
                             
                             # Step 1: Add a column with HTML links to the DataFrame
 
-                            
-                             #Step 1: Add a column with HTML links to the DataFrame
-                            data_df['LinkHTML'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
-
-                            
-                                                # Step 3: Display the table with the LinkHTML column
-                            ui.table(
-                                data=data_df[['LinkHTML']],  # Only display the link column
-                                maxHeight=300,
-                                allowHtml=True  # Allow HTML rendering in the table
-                            )
-                     
-                    
+                           
+                
                     metrics = [
                         {"label": "Total", "value": Total_requests},
                         {"label": "Closed", "value": closed_request},
