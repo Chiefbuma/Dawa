@@ -12,7 +12,7 @@ import streamlit_option_menu as option_menu
 import streamlit_shadcn_ui as ui
 from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
-from sharepoint import SharePoint
+from sharepoint2 import Share_Point
 from postgrest import APIError
 from IPython.display import HTML
 import logging
@@ -93,7 +93,7 @@ def app():
                 ]
                 
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Maintenance Report', columns=columns)
+                    clients = Share_Point().connect_to_list(ls_name='Maintenance Report', columns=columns)
                     df = pd.DataFrame(clients)
                     
                     # Ensure all specified columns are in the DataFrame, even if empty
@@ -364,7 +364,7 @@ def app():
                         st.markdown('<div style="height: 0px; overflow-y: scroll;">', unsafe_allow_html=True)
                         @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                         def load_new():
-                                New = SharePoint().connect_to_list(ls_name='Maintenance Report')
+                                New = Share_Point().connect_to_list(ls_name='Maintenance Report')
                                 return pd.DataFrame(  New )
                             
                         df_main=load_new()
