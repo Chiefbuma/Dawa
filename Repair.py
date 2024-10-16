@@ -207,7 +207,7 @@ def app():
 
                 if Main_df is not None:
                     cols = st.columns(4)
-                    with cols[0]:
+                    with cols[1]:
                         ui.card(title="Total Request", content=Total_requests, key="Revcard10").render()
                     with cols[1]:
                         ui.card(title="Closed Request", content=closed_request , key="Revcard11").render()
@@ -330,7 +330,7 @@ def app():
                             
                             ui.table(data=Approval_df, maxHeight=300)
                             
-                        with cols[1]:
+                        with cols[0]:
                             
                             st.write(summary_df)
 
