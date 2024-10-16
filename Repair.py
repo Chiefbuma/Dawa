@@ -216,10 +216,7 @@ def app():
                     with cols[3]:
                         ui.card(title="Approved Value:", content=Dir_Approved_value, key="Revcard13").render() 
                                         
-                    
-                container = st.container(border=True, height=500)
-                
-                with container:
+
                     
                     @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                     def load_new():
