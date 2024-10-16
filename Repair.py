@@ -348,9 +348,9 @@ def app():
                         data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName']]
                         
                      
-              
+                        Approval = pd.DataFrame(data_df)
                             
-                        ui.table(data=df_main, maxHeight=300)
+                        ui.table(data=Approval, maxHeight=300)
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
