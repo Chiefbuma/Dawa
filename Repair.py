@@ -331,14 +331,9 @@ def app():
 
                         
                         st.markdown('<div style="height: 0px; overflow-y: scroll;">', unsafe_allow_html=True)
-                        @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
-                        def load_new():
-                                New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
-                                return pd.DataFrame(  New )
-                            
-                        df_main=load_new()
+                
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Department','Amount on the Quotation','MainStatus','Approver','MonthName','LinkEdit']]
+                        data_df= Main_df[['ID','Date of report','Clinic','Department','Amount on the Quotation','MainStatus','Approver','MonthName','LinkEdit']]
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
