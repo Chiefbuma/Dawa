@@ -227,16 +227,16 @@ def app():
                         
                     df_check=load_new()
                     
-                    Overall_df= df_check[['Clinic','Departmental report','Title','Approver']]
+                    Overall_df= df_check[['Clinic','Departmental report','Title','Admin Approval']]
                     
                     Overall_df['Requests'] = int(Overall_df['Title'].nunique())
                     
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Overall_df['Closed'] = Overall_df['Approver'].isin(['FINALCLOSED']).astype(int)
+                    Overall_df['Approved'] = Overall_df['Admin Approval'].isin(['Approved']).astype(int)
                     
-                    Overall_df['Pending'] = (~Overall_df['Approver'].isin(['FINALCLOSED'])).astype(int)
+                    Overall_df['Pending'] = (~Overall_df['Admin Approval'].isin(['Approved'])).astype(int)
 
-                  
+                
                 
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
@@ -244,7 +244,7 @@ def app():
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = Overall_df.groupby(['Clinic']).agg({
                         'Requests': 'count',
-                        'Closed':'sum',
+                        'Approved':'sum',
                         'Pending':'sum'
                     }).reset_index()
                     
