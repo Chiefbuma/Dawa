@@ -228,15 +228,7 @@ def app():
                     
                     Overall_df['Requests'] = int(Overall_df['Title'].nunique())
                       
-                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Overall_df['Cordinator'] = Overall_df['Facility Approval'].isin(['Approved']).astype(int)
-                    
-                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Overall_df['projects'] = Overall_df['Projects Approval'].isin(['Approved']).astype(int)
-                    
-                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
-                    Overall_df['Director'] = Overall_df['Admin Approval'].isin(['Approved']).astype(int)
-                    
+                
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     Overall_df['Closed'] = Overall_df['Approver'].isin(['FINALCLOSED']).astype(int)
                     
