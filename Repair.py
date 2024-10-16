@@ -369,23 +369,21 @@ def app():
                         cell_renderer_link =  JsCode("""
                             function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                             """)
-                        
                        # JavaScript code for the custom cell renderer to wrap text
                         cell_renderer_wraped = JsCode("""
-                            class TextWrapRenderer {
-                                init(params) {
-                                    this.eGui = document.createElement('div');
-                                    this.eGui.style.whiteSpace = 'normal';
-                                    this.eGui.style.wordWrap = 'break-word';
-                                    this.eGui.innerText = params.value;
-                                }
+                            function TextWrapRenderer() {}
+                            
+                            TextWrapRenderer.prototype.init = function(params) {
+                                this.eGui = document.createElement('div');
+                                this.eGui.style.whiteSpace = 'normal';
+                                this.eGui.style.wordWrap = 'break-word';
+                                this.eGui.innerText = params.value;
+                            };
 
-                                getGui() {
-                                    return this.eGui;
-                                }
-                            }
+                            TextWrapRenderer.prototype.getGui = function() {
+                                return this.eGui;
+                            };
                         """)
-
                         
                         
                         # Step 2: Build ag-Grid options
