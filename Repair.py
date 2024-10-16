@@ -338,7 +338,10 @@ def app():
                             Approval_df = pd.DataFrame(data)
                             
                             ui.table(data=Approval_df, maxHeight=300)
-
+                            
+                        with cols[0]:
+                            
+                            ui.table(data=summary_df, maxHeight=300)
                            
                           
                     with card_container(key="gallery1"):
