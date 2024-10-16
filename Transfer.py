@@ -170,14 +170,14 @@ def app():
                         this.eGui = document.createElement('input');
                         this.eGui.setAttribute('type', 'checkbox');
 
-                        // Default the checkbox to unchecked unless the value is 'Received'
-                        this.eGui.checked = params.value === '';
+                        // Default the checkbox to unchecked (i.e., false) unless the value is 'Transferred'
+                        this.eGui.checked = params.value === 'Transferred';
 
                         this.eGui.addEventListener('click', (event) => {
                             if (event.target.checked) {
                                 params.setValue('Transferred');
                             } else {
-                                params.setValue('');
+                                params.setValue(''); // Set to blank when unchecked
                             }
                         });
                     }
@@ -191,7 +191,8 @@ def app():
                         this.eGui.checked = params.value === 'Transferred';
                     }
                 }
-            """)
+            """);
+
 
             
             textarea_renderer = JsCode("""
