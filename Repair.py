@@ -344,7 +344,7 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Department','Amount on the Quotation','MainStatus','Approver','MonthName','LinkEdit']]
+                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName','LinkEdit']]
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
@@ -353,54 +353,24 @@ def app():
                         data_df['MonthName'] = data_df['MonthName'].str.split(';#').str[1]
                     
                         data_df = data_df.rename(columns={
-                            'ID': 'Tkt',
+                            'ID': 'Ticket',
                             'Date of report':'Date',
                             'Clinic': 'Facility',
-                            'Department':'Dep',
-                            'Amount on the Quotation': 'Amount',
                             'MainStatus': 'Status',
-                            'MonthName':'Month',
-                            'Approver': 'Approver',
+                            'Approver': 'Pending With',
                             'LinkEdit': 'Link'
                         })
                         # Fill NaN/NA values with an empty string
                         
                         data_df.fillna('', inplace=True)
                         
-                        # Define the columns to filter
-                        filter_columns = ["Tkt", "Approver", "Facility","Issue","Status","Month"]
-
-                        # Create five columnss for arranging widgets horizontally
-                        col1, col2, col3, col4, col5, col6 = st.columns(6)
                         
                         
-                        # Create a dictionary to store filter values
-                        filters = {column: '' for column in filter_columns}
                         
-
-                        # Create text input widgets for each filter column and arrange them horizontally
-                        with col1:
-                            filters[filter_columns[0]] = st.text_input(f"Filter {filter_columns[0]}", filters[filter_columns[0]])
-                        with col2:
-                            filters[filter_columns[1]] = st.text_input(f"Filter {filter_columns[1]}", filters[filter_columns[1]])
-                        with col3:
-                            filters[filter_columns[2]] = st.text_input(f"Filter {filter_columns[2]}", filters[filter_columns[2]])
-                        with col4:
-                            filters[filter_columns[3]] = st.text_input(f"Filter {filter_columns[3]}", filters[filter_columns[3]])
-                        with col5:
-                            filters[filter_columns[4]] = st.text_input(f"Filter {filter_columns[4]}", filters[filter_columns[4]])
-                        with col6:
-                            filters[filter_columns[5]] = st.text_input(f"Filter {filter_columns[5]}", filters[filter_columns[5]])
-                        # Apply filters to the DataFrame
-                        filtered_df = data_df
-                        for column, filter_value in filters.items():
-                            if filter_value:
-                                filtered_df = filtered_df[filtered_df[column].str.contains(filter_value, case=False)]
-
-                        # Display the filtered DataFrame using st.data_editor
+                         # Display the filtered DataFrame using st.data_editor
                         with card_container(key="gallery4"):
                             st.data_editor(
-                                filtered_df,
+                                data_df,
                                 column_config={
                                     "Link": st.column_config.LinkColumn(
                                         "Link",
@@ -409,8 +379,8 @@ def app():
                                 },
                                 hide_index=True
                             , use_container_width=True)
-                                            
-                                                       
+                            
+                            ui.table(data=data_df)
                     
                     
                     metrics = [
