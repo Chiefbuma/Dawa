@@ -207,7 +207,7 @@ def app():
 
                 if Main_df is not None:
                     cols = st.columns(4)
-                    with cols[1]:
+                    with cols[0]:
                         ui.card(title="Total Request", content=Total_requests, key="Revcard10").render()
                     with cols[1]:
                         ui.card(title="Closed Request", content=closed_request , key="Revcard11").render()
@@ -249,8 +249,8 @@ def app():
                     }).reset_index()
                     
                     with card_container(key="table2"):
-                        cols = st.columns([2,2.5])
-                        with cols[0]:
+                        cols = st.columns(2)
+                        with cols[1]:
                     
                             # Get unique items in the "Report" column
                             unique_reports = approved_main_df["Report"].unique()
@@ -319,7 +319,7 @@ def app():
                                 {"Approver": "Director", "Approved.":Dir_Approved_request, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
                                 {"Approver": "Projects", "Approved.":Pro_Approved_request,  "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
                                 {"Approver": "Cordinator", "Approved.":Fac_Approved_request,  "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
-                                {"Approver": "Operations", "Approved.":Ops_Approved_request,  "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
+                                {"Approver": "Operations", "Approved.":Ops_Approved_request, "Value":Ops_Approved_value, "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
                                 # Add more records as needed
                             ]
                             
@@ -330,7 +330,7 @@ def app():
                             
                             ui.table(data=Approval_df, maxHeight=300)
                             
-                        with cols[1]:
+                        with cols[0]:
                             
                             st.write(summary_df)
 
