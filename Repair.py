@@ -350,8 +350,7 @@ def app():
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
                         
-                        # Now convert to string format (YYYY-MM-DD)
-                        data_df['Date of report'] = data_df['Date of report'].dt.strftime('%Y-%m-%d')
+                        
 
                         
                         
@@ -368,6 +367,9 @@ def app():
                         
                         data_df.fillna('', inplace=True)
                         
+                        
+                        # Now convert to string format (YYYY-MM-DD)
+                        data_df['Date'] = data_df['Date'].strftime("%d/%m/%Y")
                         
                         
                         # Step 2: Build ag-Grid options
