@@ -366,18 +366,19 @@ def app():
                         data_df.fillna('', inplace=True)
                         
                         # JavaScript code for rendering a clickable link in ag-Grid
-                        cell_renderer = JsCode("""
-                            function(params) {
-                                return `<a href="${params.value}" target="_blank">View</a>`;
-                            }
-                        """)
+                        cell_renderer_link =  JsCode("""
+                            function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+                            """)
                         
-                      
+                        # CSS for text wrapping in cells
+                        cell_style = {'whiteSpace': 'normal', 'wordWrap': 'break-word'}
+
                         
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
-                        gb.configure_column('Link', headerName='Link', cellRenderer=cell_renderer) # Enable HTML for the Link column
+                        gb.configure_column('Link', headerName='Link', cellRenderer=cell_renderer_link) # Enable HTML for the Link column
+                        gb.configure_column('Details', headerName='Details', cellStyle=cell_style)  # Enable text wrap for 'Description' column
                         gridOptions = gb.build()
 
                         # Step 3: Display the ag-Grid with the Link column
