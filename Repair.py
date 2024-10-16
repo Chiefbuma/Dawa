@@ -218,6 +218,45 @@ def app():
                     with cols[3]:
                         ui.card(title="Approved Value:", content=Dir_Approved_value, key="Revcard13").render() 
                                         
+                    
+                container = st.container(border=True, height=500)
+                with container:
+                    Main_df['Requests'] = int(Main_df['Title'].nunique())
+                      
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    Main_df['Cordinator'] = Main_df['Facility Approval'].isin(['Approved']).astype(int)
+                    
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    Main_df['projects'] = Main_df['Projects Approval'].isin(['Approved']).astype(int)
+                    
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    Main_df['Director'] = Main_df['Admin Approval'].isin(['Approved']).astype(int)
+                    
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    Main_df['Closed'] = Main_df['Approver'].isin(['FINALCLOSED']).astype(int)
+                    
+                    Main_df['Pending'] = (~Main_df['Approver'].isin(['FINALCLOSED'])).astype(int)
+
+                    
+                
+                    
+                    # Create a new column that indicates whether the CollectionStatus is 'Fully'
+                    #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
+                    
+                    
+                    Telesumamry_df = Main_df
+                       
+            
+                    #Group by 'Cycle' and count the occurrences for each status
+                    summary_df = Telesumamry_df.groupby(['Clinic']).agg({
+                        'Requests': 'sum',
+                        'Cordinator': 'count',
+                        'projects': 'count',
+                        'Director': 'sum',
+                        'Closed':'sum',
+                        'Pending':'sum'
+                    }).reset_index()
+                    
                     with card_container(key="table2"):
                         cols = st.columns(2)
                         with cols[1]:
@@ -297,67 +336,11 @@ def app():
                             
                             # Creating a DataFrame
                             Approval_df = pd.DataFrame(data)
+                            
+                            ui.table(data=Approval_df, maxHeight=300)
 
                            
-                            with card_container(key="table1"):
-                                with card_container(key="summary"):
-            # Define the layout using `ui.input` for inputs and `st.write` for labels
-                                    colz = st.columns([1,2,1])
-                                    with colz[1]:
-                                      st.markdown("### Maintenance Request")
-                                    # Column layout for Patient Name
-                                    cola = st.columns([2, 6,1])
-                                    with cola[0]:
-                                        st.write("**Department:**")
-                                    with cola[1]:
-                                        Department = ui.input(key="Dep")
-                                    # Column layout for UHID
-                                    colb = st.columns([2, 6,1])
-                                    with colb[0]:
-                                        st.write("**Report Type:**")
-                                    with colb[1]:
-                                        Report = ui.input(key="report")
-                                    # Column layout for Modality
-                                    colc = st.columns([2, 6,1])
-                                    with colc[0]:
-                                        st.write("**Item:**")
-                                    with colc[1]:
-                                        Item = ui.input(key="item")
-
-                                    # Column layout for Procedure
-                                    cold = st.columns([2, 6,1])
-                                    with cold[0]:
-                                        st.write("**Description of works:**")
-                                    with cold[1]:
-                                        description = ui.input(key="works")
-
-                                    # Column layout for Referred By
-                                    cole = st.columns([2, 6,1])
-                                    with cole[0]:
-                                        st.write("**Labour:**")
-                                    with cole[1]:
-                                        Labor = ui.input(key="Labor")
-
-                                    # Column layout for Facility
-                                    colf = st.columns([2, 6,1])
-                                    with colf[0]:
-                                        st.write("**Total Amount:**")
-                                    with colf[1]:
-                                        Total = ui.input(key="Total")
-
-                                    # Column layout for MPESA No
-                                    colg = st.columns([2, 6,1])
-                                    with colg[0]:
-                                        st.write("**MPESA Number.:**")
-                                    with colg[1]:
-                                        MPESA_no = ui.input(key="MPESA_no")
-                                    colj=st.columns(7)
-                                    with colj[3]:
-                                            ui_result = ui.button("Submit", key="btn2")  
-                                            if ui_result: 
-                                              with st.spinner('Wait! Reloading view...'):
-                                                st.cache_data.clear()
-                      
+                          
                     with card_container(key="gallery1"):
 
                         
