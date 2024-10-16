@@ -372,10 +372,7 @@ def app():
                             }
                         """)
                         
-                        
-                       # Step 1: Add a column with HTML links to the DataFrame
-                        data_df['Link'] = data_df['Link'].apply(lambda x: f'<a href="{x}" target="_blank">View</a>')
-                        
+                      
                         
                         
                         # Step 2: Build ag-Grid options
