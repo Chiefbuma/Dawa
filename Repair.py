@@ -345,7 +345,7 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName','LinkEdit']]
+                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver','MonthName']]
                         
                         # Convert 'bill_date' to datetime type
                         data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
@@ -358,48 +358,14 @@ def app():
                             'Date of report':'Date',
                             'Clinic': 'Facility',
                             'MainStatus': 'Status',
-                            'Approver': 'Pending With',
-                            'LinkEdit': 'Link'
+                            'Approver': 'Pending With'
+                            
                         })
                         # Fill NaN/NA values with an empty string
                         
                         data_df.fillna('', inplace=True)
                         
-                        # JavaScript code for rendering a clickable link in ag-Grid
-                        cell_renderer_link =  JsCode("""
-                            function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
-                            """)
-                       ## JavaScript code for the custom cell renderer to wrap text
-                        cell_renderer_wraped = JsCode("""
-                            function(params) {
-                                var eDiv = document.createElement('div');
-                                eDiv.style.whiteSpace = 'normal';
-                                eDiv.style.wordWrap = 'break-word';
-                                eDiv.innerText = params.value;
-                                return eDiv;
-                            }
-                        """)
-                        
-                        
-                        # Step 2: Build ag-Grid options
-                        gb = GridOptionsBuilder.from_dataframe(data_df)
-                        gb.configure_column('Link', headerName='Link', cellRenderer=cell_renderer_link) # Enable HTML for the Link column
-                        gb.configure_column('Details', headerName='Details', cellStyle=cell_renderer_wraped)  # Enable text wrap for 'Description' column
-                        gridOptions = gb.build()
-
-                        # Step 3: Display the ag-Grid with the Link column
-                        with card_container(key="gallery4"):
-                            AgGrid(
-                                data_df,
-                                gridOptions=gridOptions,
-                                enable_enterprise_modules=False,
-                                height=300,
-                                allow_unsafe_jscode=True,  # This is necessary for HTML rendering
-                            )
-                            
-                            
-                            # Step 1: Add a column with HTML links to the DataFrame
-
+                        ui.table(data=data_df)
                            
                 
                     metrics = [
