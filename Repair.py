@@ -369,20 +369,15 @@ def app():
                         cell_renderer_link =  JsCode("""
                             function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                             """)
-                       # JavaScript code for the custom cell renderer to wrap text
+                       ## JavaScript code for the custom cell renderer to wrap text
                         cell_renderer_wraped = JsCode("""
-                            function TextWrapRenderer() {}
-                            
-                            TextWrapRenderer.prototype.init = function(params) {
-                                this.eGui = document.createElement('div');
-                                this.eGui.style.whiteSpace = 'normal';
-                                this.eGui.style.wordWrap = 'break-word';
-                                this.eGui.innerText = params.value;
-                            };
-
-                            TextWrapRenderer.prototype.getGui = function() {
-                                return this.eGui;
-                            };
+                            function(params) {
+                                var eDiv = document.createElement('div');
+                                eDiv.style.whiteSpace = 'normal';
+                                eDiv.style.wordWrap = 'break-word';
+                                eDiv.innerText = params.value;
+                                return eDiv;
+                            }
                         """)
                         
                         
