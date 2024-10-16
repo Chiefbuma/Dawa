@@ -319,7 +319,7 @@ def app():
                                 {"Approver": "Director", "Approved.":Dir_Approved_request, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
                                 {"Approver": "Projects", "Approved.":Pro_Approved_request,  "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
                                 {"Approver": "Cordinator", "Approved.":Fac_Approved_request,  "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
-                                {"Approver": "Operations", "Approved.":Ops_Approved_request, "Value":Ops_Approved_value, "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
+                                {"Approver": "Operations", "Approved.":Ops_Approved_request,  "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
                                 # Add more records as needed
                             ]
                             
