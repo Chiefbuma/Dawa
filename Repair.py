@@ -227,8 +227,7 @@ def app():
                     Overall_df= Main_df[['Clinic','Departmental report','Title','Approver']]
                     
                     Overall_df['Requests'] = int(Overall_df['Title'].nunique())
-                      
-                
+                    
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     Overall_df['Closed'] = Overall_df['Approver'].isin(['FINALCLOSED']).astype(int)
                     
@@ -236,14 +235,9 @@ def app():
 
                     st.write(Overall_df)
                 
-                    
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
                     
-                    
-                
-                       
-            
                     #Group by 'Cycle' and count the occurrences for each status
                     summary_df = Overall_df.groupby(['Clinic']).agg({
                         'Requests': 'sum',
