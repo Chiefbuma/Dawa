@@ -218,6 +218,7 @@ def app():
                                         
                     
                 container = st.container(border=True, height=500)
+                
                 with container:
                     
                     @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
@@ -248,93 +249,92 @@ def app():
                         'Pending':'sum'
                     }).reset_index()
                     
-                    with card_container(key="table2"):
-                        cols = st.columns(2)
-                        with cols[1]:
-                    
-                            # Get unique items in the "Report" column
-                            unique_reports = approved_main_df["Report"].unique()
+                
+                    cols = st.columns(2)
+                    with cols[1]:
+                
+                        # Get unique items in the "Report" column
+                        unique_reports = approved_main_df["Report"].unique()
 
-                            # Create an empty dictionary to store the sum of approved amounts for each unique report
-                            report_sum = {}
+                        # Create an empty dictionary to store the sum of approved amounts for each unique report
+                        report_sum = {}
 
-                            # Iterate over each unique report and calculate the sum of approved amounts
-                            for report in unique_reports:
-                                sum_approved_amount = approved_main_df[approved_main_df["Report"] == report]["Approved amount"].sum()
-                                report_sum[report] = sum_approved_amount
+                        # Iterate over each unique report and calculate the sum of approved amounts
+                        for report in unique_reports:
+                            sum_approved_amount = approved_main_df[approved_main_df["Report"] == report]["Approved amount"].sum()
+                            report_sum[report] = sum_approved_amount
 
-                            # Convert the dictionary to a DataFrame for easier visualization
-                            report_sum_df = pd.DataFrame(list(report_sum.items()), columns=["Item", "Cost"])
-                            
-                            #ALL SUMMARY
-                            Finance_Approved = Selected_df[ Selected_df["Biomedical Head Approval"] == "Approved"]
-                            Finance_Approved_value = '{:,.0f}'.format(Finance_Approved["Approved amount"].sum())
-                            Finance_Approved_request =  Finance_Approved["ID"].nunique()
-                            
-                            Finance_pending =  Selected_df[( Selected_df["Biomedical Head Approval"].isnull()) & (Selected_df["Projects Approval"] == "Approved")]
-                            Fin_pending_request = Finance_pending["ID"].nunique()
-                           
-                           
-                            Director_Approved = Selected_df[ Selected_df["Admin Approval"] == "Approved"]
-                            Dir_Approved_value = '{:,.0f}'.format(Director_Approved["Approved amount"].sum())
-                            Dir_Approved_request = Director_Approved["ID"].nunique()
+                        # Convert the dictionary to a DataFrame for easier visualization
+                        report_sum_df = pd.DataFrame(list(report_sum.items()), columns=["Item", "Cost"])
+                        
+                        #ALL SUMMARY
+                        Finance_Approved = Selected_df[ Selected_df["Biomedical Head Approval"] == "Approved"]
+                        Finance_Approved_value = '{:,.0f}'.format(Finance_Approved["Approved amount"].sum())
+                        Finance_Approved_request =  Finance_Approved["ID"].nunique()
+                        
+                        Finance_pending =  Selected_df[( Selected_df["Biomedical Head Approval"].isnull()) & (Selected_df["Projects Approval"] == "Approved")]
+                        Fin_pending_request = Finance_pending["ID"].nunique()
+                        
+                        
+                        Director_Approved = Selected_df[ Selected_df["Admin Approval"] == "Approved"]
+                        Dir_Approved_value = '{:,.0f}'.format(Director_Approved["Approved amount"].sum())
+                        Dir_Approved_request = Director_Approved["ID"].nunique()
 
-                            Director_pending =  Selected_df[( Selected_df["Admin Approval"].isnull()) & (Selected_df["Projects Approval"] == "Approved")]
-                            Dir_pending_request = Director_pending["ID"].nunique()
+                        Director_pending =  Selected_df[( Selected_df["Admin Approval"].isnull()) & (Selected_df["Projects Approval"] == "Approved")]
+                        Dir_pending_request = Director_pending["ID"].nunique()
 
-                            Director_Rejected = Selected_df[ Selected_df["Admin Approval"] == "Rejected"]
-                            Dir_rejected_request = Director_Rejected["ID"].nunique()
+                        Director_Rejected = Selected_df[ Selected_df["Admin Approval"] == "Rejected"]
+                        Dir_rejected_request = Director_Rejected["ID"].nunique()
 
-                            Ops_Approved =  Selected_df[ Selected_df["RIT Approval"] == "Approved"]
-                            Ops_Approved_value = '{:,.0f}'.format(Ops_Approved["Approved amount"].sum())
-                            Ops_Approved_request = Ops_Approved["ID"].nunique()
+                        Ops_Approved =  Selected_df[ Selected_df["RIT Approval"] == "Approved"]
+                        Ops_Approved_value = '{:,.0f}'.format(Ops_Approved["Approved amount"].sum())
+                        Ops_Approved_request = Ops_Approved["ID"].nunique()
 
-                            Ops_pending =  Selected_df[Selected_df["RIT Approval"].isnull()]
-                            Ops_pending_request = Ops_pending["ID"].nunique()
+                        Ops_pending =  Selected_df[Selected_df["RIT Approval"].isnull()]
+                        Ops_pending_request = Ops_pending["ID"].nunique()
 
-                            Ops_rejected =  Selected_df[Selected_df["RIT Approval"] == "Rejected"]
-                            Ops_rejected_request = Ops_rejected["ID"].nunique()
+                        Ops_rejected =  Selected_df[Selected_df["RIT Approval"] == "Rejected"]
+                        Ops_rejected_request = Ops_rejected["ID"].nunique()
 
-                            Fac_Approved =  Selected_df[Selected_df["Facility Approval"] == "Approved"]
-                            Fac_Approved_value = '{:,.0f}'.format(Fac_Approved["Approved amount"].sum())
-                            Fac_Approved_request = Fac_Approved["ID"].nunique()
+                        Fac_Approved =  Selected_df[Selected_df["Facility Approval"] == "Approved"]
+                        Fac_Approved_value = '{:,.0f}'.format(Fac_Approved["Approved amount"].sum())
+                        Fac_Approved_request = Fac_Approved["ID"].nunique()
 
-                            Fac_pending =  Selected_df[( Selected_df["Facility Approval"].isnull()) & ( Selected_df["RIT Approval"] == "Approved")]
-                            Fac_pending_request = Fac_pending["ID"].nunique()
+                        Fac_pending =  Selected_df[( Selected_df["Facility Approval"].isnull()) & ( Selected_df["RIT Approval"] == "Approved")]
+                        Fac_pending_request = Fac_pending["ID"].nunique()
 
-                            Fac_rejected =  Selected_df[ Selected_df["Facility Approval"] == "Rejected"]
-                            Fac_rejected_request = Fac_rejected["ID"].nunique()
+                        Fac_rejected =  Selected_df[ Selected_df["Facility Approval"] == "Rejected"]
+                        Fac_rejected_request = Fac_rejected["ID"].nunique()
 
-                            Pro_Approved = Selected_df[Selected_df["Projects Approval"] == "Approved"]
-                            Pro_Approved_value = '{:,.0f}'.format(Pro_Approved["Approved amount"].sum())
-                            Pro_Approved_request = Pro_Approved["ID"].nunique()
+                        Pro_Approved = Selected_df[Selected_df["Projects Approval"] == "Approved"]
+                        Pro_Approved_value = '{:,.0f}'.format(Pro_Approved["Approved amount"].sum())
+                        Pro_Approved_request = Pro_Approved["ID"].nunique()
 
-                            Pro_pending =  Selected_df[( Selected_df["Projects Approval"].isnull()) & (Selected_df["Facility Approval"] == "Approved")]
-                            Pro_pending_request = Pro_pending["ID"].nunique()
+                        Pro_pending =  Selected_df[( Selected_df["Projects Approval"].isnull()) & (Selected_df["Facility Approval"] == "Approved")]
+                        Pro_pending_request = Pro_pending["ID"].nunique()
 
-                            Pro_rejected = Selected_df[Selected_df["Projects Approval"] == "Rejected"]
-                            Pro_rejected_request = Pro_rejected["ID"].nunique()
-                                                    
-                            data = [
-                                {"Approver": "Director", "Approved.":Dir_Approved_request, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
-                                {"Approver": "Projects", "Approved.":Pro_Approved_request,  "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
-                                {"Approver": "Cordinator", "Approved.":Fac_Approved_request,  "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
-                                {"Approver": "Operations", "Approved.":Ops_Approved_request,  "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
-                                # Add more records as needed
-                            ]
-                            
-                            #st.write(New_df)
-                            
-                            # Creating a DataFrame
-                            Approval_df = pd.DataFrame(data)
-                            
-                            ui.table(data=Approval_df, maxHeight=300)
-                            
-                        with cols[0]:
-                            
-                            with card_container(key="gallery96"):
-                            
-                                st.write(summary_df)
+                        Pro_rejected = Selected_df[Selected_df["Projects Approval"] == "Rejected"]
+                        Pro_rejected_request = Pro_rejected["ID"].nunique()
+                                                
+                        data = [
+                            {"Approver": "Director", "Approved.":Dir_Approved_request, "Pending": Dir_pending_request,"Rejected": Dir_rejected_request },
+                            {"Approver": "Projects", "Approved.":Pro_Approved_request,  "Pending":Pro_pending_request,"Rejected": Pro_rejected_request },
+                            {"Approver": "Cordinator", "Approved.":Fac_Approved_request,  "Pending":Fac_pending_request,"Rejected": Fac_rejected_request },
+                            {"Approver": "Operations", "Approved.":Ops_Approved_request,  "Pending":Ops_pending_request ,"Rejected": Ops_rejected_request}
+                            # Add more records as needed
+                        ]
+                        
+                        #st.write(New_df)
+                        
+                        # Creating a DataFrame
+                        Approval_df = pd.DataFrame(data)
+                        
+                        ui.table(data=Approval_df, maxHeight=300)
+                        
+                    with cols[0]:
+                        
+                        
+                        st.write(summary_df)
 
                     with card_container(key="gallery1"):
 
