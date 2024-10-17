@@ -345,8 +345,10 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Clinic','Details','MainStatus','Approver']]
+                        data_df= df_main[['ID','Date of report','Clinic','Details','Approver','MainStatus']]
                         
+                        #Now convert to string format (YYYY-MM-DD)
+                        data_df['Date of report'] = data_df['Date of report'].strftime("%d/%m/%Y")
                         
 
                         
@@ -356,16 +358,15 @@ def app():
                             'ID': 'Ticket',
                             'Date of report':'Date',
                             'Clinic': 'Facility',
-                            'MainStatus': 'Status',
-                            'Approver': 'Pending With'
-                            
+                            'Approver': 'Pending With',
+                            'MainStatus': 'Status'
                         })
                         # Fill NaN/NA values with an empty string
                         
                         data_df.fillna('', inplace=True)
                         
                         
-                
+                        
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
