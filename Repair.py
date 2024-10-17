@@ -12,7 +12,8 @@ import streamlit_option_menu as option_menu
 import streamlit_shadcn_ui as ui
 from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
-from sharepoint import SharePoint,SharePonitLsist
+from sharepoint import SharePoint
+from sharepoint import SharePonitLsist
 from postgrest import APIError
 from IPython.display import HTML
 import logs,conection
