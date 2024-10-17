@@ -39,7 +39,7 @@ def app():
         if st.session_state.is_authenticated:
             
            # Define the cache decorator
-            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False)
+          
             def load_new():
                 columns = [
                     "Date of report",
