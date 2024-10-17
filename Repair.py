@@ -15,7 +15,7 @@ from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
 from sharepoint import SharePoint
 from postgrest import APIError
 from IPython.display import HTML
-import main
+import logs,conection
 from streamlit_dynamic_filters import DynamicFilters
 
 
