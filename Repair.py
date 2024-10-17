@@ -347,12 +347,14 @@ def app():
                         
                         data_df= df_main[['ID','Date of report','Clinic','Details','Approver','MainStatus']]
                         
-                        #Now convert to string format (YYYY-MM-DD)
-                        data_df['Date of report'] = data_df['Date of report'].strftime("%d/%m/%Y")
-                        
+                        import pandas as pd
 
-                        
-                        
+                        # Ensure the 'Date of report' column is in datetime format
+                        data_df['Date of report'] = pd.to_datetime(data_df['Date of report'], errors='coerce')
+
+                        # Format the 'Date of report' column to 'dd/mm/yyyy'
+                        data_df['Date of report'] = data_df['Date of report'].dt.strftime("%d/%m/%Y")
+
                         
                         data_df = data_df.rename(columns={
                             'ID': 'Ticket',
