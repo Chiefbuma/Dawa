@@ -345,10 +345,7 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Details','MainStatus','Approver']]
-                        
-                        # Convert 'bill_date' to datetime type
-                        data_df['Date of report'] = pd.to_datetime(data_df['Date of report']).dt.date
+                        data_df= df_main[['ID','Clinic','Details','MainStatus','Approver']]
                         
                         
 
@@ -368,9 +365,7 @@ def app():
                         data_df.fillna('', inplace=True)
                         
                         
-                        # Now convert to string format (YYYY-MM-DD)
-                        data_df['Date'] = data_df['Date'].strftime("%d/%m/%Y")
-                        
+                
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
