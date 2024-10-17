@@ -20,6 +20,7 @@ import conection
 import logging
 from streamlit_dynamic_filters import DynamicFilters
 from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
+from office365.sharepoint.listitems.caml.query import CamlQuery
 
 
 
@@ -48,27 +49,40 @@ def app():
             SHAREPOINT_SITE = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
             LIST_NAME = "Maintenance Report"  # The name of the SharePoint list you want to access
 
-            
             # Authenticate with username and password
             credentials = UserCredential(USERNAME, PASSWORD)
             ctx = ClientContext(SHAREPOINT_SITE).with_credentials(credentials)
 
             # Get the SharePoint List
             list_object = ctx.web.lists.get_by_title(LIST_NAME)
-            items = list_object.get_items()
+
+            # Create an empty list to store all items
+            all_items = []
+
+            # CAML query to get list items in batches (pagination)
+            caml_query = CamlQuery()
+            caml_query.ViewXml = "<View><RowLimit>500</RowLimit></View>"  # Adjust the limit as needed
+
+            # Get first batch of items
+            items = list_object.get_items(caml_query)
             ctx.load(items)
             ctx.execute_query()
 
-            # Extracting list items and converting them to a Pandas DataFrame
-            data = []
-            for item in items:
-                data.append(item.properties)  # Access the item properties
+            # Loop through the results and retrieve all pages
+            while True:
+                all_items.extend(items)
+                if not items.has_next:  # Check if there is a next page
+                    break
+                items = items.next()
+                ctx.load(items)
+                ctx.execute_query()
 
-            # Convert to a DataFrame
+            # Extract the list item properties and convert them to a Pandas DataFrame
+            data = [item.properties for item in all_items]
             df = pd.DataFrame(data)
 
-            # Print or return the DataFrame
-            st.write(df)
+            # Print or process the DataFrame
+            print(df)
 
             # Optional: Ensure all required columns exist (add missing columns if necessary)
             columns = [
