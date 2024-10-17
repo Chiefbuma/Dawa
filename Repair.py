@@ -192,7 +192,6 @@ def app():
                 pending_requests_calc = Main_df [Main_df ["MainStatus"] == "Pending"]
                 pending_request = int(pending_requests_calc.shape[0])
                 
-                
                 pending_value=pending_requests_calc.groupby('ID')["Amount on the Quotation"].sum().sum()
 
                 closed_requests_calc =  Main_df [Main_df ["MainStatus"] == "Closed"]
@@ -218,7 +217,6 @@ def app():
                         ui.card(title="Approved Value:", content=Dir_Approved_value, key="Revcard13").render() 
                                         
 
-                    
                     @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                     def load_new():
                             New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
@@ -235,7 +233,6 @@ def app():
                     
                     Overall_df['Pending'] = (~Overall_df['Admin Approval'].isin(['Approved'])).astype(int)
 
-                
                 
                     # Create a new column that indicates whether the CollectionStatus is 'Fully'
                     #Main_df['TransIn'] = Main_df['Location'] == Main_df['TransIn']
@@ -256,7 +253,7 @@ def app():
 
                         # Create an empty dictionary to store the sum of approved amounts for each unique report
                         report_sum = {}
-
+   
                         # Iterate over each unique report and calculate the sum of approved amounts
                         for report in unique_reports:
                             sum_approved_amount = approved_main_df[approved_main_df["Report"] == report]["Approved amount"].sum()
@@ -331,12 +328,11 @@ def app():
                         
                     with cols[0]:
                         
-                        
                         st.write(summary_df)
 
                     with card_container(key="gallery1"):
 
-                        
+
                         st.markdown('<div style="height: 0px; overflow-y: scroll;">', unsafe_allow_html=True)
                         @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                         def load_new():
@@ -345,15 +341,9 @@ def app():
                             
                         df_main=load_new()
                         
-                        data_df= df_main[['ID','Date of report','Clinic','Details','Approver','MainStatus']]
+                        data_df= df_main[['ID','Clinic','Details','Approver','MainStatus']]
                         
                         import pandas as pd
-
-                        # Ensure the 'Date of report' column is in datetime format
-                        data_df['Date of report'] = pd.to_datetime(data_df['Date of report'], errors='coerce')
-
-                        # Format the 'Date of report' column to 'dd/mm/yyyy'
-                        data_df['Date of report'] = data_df['Date of report'].dt.strftime("%d/%m/%Y")
 
                         
                         data_df = data_df.rename(columns={
@@ -366,9 +356,6 @@ def app():
                         # Fill NaN/NA values with an empty string
                         
                         data_df.fillna('', inplace=True)
-                        
-                        
-                        
                         
                         # Step 2: Build ag-Grid options
                         gb = GridOptionsBuilder.from_dataframe(data_df)
@@ -403,8 +390,6 @@ def app():
                                     st.stop() 
                             # Step 1: Add a column with HTML links to the DataFrame
 
-                           
-                
                     metrics = [
                         {"label": "Total", "value": Total_requests},
                         {"label": "Closed", "value": closed_request},
