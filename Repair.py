@@ -68,7 +68,7 @@ def app():
             df = pd.DataFrame(data)
 
             # Print or return the DataFrame
-            print(df)
+            st.write(df)
 
             # Optional: Ensure all required columns exist (add missing columns if necessary)
             columns = [
