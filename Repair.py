@@ -12,7 +12,7 @@ import streamlit_option_menu as option_menu
 import streamlit_shadcn_ui as ui
 from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
-from sharepoint import SharePonitLsist
+from sharepoint import SharePoint
 from postgrest import APIError
 from IPython.display import HTML
 import logging
@@ -94,7 +94,7 @@ def app():
                 ]
                 
                 try:
-                    clients = SharePonitLsist().connect_to_list(ls_name='Maintenance Report', columns=columns)
+                    clients = SharePoint().connect_to_list(ls_name='Maintenance Report', columns=columns)
                     df = pd.DataFrame(clients)
                     
                     # Ensure all specified columns are in the DataFrame, even if empty
@@ -155,7 +155,7 @@ def app():
                         key="MCcard3"
                     ).render()
             with cols[1]:
-                choice = ui.select(options=month_options)
+                choice = st.selectbox(options=month_options)
                 
                 if choice and choice != "Select Month":
                     
@@ -174,16 +174,14 @@ def app():
                     
                 if choice and choice == "Select Month":
                     
-                    
                     Selected_df = Main_df[ Main_df['Month'] < 13]
                     approved_main_df = Main_df[Main_df['Title'] != '']
                     Centre_df=Main_df[(Main_df['Admin Approval'] == 'Approved') & (Main_df['Month']< 13)]
                     
                     department_All=department_sum_df
                     
-                    
             with card_container(key="Main1"):
-                
+            
                 #ALL SUMMARY
                 Total_requests = Main_df["ID"].nunique()
                 
@@ -216,10 +214,9 @@ def app():
                     with cols[3]:
                         ui.card(title="Approved Value:", content=Dir_Approved_value, key="Revcard13").render() 
                                         
-
                     @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                     def load_new():
-                            New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
+                            New = SharePoint().connect_to_list(ls_name='Maintenance Report')
                             return pd.DataFrame(  New )
                         
                     df_check=load_new()
@@ -336,7 +333,7 @@ def app():
                         st.markdown('<div style="height: 0px; overflow-y: scroll;">', unsafe_allow_html=True)
                         @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                         def load_new():
-                                New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
+                                New = SharePoint().connect_to_list(ls_name='Maintenance Report')
                                 return pd.DataFrame(  New )
                             
                         df_main=load_new()
