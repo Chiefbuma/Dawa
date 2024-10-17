@@ -12,13 +12,16 @@ import streamlit_option_menu as option_menu
 import streamlit_shadcn_ui as ui
 from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
-from sharepoint import SharePoint
+from sharepoint import SharePonitLsist
 from postgrest import APIError
 from IPython.display import HTML
 import logging
 from streamlit_dynamic_filters import DynamicFilters
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
-
+from shareplum import Site, Office365
+from shareplum.site import Version
+import json
+from requests.exceptions import RequestException
 
 
 def app():
@@ -35,15 +38,15 @@ def app():
                     
         if st.session_state.is_authenticated:
             
-            # get clients sharepoint list
-            st.cache_data(ttl=80, max_entries=2000, show_spinner=False, persist=False, experimental_allow_widgets=False)
+           # Define the cache decorator
+            @st.cache_data(ttl=80, max_entries=2000, show_spinner=False)
             def load_new():
                 columns = [
                     "Date of report",
                     "Name of Staff",
                     "Department",
                     "Month",
-                    "Date Number ",
+                    "Date Number",
                     "Clinic",
                     "Departmental report",
                     "Details",
@@ -90,23 +93,33 @@ def app():
                     "MonthName",
                     "Centre Manager Approval",
                     "Biomedical Head Approval"
-
                 ]
                 
                 try:
-                    clients = SharePoint().connect_to_list(ls_name='Maintenance Report', columns=columns)
-                    df = pd.DataFrame(clients)
+                    # Authenticate and connect to SharePoint list
+                    authcookie = Office365('https://blissgvske.sharepoint.com', 
+                                        username='biosafety@blisshealthcare.co.ke', 
+                                        password='Streamlit@2024').GetCookies()
+
+                    site = Site('https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/', authcookie=authcookie)
+                    sp_list = site.List('Maintenance Report')  # Replace with your list name
+                    data = sp_list.GetListItems(fields=columns)
                     
-                    # Ensure all specified columns are in the DataFrame, even if empty
+                    # Convert the data to a DataFrame
+                    df = pd.DataFrame(data)
+
+                    # Ensure all specified columns are present in the DataFrame
                     for col in columns:
                         if col not in df.columns:
                             df[col] = None
 
                     return df
-                except APIError as e:
-                    st.error("Connection not available, check connection")
-                    st.stop()       
-           
+                
+                except RequestException as e:
+                    st.error("Connection not available, please check your connection.")
+                    st.stop()
+
+            # Load data into DataFrame
             Main_df = load_new()
             
             Department_df= Main_df[['Departmental report','Approved amount','Admin Approval','Month']]
@@ -214,9 +227,10 @@ def app():
                     with cols[3]:
                         ui.card(title="Approved Value:", content=Dir_Approved_value, key="Revcard13").render() 
                                         
+
                     @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                     def load_new():
-                            New = SharePoint().connect_to_list(ls_name='Maintenance Report')
+                            New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
                             return pd.DataFrame(  New )
                         
                     df_check=load_new()
@@ -333,7 +347,7 @@ def app():
                         st.markdown('<div style="height: 0px; overflow-y: scroll;">', unsafe_allow_html=True)
                         @st.cache_data(ttl=600, max_entries=100, show_spinner=False, persist=False, experimental_allow_widgets=False)
                         def load_new():
-                                New = SharePoint().connect_to_list(ls_name='Maintenance Report')
+                                New = SharePonitLsist().connect_to_list(ls_name='Maintenance Report')
                                 return pd.DataFrame(  New )
                             
                         df_main=load_new()
