@@ -13,7 +13,6 @@ import streamlit_shadcn_ui as ui
 from local_components import card_container
 from streamlit_shadcn_ui import slider, input, textarea, radio_group, switch
 from sharepoint import SharePoint
-from sharepoint import SharePonitLsist
 from postgrest import APIError
 from IPython.display import HTML
 import conection
@@ -95,7 +94,7 @@ def app():
                 ]
                 
                 try:
-                    clients = SharePonitLsist().connect_to_list(ls_name='Maintenance Report', columns=columns)
+                    clients = SharePoint().connect_to_list(ls_name='Maintenance Report', columns=columns)
                     df = pd.DataFrame(clients)
                     
                     # Ensure all specified columns are in the DataFrame, even if empty
