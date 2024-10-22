@@ -622,7 +622,7 @@ def app():
                                         unsafe_allow_html=True
                                     )
                                 
-                            st.write(status_df)
+                            #st.write(status_df)
                             
                             # Configure GridOptions for the main grid
                             gb = GridOptionsBuilder.from_dataframe(status_df)
