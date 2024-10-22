@@ -597,8 +597,8 @@ def app():
                             "UHID",
                             "mobile",
                             "Medical Centre","Cycle",
-                                "Consulted","Booked","Dispatch",
-                                'Dispatched Date', 
+                            "Dispatch",
+                            'Dispatched Date', 
                             'Received',
                             'TransFrom',
                             'TransTo',
@@ -618,8 +618,6 @@ def app():
                         gb.configure_grid_options(enableQuickFilter=True,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})  # Enable search
                         gb.configure_column('UHID', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
                         gb.configure_column('Patientname', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-                        gb.configure_column('Location', editable=False,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})
-                        # Configure the default column to be editable
                         gb.configure_default_column(editable=True, minWidth=150, flex=0)
 
                         # Build the gri
