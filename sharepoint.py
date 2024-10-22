@@ -61,8 +61,6 @@ class SharePoint:
         except Exception as e:
             raise e
 
-
-        
 class SharePonitLsist:
     def auth(self):
         self.authcookie = Office365(

@@ -22,6 +22,7 @@ from streamlit_dynamic_filters import DynamicFilters
 
 
 
+
 def app():
     
     try:
@@ -622,7 +623,31 @@ def app():
                                     )
                                 
                             st.write(status_df)
-    
+                            
+                            # Configure GridOptions for the main grid
+                            gb = GridOptionsBuilder.from_dataframe(status_df)
+
+                            
+                            
+                            # Configure the default column to be editable
+                            gb.configure_default_column(editable=True, minWidth=150, flex=0)
+
+                            # Build the gri
+                            gridoptions = gb.build()
+                            
+                                
+                            # Display the AgGrid table
+                            response = AgGrid(
+                                status_df,
+                                gridOptions=gridoptions,
+                                editable=True,
+                                allow_unsafe_jscode=True,
+                                theme='balham',
+                                height=300,
+                                fit_columns_on_grid_load=True
+                            )
+                            
+        
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
     except APIError as e:
