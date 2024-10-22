@@ -177,6 +177,7 @@ def app():
                                                                     'Dawa Nyumbani', 
                                                                     'Pharmacy',
                                                                     'Quality',
+                                                                    'Customer Service',
                                                                     'Guest',
                                                                     'Telemedicine',
                                                                     'Warehouse'])
