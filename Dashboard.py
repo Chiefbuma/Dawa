@@ -600,7 +600,6 @@ def app():
                             'Dispatched Date', 
                             'Received ',
                             'Collected',
-                             'Collection Date',
                              'MVC',
                             'TransFrom',
                             'TransTo'
