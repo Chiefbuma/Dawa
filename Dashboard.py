@@ -615,7 +615,7 @@ def app():
                         # Configure GridOptions for the main grid
                         gb = GridOptionsBuilder.from_dataframe(status_df)
 
-                        gb.configure_grid_options(enableQuickFilter=True)  # Enable search
+                        gb.configure_grid_options(enableQuickFilter=True,filter="agTextColumnFilter", filter_params={"filterOptions": ["contains", "notContains", "startsWith", "endsWith"]})  # Enable search
                         
                         # Configure the default column to be editable
                         gb.configure_default_column(editable=True, minWidth=150, flex=0)
