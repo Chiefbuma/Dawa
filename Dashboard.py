@@ -647,8 +647,11 @@ def app():
                                 fit_columns_on_grid_load=True
                             )
                             
+                                                    # Access the updated data (if any cell is edited)
+                            edited_df = response['data']
+
                             
-                            st.write(response)
+                            st.write(edited_df)
         
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
