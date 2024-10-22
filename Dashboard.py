@@ -524,152 +524,152 @@ def app():
                     
                     #st.write(Revenue_df)
                             
-                with st.expander(label="Click here to Track Patient status"):
-                    with card_container(key="mew"):  
-                        
-                            display_only_renderer = JsCode("""
-                                class DisplayOnlyRenderer {
-                                    init(params) {
-                                        this.params = params;
-                                        this.eGui = document.createElement('div');
-
-                                        // Set the width and height of the div
-                                        this.eGui.style.width = '200px'; // Adjust the width as needed
-                                        this.eGui.style.height = '20px'; // Adjust the height as needed
-
-                                        this.eGui.innerText = this.params.value || '';
-                                    }
-
-                                    getGui() {
-                                        return this.eGui;
-                                    }
-                                }
-                                """)
-                            
-                            display_only_rendererView = JsCode("""
-                                class DisplayOnlyRenderer {
-                                    init(params) {
-                                        this.params = params;
-                                        this.eGui = document.createElement('div');
-
-                                        // Set the width and height of the div
-                                        this.eGui.style.width = '5px'; // Adjust the width as needed
-                                        this.eGui.style.height = '20px'; // Adjust the height as needed
-
-                                        this.eGui.innerText = this.params.value || '';
-                                    }
-
-                                    getGui() {
-                                        return this.eGui;
-                                    }
-                                }
-                                """)
-                            
-                                    
-                            sumamry_df = Main_df.rename(columns={
-                                'UHID':'UHID',
-                                'Patientname':'Patientname',
-                                'DoctorName': 'Doctor',
-                                'Booked By':'Cordinator',
-                                'mobile':'mobile',
-                                'Dispatched By':'WareHouse',
-                                'Location':'Medical Centre',
-                                'Dispensed By':'Pharmatech.',
-                                'Booking status': 'Booked',
-                                'Transfer Status':'Total',
-                                'Transfer To':'TransTo',
-                                'Transfer From':'TransFrom',
-                                'Consultation Status': 'Consulted',
-                                'Dispatched status':'Dispatch',
-                                'Dispatched Date':'Dispatched Date',
-                                'Received Status': 'Received',
-                                'Collection Date':'Date',
-                                'Partial_Collection':'Partial',
-                                'Full_Collection':'Full',
-                                'Collection status': 'Collected',
-                                'Month': 'Month',
-                                'MVC':'MVC',
-                                "Cycle":'Cycle'})
+            
+                with card_container(key="mew"):  
                     
-                            # Create the DataFrame with the required columns
-                            status_df = sumamry_df[[
-                                "Patientname",
-                                "UHID",
-                                "mobile",
-                                "Medical Centre","Cycle",
-                                 "Consulted","Booked","Dispatch",
-                                 'Dispatched Date', 
-                                'Received',
-                                'TransFrom',
-                                'TransTo',
-                                'Collected',
-                                'Date',
-                                'MVC'
-                            ]]
-                            
+                        display_only_renderer = JsCode("""
+                            class DisplayOnlyRenderer {
+                                init(params) {
+                                    this.params = params;
+                                    this.eGui = document.createElement('div');
 
-                            colsearch = st.columns(4)
-                            
-                            with colsearch [0]:
+                                    // Set the width and height of the div
+                                    this.eGui.style.width = '200px'; // Adjust the width as needed
+                                    this.eGui.style.height = '20px'; // Adjust the height as needed
 
-                                    
-                                    st.markdown(
-                                        f"""
-                                        <div style="background-color:white; padding:20px; border-radius:5px; width:1250px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
+                                    this.eGui.innerText = this.params.value || '';
+                                }
 
-                                        """, 
-                                        unsafe_allow_html=True
-                                    )
+                                getGui() {
+                                    return this.eGui;
+                                }
+                            }
+                            """)
+                        
+                        display_only_rendererView = JsCode("""
+                            class DisplayOnlyRenderer {
+                                init(params) {
+                                    this.params = params;
+                                    this.eGui = document.createElement('div');
+
+                                    // Set the width and height of the div
+                                    this.eGui.style.width = '5px'; // Adjust the width as needed
+                                    this.eGui.style.height = '20px'; // Adjust the height as needed
+
+                                    this.eGui.innerText = this.params.value || '';
+                                }
+
+                                getGui() {
+                                    return this.eGui;
+                                }
+                            }
+                            """)
+                        
                                 
-                            #st.write(status_df)
-                            
-                            # Configure GridOptions for the main grid
-                            gb = GridOptionsBuilder.from_dataframe(status_df)
+                        sumamry_df = Main_df.rename(columns={
+                            'UHID':'UHID',
+                            'Patientname':'Patientname',
+                            'DoctorName': 'Doctor',
+                            'Booked By':'Cordinator',
+                            'mobile':'mobile',
+                            'Dispatched By':'WareHouse',
+                            'Location':'Medical Centre',
+                            'Dispensed By':'Pharmatech.',
+                            'Booking status': 'Booked',
+                            'Transfer Status':'Total',
+                            'Transfer To':'TransTo',
+                            'Transfer From':'TransFrom',
+                            'Consultation Status': 'Consulted',
+                            'Dispatched status':'Dispatch',
+                            'Dispatched Date':'Dispatched Date',
+                            'Received Status': 'Received',
+                            'Collection Date':'Date',
+                            'Partial_Collection':'Partial',
+                            'Full_Collection':'Full',
+                            'Collection status': 'Collected',
+                            'Month': 'Month',
+                            'MVC':'MVC',
+                            "Cycle":'Cycle'})
+                
+                        # Create the DataFrame with the required columns
+                        status_df = sumamry_df[[
+                            "Patientname",
+                            "UHID",
+                            "mobile",
+                            "Medical Centre","Cycle",
+                                "Consulted","Booked","Dispatch",
+                                'Dispatched Date', 
+                            'Received',
+                            'TransFrom',
+                            'TransTo',
+                            'Collected',
+                            'Date',
+                            'MVC'
+                        ]]
+                        
 
-                            gb.configure_grid_options(enableQuickFilter=True)  # Enable search
-                            
-                            # Configure the default column to be editable
-                            gb.configure_default_column(editable=True, minWidth=150, flex=0)
+                        colsearch = st.columns(4)
+                        
+                        with colsearch [0]:
 
-                            # Build the gri
-                            gridoptions = gb.build()
-                            
                                 
-                            # Display the AgGrid table
-                            response = AgGrid(
-                                status_df,
-                                gridOptions=gridoptions,
-                                editable=True,
-                                allow_unsafe_jscode=True,
-                                theme='balham',
-                                height=300,
-                                fit_columns_on_grid_load=True
-                            )
-                            
-                                                    # Access the updated data (if any cell is edited)
-                            edited_df = response['data']
+                                st.markdown(
+                                    f"""
+                                    <div style="background-color:white; padding:20px; border-radius:5px; width:1250px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
 
+                                    """, 
+                                    unsafe_allow_html=True
+                                )
                             
-                            #st.write(edited_df)
+                        #st.write(status_df)
+                        
+                        # Configure GridOptions for the main grid
+                        gb = GridOptionsBuilder.from_dataframe(status_df)
+
+                        gb.configure_grid_options(enableQuickFilter=True)  # Enable search
+                        
+                        # Configure the default column to be editable
+                        gb.configure_default_column(editable=True, minWidth=150, flex=0)
+
+                        # Build the gri
+                        gridoptions = gb.build()
+                        
                             
-                            # Function to convert DataFrame to Excel in memory
-                            def to_excel(df):
-                                output = BytesIO()
-                                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                                    df.to_excel(writer, index=False, sheet_name='Sheet1')
-                                processed_data = output.getvalue()
-                                return processed_data
+                        # Display the AgGrid table
+                        response = AgGrid(
+                            status_df,
+                            gridOptions=gridoptions,
+                            editable=True,
+                            allow_unsafe_jscode=True,
+                            theme='balham',
+                            height=300,
+                            fit_columns_on_grid_load=True
+                        )
+                        
+                                                # Access the updated data (if any cell is edited)
+                        edited_df = response['data']
 
-                            # Convert the edited DataFrame to Excel
-                            excel_data = to_excel(edited_df)
+                        
+                        #st.write(edited_df)
+                        
+                        # Function to convert DataFrame to Excel in memory
+                        def to_excel(df):
+                            output = BytesIO()
+                            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                                df.to_excel(writer, index=False, sheet_name='Sheet1')
+                            processed_data = output.getvalue()
+                            return processed_data
 
-                            # Create a download button for the Excel file
-                            st.download_button(
-                                label="Download as Excel",
-                                data=excel_data,
-                                file_name='agrid_table.xlsx',
-                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            )
+                        # Convert the edited DataFrame to Excel
+                        excel_data = to_excel(edited_df)
+
+                        # Create a download button for the Excel file
+                        st.download_button(
+                            label="Download as Excel",
+                            data=excel_data,
+                            file_name='agrid_table.xlsx',
+                            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        )
         
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
