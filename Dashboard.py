@@ -647,6 +647,8 @@ def app():
                                 fit_columns_on_grid_load=True
                             )
                             
+                            
+                            st.write(response)
         
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
