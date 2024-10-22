@@ -583,6 +583,7 @@ def app():
                             'Dispatched status':'Dispatch',
                             'Dispatched Date':'Dispatched Date',
                             'Received Status': 'Received',
+                            'Collection Date':'Date',
                             'Partial_Collection':'Partial',
                             'Full_Collection':'Full',
                             'Collection status': 'Collected',
@@ -598,12 +599,12 @@ def app():
                             "Medical Centre","Cycle",
                             "Dispatch",
                             'Dispatched Date', 
-                            'Received ',
+                            'Received',
                             'Collected',
-                             'MVC',
+                            'Date',
                             'TransFrom',
-                            'TransTo'
-                            
+                            'TransTo',
+                            'MVC'
                         ]]
                         
 
