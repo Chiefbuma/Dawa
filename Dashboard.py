@@ -650,7 +650,7 @@ def app():
                             edited_df = response['data']
 
                             
-                            st.write(edited_df)
+                            #st.write(edited_df)
                             
                             # Function to convert DataFrame to Excel in memory
                             def to_excel(df):
