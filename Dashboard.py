@@ -18,6 +18,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder,JsCode
 from IPython.display import HTML
 import conection
 from streamlit_dynamic_filters import DynamicFilters
+from io import BytesIO
 
 
 
@@ -526,8 +527,6 @@ def app():
                 with st.expander(label="Click here to Track Patient status"):
                     with card_container(key="mew"):  
                         
-                        container = st.container(border=True, height=400)
-                        with container:
                             display_only_renderer = JsCode("""
                                 class DisplayOnlyRenderer {
                                     init(params) {
@@ -627,7 +626,7 @@ def app():
                             # Configure GridOptions for the main grid
                             gb = GridOptionsBuilder.from_dataframe(status_df)
 
-                            
+                            gb.configure_grid_options(enableQuickFilter=True)  # Enable search
                             
                             # Configure the default column to be editable
                             gb.configure_default_column(editable=True, minWidth=150, flex=0)
@@ -652,6 +651,25 @@ def app():
 
                             
                             st.write(edited_df)
+                            
+                            # Function to convert DataFrame to Excel in memory
+                            def to_excel(df):
+                                output = BytesIO()
+                                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                                    df.to_excel(writer, index=False, sheet_name='Sheet1')
+                                processed_data = output.getvalue()
+                                return processed_data
+
+                            # Convert the edited DataFrame to Excel
+                            excel_data = to_excel(edited_df)
+
+                            # Create a download button for the Excel file
+                            st.download_button(
+                                label="Download as Excel",
+                                data=excel_data,
+                                file_name='agrid_table.xlsx',
+                                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            )
         
         else:
             st.write("You  are  not  logged  in. Click   **[Account]**  on the  side  menu to Login  or  Signup  to proceed")
