@@ -609,18 +609,7 @@ def app():
                         
 
                         colsearch = st.columns(4)
-                        
-                        with colsearch [0]:
-
-                                
-                                st.markdown(
-                                    f"""
-                                    <div style="background-color:white; padding:20px; border-radius:5px; width:1250px; border: 0.5px solid grey; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); margin-bottom:5px;">
-
-                                    """, 
-                                    unsafe_allow_html=True
-                                )
-                            
+                               
                         #st.write(status_df)
                         
                         # Configure GridOptions for the main grid
