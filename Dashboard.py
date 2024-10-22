@@ -601,7 +601,6 @@ def app():
                             "Dispatch",
                             'Dispatched Date', 
                             'Received',
-                            'Received Date',
                             'Collected',
                             'Date',
                             'TransFrom',
