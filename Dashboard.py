@@ -599,7 +599,6 @@ def app():
                             "Dispatch",
                             'Dispatched Date', 
                             'Received ',
-                            'Received Date',
                             'Collected',
                              'Collection Date',
                              'MVC',
