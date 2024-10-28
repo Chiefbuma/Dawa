@@ -3,7 +3,7 @@ from shareplum.site import Version
 import json
 
 USERNAME = "biosafety@blisshealthcare.co.ke"
-PASSWORD = "Streamlit@2024"
+PASSWORD = "#Safety2026"
 SHAREPOINT_URL = "https://blissgvske.sharepoint.com"
 SHAREPOINT_SITE = "https://blissgvske.sharepoint.com/sites/BlissHealthcareReports/"
 
