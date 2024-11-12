@@ -61,7 +61,7 @@ def app():
                 
                 staffname = usersD_df['staffname'].iloc[0]
                 
-                # Get a list of unique values in the 'Cycle' column
+                # Get a list of unique values in the 'Cycle
                 Cycle = mainall['Cycle'].unique().tolist()
                 
                 with card_container(key="collect3"):
